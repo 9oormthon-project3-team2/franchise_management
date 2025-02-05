@@ -38,6 +38,7 @@ jobs:
           TAG=${{ github.sha }}
           docker build -t $IMAGE_NAME:$TAG .
           docker push $IMAGE_NAME:$TAG
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.8
         with:
