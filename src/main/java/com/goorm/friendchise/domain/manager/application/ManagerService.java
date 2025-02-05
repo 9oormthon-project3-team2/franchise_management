@@ -7,13 +7,11 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
-import com.goorm.friendchise.global.exception.CustomException;
+import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.goorm.friendchise.global.exception.ErrorCode.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +60,6 @@ public class ManagerService {
 	@Transactional
 	public Manager findManagerByUsername(String username) {
 		return managerRepository.findByUsername(username)
-			.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+			.orElseThrow(ManagerNotFoundException::new);
 	}
 }
