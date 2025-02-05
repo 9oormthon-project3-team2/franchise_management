@@ -26,13 +26,19 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
+      - name: Transfer JAR to EC2
+        run: |
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          scp -o StrictHostKeyChecking=no -i private_key.pem build/libs/*.jar ubuntu@3.38.104.230:~/app/
+
       - name: Set up SSH & Deploy
         run: |
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@3.38.104.230 << 'EOF'
+            mkdir -p ~/app
             cd ~/app
-            git pull origin main
             docker-compose down
             docker-compose up --build -d
           EOF
