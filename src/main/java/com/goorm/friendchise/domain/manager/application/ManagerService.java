@@ -3,11 +3,17 @@ package com.goorm.friendchise.domain.manager.application;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
+import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
+import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
+import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
+import com.goorm.friendchise.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.goorm.friendchise.global.exception.ErrorCode.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +30,38 @@ public class ManagerService {
 	}
 
 	// TODO 로그인
-	// TODO 로그아웃
-	// TODO 회원 정보 조회
-	// TODO 회원 정보 수정
-	// TODO 회원 비밀번호 수정
-	// TODO 회원 탈퇴
+	public ManagerTokenResponse login(ManageLoginRequest request) {
+		return ManagerTokenResponse.of("", "");
+	}
+
+	@Transactional(readOnly = true)
+	public ManagerDetailResponse detail(String username) {
+		Manager manager = findManagerByUsername(username);
+		return ManagerDetailResponse.from(manager);
+	}
+
+	@Transactional
+	public void updateManager(String username, Long newStoreId) {
+		Manager manager = findManagerByUsername(username);
+		manager.updateManageId(newStoreId);
+	}
+
+	@Transactional
+	public void updatePassword(String username, String newPassword) {
+		String encode = bCryptPasswordEncoder.encode(newPassword);
+		Manager manager = findManagerByUsername(username);
+		manager.updatePassword(encode);
+	}
+
+	@Transactional
+	public void delete(String username) {
+		Manager manager = findManagerByUsername(username);
+		managerRepository.delete(manager);
+	}
+
+	@Transactional
+	public Manager findManagerByUsername(String username) {
+		return managerRepository.findByUsername(username)
+			.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+	}
 }

@@ -21,4 +21,14 @@ public class ManagerRepositoryImpl implements ManagerRepository {
 	public Optional<Manager> findById(Long id) {
 		return jpaManagerRepository.findById(id);
 	}
+
+	@Override
+	public Optional<Manager> findByUsername(String username) {
+		return jpaManagerRepository.findByUsername(username);
+	}
+
+	@Override
+	public void delete(Manager manager) {
+		jpaManagerRepository.delete(manager);
+	}
 }

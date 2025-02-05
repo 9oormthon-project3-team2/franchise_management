@@ -6,4 +6,8 @@ public interface ManagerRepository {
 	Manager save(Manager manager);
 
 	Optional<Manager> findById(Long id);
+
+	Optional<Manager> findByUsername(String username);
+
+	void delete(Manager manager);
 }
