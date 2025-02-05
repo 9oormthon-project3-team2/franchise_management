@@ -1,4 +1,4 @@
-package com.goorm.friendchise.manager.dto.response;
+package com.goorm.friendchise.domain.manager.dto.response;
 
 import lombok.Builder;
 

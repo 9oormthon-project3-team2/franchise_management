@@ -1,4 +1,4 @@
-package com.goorm.friendchise.manager.domain;
+package com.goorm.friendchise.domain.manager.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

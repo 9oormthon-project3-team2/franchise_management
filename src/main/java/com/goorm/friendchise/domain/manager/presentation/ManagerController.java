@@ -1,6 +1,6 @@
-package com.goorm.friendchise.manager.presentation;
+package com.goorm.friendchise.domain.manager.presentation;
 
-import com.goorm.friendchise.manager.application.ManagerService;
+import com.goorm.friendchise.domain.manager.application.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
