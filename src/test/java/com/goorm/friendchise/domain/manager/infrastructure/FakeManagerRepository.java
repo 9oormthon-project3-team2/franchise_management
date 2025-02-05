@@ -10,10 +10,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeManagerRepository implements ManagerRepository {
-
 	private final List<Manager> data = Collections.synchronizedList(new ArrayList<>());
 	private final AtomicLong sequence = new AtomicLong(1);
-
 
 	@Override
 	public Manager save(Manager manager) {
