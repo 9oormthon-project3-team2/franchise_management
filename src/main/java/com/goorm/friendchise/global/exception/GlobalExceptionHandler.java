@@ -1,5 +1,6 @@
 package com.goorm.friendchise.global.exception;
 
+import com.goorm.friendchise.domain.customer.exception.CustomerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus()).body(createErrorResponse(errorCode));
     }
+
+    @ExceptionHandler(CustomerException.class)
+    public ResponseEntity<ErrorResponse> handleCustomerException(CustomException e) {
+        log.warn("CustomerException 예외 발생, msg:{}", e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity.status(errorCode.getStatus()).body(createErrorResponse(errorCode));
+    }
+
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(

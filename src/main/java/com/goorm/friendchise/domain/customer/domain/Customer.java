@@ -31,4 +31,6 @@ public class Customer {
 
     @ElementCollection
     private ArrayList<Achievement> achievements;
+
+    public void updatePassword(String password) {this.password=password;}
 }

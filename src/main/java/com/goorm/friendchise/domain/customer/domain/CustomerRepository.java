@@ -11,5 +11,7 @@ public interface CustomerRepository {
 
     Optional<Customer> findByUsername(String username);
 
+    boolean existsByUsername(String username);
+
     void delete(Customer customer);
 }

@@ -29,6 +29,9 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
+    public boolean existsByUsername(String username){ return jpaCustomerRepository.existsByUsername(username);}
+
+    @Override
     public void delete(Customer customer) {
         jpaCustomerRepository.delete(customer);
     }
