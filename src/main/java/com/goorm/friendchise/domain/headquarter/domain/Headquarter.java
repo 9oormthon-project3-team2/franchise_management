@@ -1,9 +1,12 @@
 package com.goorm.friendchise.domain.headquarter.domain;
 
+import com.goorm.friendchise.domain.headquarter.Item.domain.Item;
 import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,6 +22,8 @@ public class Headquarter extends BaseEntity {
     @Column(unique = true, length = 50)
     private String franchiseName;
 
+    @OneToMany(mappedBy = "headquarter", fetch = FetchType.LAZY)
+    private List<Item> items;
 
     public static Headquarter of(String franchiseName) {
         return Headquarter.builder()
@@ -28,5 +33,10 @@ public class Headquarter extends BaseEntity {
 
     public void updateFranchiseName(String franchiseName) {
         this.franchiseName = franchiseName;
+    }
+
+    public void addItem(Item item) {
+        this.items.add(item);
+        item.setHeadquarter(this);
     }
 }

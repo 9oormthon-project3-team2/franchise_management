@@ -5,6 +5,6 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 public record ItemReqDtoList(
-        @Valid List<ItemReqDto> itemReqDtoList
+        @Valid List<ItemReqDto> itemList
 ) {
 }

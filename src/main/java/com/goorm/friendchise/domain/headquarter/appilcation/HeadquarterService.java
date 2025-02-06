@@ -1,14 +1,19 @@
 package com.goorm.friendchise.domain.headquarter.appilcation;
 
+import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
+import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.headquarter.dto.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.HeadquarterResDto;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
+import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -52,6 +57,4 @@ public class HeadquarterService {
     public void deleteHeadquarter(Long id) {
         headquarterRepository.deleteById(id);
     }
-
-
 }

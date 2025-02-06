@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.headquarter.presentation;
 
+import com.goorm.friendchise.domain.headquarter.Item.application.ItemService;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDto;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping("/headquarter")
 public class HeadquarterController {
     private final HeadquarterService headquarterService;
+    private final ItemService itemService;
 
     @PostMapping("/register")
     public ResponseEntity<HeadquarterResDto> createHeadquarter(@Valid @RequestBody HeadquarterReqDto headquarterReqDto) {
@@ -40,10 +42,10 @@ public class HeadquarterController {
         return ResponseEntity.ok().body(null);
     }
 
-//    @PostMapping("/item/register")
-//    public ResponseEntity<List<ItemResDto>> createItem(@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
-//        return ResponseEntity.ok().body(headquarterService.createItem(itemReqDtoList));
-//    }
+    @PostMapping("/{id}/item/register")
+    public ResponseEntity<List<ItemResDto>> createItems(@PathVariable Long headquarterId ,@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
+        return ResponseEntity.ok().body(itemService.createItems(headquarterId, itemReqDtoList));
+    }
 
 
 }
