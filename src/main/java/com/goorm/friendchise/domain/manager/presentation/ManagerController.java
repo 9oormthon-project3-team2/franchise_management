@@ -8,7 +8,6 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +47,7 @@ public class ManagerController {
 	}
 
 	@GetMapping("/mypage")
-	public ResponseEntity<ManagerDetailResponse> mypage(){
+	public ResponseEntity<ManagerDetailResponse> mypage() {
 		return ResponseEntity.ok(managerService.mypage());
 	}
 
