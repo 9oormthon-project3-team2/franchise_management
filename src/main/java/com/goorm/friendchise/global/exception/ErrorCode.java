@@ -12,7 +12,14 @@ public enum ErrorCode {
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "유효하지 않은 파라미터입니다."),
     TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "타입이 일치하지 않습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리소스를 찾을 수 없습니다."),
-    URL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 URL을 찾을 수 없습니다.");
+    URL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 URL을 찾을 수 없습니다."),
+
+    /* ------------------------------- store ----------------------------------- */
+    STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 매장입니다."),
+    ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "입력한 주소와 관련된 주소가 없습니다."),
+
+    /* ------------------------------- sales ----------------------------------- */
+    SALES_NOT_FOND(HttpStatus.BAD_REQUEST, "존재하지 않는 매출입니다.");
 
     private final HttpStatus status;
     private final String message;
