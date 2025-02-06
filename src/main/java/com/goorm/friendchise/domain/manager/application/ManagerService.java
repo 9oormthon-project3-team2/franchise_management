@@ -10,6 +10,8 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,8 +52,8 @@ public class ManagerService {
 		return ManagerDetailResponse.from(manager);
 	}
 
-	public void updateManager(String username, Long newStoreId) {
-		Manager manager = findManagerByUsername(username);
+	public void updateManager(Long newStoreId) {
+		Manager manager = findManagerByAuth();
 		manager.updateManageId(newStoreId);
 	}
 
@@ -69,5 +71,15 @@ public class ManagerService {
 	public Manager findManagerByUsername(String username) {
 		return managerRepository.findByUsername(username)
 			.orElseThrow(ManagerNotFoundException::new);
+	}
+
+	public Manager findManagerByAuth() {
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			String username = ((UserDetails) principal).getUsername();
+			return findManagerByUsername(username);
+		} catch (Exception e) {
+			throw new ManagerNotFoundException();
+		}
 	}
 }

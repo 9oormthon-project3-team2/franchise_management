@@ -42,6 +42,7 @@ public class SecurityConfig {
 				.requestMatchers(SWAGGER_PATTERNS).permitAll()
 				.requestMatchers(STATIC_RESOURCES_PATTERNS).permitAll()
 				.requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
+				.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 				.anyRequest().authenticated()
 			)
 			.build();
@@ -65,6 +66,12 @@ public class SecurityConfig {
 		"/favicon.ico",
 		"/index.html",
 		"/",
+	};
+
+	// TODO 추후 권한별 분리 할때 세분화
+	private static final String[] PUBLIC_ENDPOINTS = {
+		"/manager/**",
+		"notification/**"
 	};
 
 	CorsConfigurationSource corsConfigurationSource() {
