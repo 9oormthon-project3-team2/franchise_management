@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.manager.domain;
 
+import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -19,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class Manager {
+public class Manager extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
