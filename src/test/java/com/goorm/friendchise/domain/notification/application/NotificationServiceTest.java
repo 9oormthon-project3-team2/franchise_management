@@ -2,13 +2,14 @@ package com.goorm.friendchise.domain.notification.application;
 
 import com.goorm.friendchise.domain.notification.domain.Notification;
 import com.goorm.friendchise.domain.notification.domain.NotificationRepository;
-import com.goorm.friendchise.domain.notification.domain.NotificationTarget;
-import com.goorm.friendchise.domain.notification.domain.NotificationType;
+import com.goorm.friendchise.domain.notification.event.PromotionCreatedEvent;
 import com.goorm.friendchise.domain.notification.infrastructure.FakeNotificationRepository;
-import com.goorm.friendchise.domain.notification.presentation.dto.NotificationCreateRequest;
+import com.goorm.friendchise.domain.promotion.domain.Promotion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,52 +23,39 @@ class NotificationServiceTest {
 	void setUp() {
 		notificationRepository = new FakeNotificationRepository();
 		notificationService = new NotificationService(notificationRepository);
-
-		// 기본 알림 미리 생성
-		notificationService.createNotification(createTestRequest(101L, "test-title1", "test-content1"));
-		notificationService.createNotification(createTestRequest(101L, "test-title2", "test-content2"));
 	}
 
 	@Test
-	void createNotification_success() {
+	void handlePromotionCreated_success() {
 		// given
-		NotificationCreateRequest request = createTestRequest(102L, "new-title", "new-content");
+		PromotionCreatedEvent event = new PromotionCreatedEvent(
+			Promotion.create(1L,
+				"할인 이벤트",
+				"전 매장 50% 할인",
+				LocalDateTime.of(2025, 3, 1, 9, 0),
+				LocalDateTime.of(2025, 3, 7, 23, 59))
+		);
 
 		// when
-		Notification notification = notificationService.createNotification(request);
+		notificationService.handlePromotionCreated(event);
 
 		// then
-		assertThat(notification).isNotNull();
-		assertThat(notification.getTargetId()).isEqualTo(102L);
-		assertThat(notification.getTitle()).isEqualTo("new-title");
-		assertThat(notification.getContent()).isEqualTo("new-content");
-
-		// 추가 검증: Fake Repository에 저장되었는지 확인
-		List<Notification> notifications = notificationRepository.findByTargetTypeAndTargetId(NotificationTarget.STORE, 102L);
-		assertThat(notifications).hasSize(1);
-	}
-
-	@Test
-	void getNotificationsByTarget_success() {
-		// when
-		List<Notification> notifications = notificationService.getNotificationsByTarget(NotificationTarget.STORE, 101L);
-
-		// then
-		assertThat(notifications).hasSize(2);
-		assertThat(notifications.get(0).getTitle()).isEqualTo("test-title1");
-		assertThat(notifications.get(1).getTitle()).isEqualTo("test-title2");
+		List<Notification> notifications = notificationRepository.findAll();
+		assertThat(notifications).hasSize(3);  // 기본적으로 3개 매장에 전송
+		assertThat(notifications.get(0).getTitle()).isEqualTo("할인 이벤트");
 	}
 
 	@Test
 	void markAsRead_success() {
 		// given
-		Notification notification = notificationService.createNotification(createTestRequest(103L, "mark-read", "content"));
+		Notification notification = notificationRepository.save(Notification.create(101L, "긴급 점검", "서버 점검"));
+		Long notificationId = notification.getId();
 
 		// when
-		notificationService.markAsRead(notification.getId());
+		notificationService.markAsRead(notificationId);
 
 		// then
-		Optional<Notification> updatedNotification = notificationRepository.findById(notification.getId());
+		Optional<Notification> updatedNotification = notificationRepository.findById(notificationId);
 		assertThat(updatedNotification).isPresent();
 		assertThat(updatedNotification.get().isRead()).isTrue();
 	}
@@ -75,24 +63,26 @@ class NotificationServiceTest {
 	@Test
 	void deleteNotification_success() {
 		// given
-		Notification notification = notificationService.createNotification(createTestRequest(104L, "delete-test", "content"));
+		Notification notification = notificationRepository.save(Notification.create(101L, "삭제 테스트", "이 알림은 삭제됩니다."));
+		Long notificationId = notification.getId();
 
 		// when
-		notificationService.deleteNotification(notification.getId());
+		notificationService.deleteNotification(notificationId);
 
 		// then
-		Optional<Notification> deletedNotification = notificationRepository.findById(notification.getId());
+		Optional<Notification> deletedNotification = notificationRepository.findById(notificationId);
 		assertThat(deletedNotification).isEmpty();
 	}
 
-	// 중복 제거: 테스트용 알림 생성 메서드 추가
-	private NotificationCreateRequest createTestRequest(Long targetId, String title, String content) {
-		return NotificationCreateRequest.builder()
-			.targetId(targetId)
-			.targetType(NotificationTarget.STORE)
-			.notificationType(NotificationType.PROMOTION)
-			.title(title)
-			.content(content)
-			.build();
+	@Test
+	void subscribe_success() {
+		// given
+		Long storeId = 101L;
+
+		// when
+		SseEmitter emitter = notificationService.subscribe(storeId);
+
+		// then
+		assertThat(emitter).isNotNull();
 	}
 }

@@ -1,28 +1,40 @@
 package com.goorm.friendchise.domain.notification.domain;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 class NotificationTest {
 
 	@Test
 	void create_success() {
-		Notification notification = Notification.create(101L, NotificationTarget.STORE, NotificationType.PROMOTION, "test-title", "test-content");
+		// given
+		Long id = 1L;
+		Long targetId = 001L;
+		String title = "title";
+		String content = "content";
+		boolean isRead = false;
 
-		assertNotNull(notification);
-		assertEquals(101L, notification.getTargetId());
-		assertEquals(NotificationTarget.STORE, notification.getTargetType());
-		assertEquals(NotificationType.PROMOTION, notification.getNotificationType());
-		assertEquals("test-title", notification.getTitle());
-		assertEquals("test-content", notification.getContent());
+		// when
+		Notification notification = new Notification(id, targetId, title, content, isRead);
+
+		// then
+		assertThat(notification.getId()).isEqualTo(1L);
+		assertThat(notification.getId()).isEqualTo(001L);
+		assertThat(notification.getTitle()).isEqualTo("title");
+		assertThat(notification.getContent()).isEqualTo("content");
+		assertThat(notification.isRead()).isFalse();
 	}
 
 	@Test
-	void markAsRead_success() {
-		Notification notification = Notification.create(101L, NotificationTarget.STORE, NotificationType.PROMOTION, "test-title", "test-content");
+	void isRead_success() {
+		// given
+		Notification notification = Notification.create(001L, "title", "content");
+
+		// when
 		notification.markAsRead();
-		Assertions.assertThat(notification.isRead()).isTrue();
+
+		// then
+		assertThat(notification.isRead()).isEqualTo(true);
 	}
 }
