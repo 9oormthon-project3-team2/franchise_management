@@ -23,3 +23,6 @@ spring:
     defer-datasource-initialization: true
     show-sql: true
     open-in-view: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/testdb
