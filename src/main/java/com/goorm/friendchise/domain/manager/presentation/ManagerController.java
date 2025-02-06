@@ -7,8 +7,8 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,17 +41,30 @@ public class ManagerController {
 	}
 
 	@GetMapping("/{username}")
-	public ResponseEntity<ManagerDetailResponse> mypage(
+	public ResponseEntity<ManagerDetailResponse> userDetail(
 		@PathVariable String username
 	) {
 		return ResponseEntity.ok(managerService.detail(username));
 	}
 
-//	@PutMapping("/update")
-//	public ResponseEntity<Void> update(
-//		@RequestParam Long newStoreId
-//	) {
-//		managerService.updateManager(newStoreId);
-//		return ResponseEntity.noContent().build();
-//	}
+	@GetMapping("/mypage")
+	public ResponseEntity<ManagerDetailResponse> mypage(){
+		return ResponseEntity.ok(managerService.mypage());
+	}
+
+	@PutMapping("/update/store-id")
+	public ResponseEntity<Void> update(
+		@RequestParam Long newStoreId
+	) {
+		managerService.updateManager(newStoreId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PutMapping("/update/password")
+	public ResponseEntity<Void> updatePassword(
+		@RequestParam String newPassword
+	) {
+		managerService.updatePassword(newPassword);
+		return ResponseEntity.noContent().build();
+	}
 }

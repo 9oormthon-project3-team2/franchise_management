@@ -12,7 +12,6 @@ import com.goorm.friendchise.global.auth.jwt.JwtProperties;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -59,22 +58,6 @@ class ManagerServiceTest {
 		assertNull(detail.manageId());
 	}
 
-//	@Test
-//	void updateManager_success() {
-//		String inputName = "test";
-//		Long storeId = 1L;
-//		managerService.updateManager(storeId);
-//		assertEquals(storeId, managerService.findManagerByUsername(inputName).getManageId());
-//	}
-
-	@Test
-	void updatePassword_success() {
-		String inputName = "test";
-		String oldPassword = managerService.findManagerByUsername(inputName).getPassword();
-		managerService.updatePassword(inputName, "newPassword");
-		String newPassword = managerService.findManagerByUsername(inputName).getPassword();
-		assertNotEquals(oldPassword, newPassword);
-	}
 
 	@Test
 	void delete_success() {

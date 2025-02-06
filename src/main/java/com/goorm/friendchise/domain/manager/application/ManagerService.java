@@ -52,14 +52,19 @@ public class ManagerService {
 		return ManagerDetailResponse.from(manager);
 	}
 
+	public ManagerDetailResponse mypage() {
+		Manager manager = findManagerByAuth();
+		return ManagerDetailResponse.from(manager);
+	}
+
 	public void updateManager(Long newStoreId) {
 		Manager manager = findManagerByAuth();
 		manager.updateManageId(newStoreId);
 	}
 
-	public void updatePassword(String username, String newPassword) {
+	public void updatePassword(String newPassword) {
 		String encode = bCryptPasswordEncoder.encode(newPassword);
-		Manager manager = findManagerByUsername(username);
+		Manager manager = findManagerByAuth();
 		manager.updatePassword(encode);
 	}
 
