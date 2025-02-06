@@ -24,20 +24,20 @@ import static javax.xml.crypto.dsig.SignatureProperties.TYPE;
 public class TokenProvider {
 	private final JwtProperties jwtProperties;
 
-	public String generateToken(String userId, Duration expiredAt, String role) {
+	public String generateToken(String username, Duration expiredAt, String role) {
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + expiredAt.toMillis());
-		return makeToken(now, expiry, userId, role);
+		return makeToken(now, expiry, username, role);
 	}
 
-	private String makeToken(Date now, Date expiry, String userId, String role) {
+	private String makeToken(Date now, Date expiry, String username, String role) {
 		return Jwts.builder()
 			.setHeaderParam(TYPE, JWT_TYPE)
 			.setIssuer(jwtProperties.getIssuer())
 			.setIssuedAt(now)
 			.setExpiration(expiry)
-			.setSubject(userId)
-			.claim("userId", userId)
+			.setSubject(username)
+			.claim("username", username)
 			.claim("role", role)
 			.signWith(HS256, jwtProperties.getSecretKey())
 			.compact();
@@ -78,9 +78,9 @@ public class TokenProvider {
 		return Collections.singleton(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
 	}
 
-	public String getUserId(String token) {
+	public String getUsername(String token) {
 		Claims claims = getClaims(token);
-		return claims.get("userId", String.class);
+		return claims.get("username", String.class);
 	}
 
 	private Claims getClaims(String token) {
