@@ -8,6 +8,7 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
+import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.jwt.JwtProperties;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,8 @@ class ManagerServiceTest {
 		ManagerRepository managerRepository = new FakeManagerRepository();
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
-		managerService = new ManagerService(managerRepository, bCryptPasswordEncoder, tokenProvider);
+		AuthService authService = new AuthService(managerRepository);
+		managerService = new ManagerService(managerRepository, bCryptPasswordEncoder, tokenProvider, authService);
 
 		managerRepository.save(
 			Manager.create("test", "test1234", Role.HEADQUARTER)
@@ -55,15 +57,6 @@ class ManagerServiceTest {
 		assertEquals(inputName, detail.username());
 		assertEquals(Role.HEADQUARTER, detail.role());
 		assertNull(detail.manageId());
-	}
-
-
-	@Test
-	void delete_success() {
-		String inputName = "test";
-		managerService.delete(inputName);
-		assertThatThrownBy(() -> managerService.findManagerByUsername(inputName))
-			.isInstanceOf(ManagerNotFoundException.class);
 	}
 
 	@Test

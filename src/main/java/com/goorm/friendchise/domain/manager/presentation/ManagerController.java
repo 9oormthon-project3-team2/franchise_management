@@ -8,6 +8,7 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +65,12 @@ public class ManagerController {
 		@RequestParam String newPassword
 	) {
 		managerService.updatePassword(newPassword);
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping
+	public ResponseEntity<Void> delete() {
+		managerService.delete();
 		return ResponseEntity.noContent().build();
 	}
 }

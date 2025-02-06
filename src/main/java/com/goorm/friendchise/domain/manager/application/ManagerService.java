@@ -68,8 +68,8 @@ public class ManagerService {
 		manager.updatePassword(encode);
 	}
 
-	public void delete(String username) {
-		Manager manager = findManagerByUsername(username);
+	public void delete() {
+		Manager manager = authService.findManagerByAuth();
 		managerRepository.delete(manager);
 	}
 
