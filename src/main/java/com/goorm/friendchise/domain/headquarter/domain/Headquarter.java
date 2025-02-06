@@ -22,7 +22,8 @@ public class Headquarter extends BaseEntity {
     @Column(unique = true, length = 50)
     private String franchiseName;
 
-    @OneToMany(mappedBy = "headquarter", fetch = FetchType.LAZY)
+    // Headquarter의 persist, remove 시 Item도 같이 처리
+    @OneToMany(mappedBy = "headquarter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Item> items;
 
     public static Headquarter of(String franchiseName) {

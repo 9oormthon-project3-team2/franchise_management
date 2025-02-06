@@ -1,7 +1,8 @@
 package com.goorm.friendchise.domain.headquarter.Item.domain;
 
-import com.goorm.friendchise.domain.headquarter.Item.domain.Item;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository {
+    Item save(Item item);
+    Optional<Item> findById(Long id);
 }
