@@ -1,6 +1,7 @@
 package com.goorm.friendchise.domain.headquarter.Item.domain;
 
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
+import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Item {
+public class Item extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

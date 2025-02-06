@@ -1,6 +1,7 @@
 package com.goorm.friendchise.domain.headquarter.promotion.domain;
 
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
+import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Promotion {
+public class Promotion extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

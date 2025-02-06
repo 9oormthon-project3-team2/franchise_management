@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.headquarter.domain;
 
+import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -9,7 +10,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Entity
-public class Headquarter {
+public class Headquarter extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
