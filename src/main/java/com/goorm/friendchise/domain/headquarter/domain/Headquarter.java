@@ -6,6 +6,8 @@ import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 @Entity
 public class Headquarter {
     @Id
@@ -16,10 +18,6 @@ public class Headquarter {
     @Column(unique = true, length = 50)
     private String franchiseName;
 
-    @Builder
-    private Headquarter(String franchiseName) {
-        this.franchiseName = franchiseName;
-    }
 
     public static Headquarter of(String franchiseName) {
         return Headquarter.builder()

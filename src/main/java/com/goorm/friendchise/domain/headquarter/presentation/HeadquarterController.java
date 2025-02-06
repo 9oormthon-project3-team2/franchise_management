@@ -40,10 +40,10 @@ public class HeadquarterController {
         return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping("/item/register")
-    public ResponseEntity<List<ItemResDto>> createItem(@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
-        return ResponseEntity.ok().body(headquarterService.createItem(itemReqDtoList));
-    }
+//    @PostMapping("/item/register")
+//    public ResponseEntity<List<ItemResDto>> createItem(@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
+//        return ResponseEntity.ok().body(headquarterService.createItem(itemReqDtoList));
+//    }
 
 
 }

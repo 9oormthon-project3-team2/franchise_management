@@ -1,22 +1,20 @@
 package com.goorm.friendchise.domain.headquarter.appilcation;
 
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
+import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.headquarter.dto.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.HeadquarterResDto;
-import com.goorm.friendchise.domain.headquarter.infrastructure.HeadquarterRepositoryImpl;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
-import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class HeadquarterService {
-    private final HeadquarterRepositoryImpl headquarterRepository;
+    private final HeadquarterRepository headquarterRepository;
 
     @Transactional
     public HeadquarterResDto createHeadquarter(HeadquarterReqDto headquarterReqDto) {
