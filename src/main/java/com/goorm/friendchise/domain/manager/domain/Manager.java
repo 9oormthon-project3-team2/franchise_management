@@ -48,4 +48,8 @@ public class Manager {
 	public void updateManageId(Long manageId) {
 		this.manageId = manageId;
 	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
 }
