@@ -8,10 +8,9 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
+import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +24,7 @@ public class ManagerService {
 	private final ManagerRepository managerRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final TokenProvider tokenProvider;
+	private final AuthService authService;
 
 	private static final Duration REFRESH_TOKEN_EXP = Duration.ofDays(1);
 	private static final Duration ACCESS_TOKEN_EXP = Duration.ofHours(1);
@@ -53,18 +53,18 @@ public class ManagerService {
 	}
 
 	public ManagerDetailResponse mypage() {
-		Manager manager = findManagerByAuth();
+		Manager manager = authService.findManagerByAuth();
 		return ManagerDetailResponse.from(manager);
 	}
 
 	public void updateManager(Long newStoreId) {
-		Manager manager = findManagerByAuth();
+		Manager manager = authService.findManagerByAuth();
 		manager.updateManageId(newStoreId);
 	}
 
 	public void updatePassword(String newPassword) {
 		String encode = bCryptPasswordEncoder.encode(newPassword);
-		Manager manager = findManagerByAuth();
+		Manager manager = authService.findManagerByAuth();
 		manager.updatePassword(encode);
 	}
 
@@ -76,15 +76,5 @@ public class ManagerService {
 	public Manager findManagerByUsername(String username) {
 		return managerRepository.findByUsername(username)
 			.orElseThrow(ManagerNotFoundException::new);
-	}
-
-	public Manager findManagerByAuth() {
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			String username = ((UserDetails) principal).getUsername();
-			return findManagerByUsername(username);
-		} catch (Exception e) {
-			throw new ManagerNotFoundException();
-		}
 	}
 }
