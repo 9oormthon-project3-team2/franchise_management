@@ -39,6 +39,7 @@ public class ManagerService {
 	public ManagerTokenResponse login(ManageLoginRequest request) {
 		String name = request.username();
 		Manager manager = findManagerByUsername(name);
+		manager.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
 		String role = manager.getRole().name();
 		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, role);

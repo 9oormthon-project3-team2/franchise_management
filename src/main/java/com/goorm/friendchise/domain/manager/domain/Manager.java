@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.manager.domain;
 
+import com.goorm.friendchise.domain.manager.exception.PasswordNotMatchException;
 import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -63,5 +65,11 @@ public class Manager extends BaseEntity implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
+	}
+
+	public void isPasswordMatch(String inputPassword, PasswordEncoder passwordEncoder) {
+		if (!passwordEncoder.matches(inputPassword, this.password)) {
+			throw new PasswordNotMatchException();
+		}
 	}
 }
