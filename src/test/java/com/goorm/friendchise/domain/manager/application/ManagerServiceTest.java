@@ -49,7 +49,7 @@ class ManagerServiceTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("create는 새로운 Manager를 생성")
 	void create_success() {
 		// given
 		ManageCreateRequest request = ManageCreateRequest.builder()
@@ -67,7 +67,7 @@ class ManagerServiceTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("detail은 입력된 username으로 ManagerDetailResponse를 반환")
 	void detail_success() {
 		// given
 		String inputName = "test";
@@ -84,7 +84,7 @@ class ManagerServiceTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("mypage는 SecurityContextHolder의 정보로 ManagerDetailResponse를 반환")
 	void mypage_success() {
 		// when
 		ManagerDetailResponse mypage = managerService.mypage();
@@ -97,7 +97,7 @@ class ManagerServiceTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("updateManager는 Manager의 manageId를 변경")
 	void updateManager_success() {
 		// given
 		Long newStoreId = 1L;
@@ -111,7 +111,7 @@ class ManagerServiceTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("updatePassword는 Manager의 password를 변경")
 	void updatePassword_success() {
 		// given
 		Manager manager = managerService.findManagerByUsername("test");
@@ -126,7 +126,7 @@ class ManagerServiceTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("delete는 Manager를 삭제")
 	void delete_success() {
 		// when
 		managerService.delete();
@@ -139,7 +139,7 @@ class ManagerServiceTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("findManagerByUsername은 username으로 Manager를 반환")
 	void findManagerByUsername_success() {
 		// given
 		String inputName = "test";
