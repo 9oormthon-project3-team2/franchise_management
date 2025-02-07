@@ -1,10 +1,9 @@
 package com.goorm.friendchise.domain.store.dto;
 
-import lombok.Getter;
 
-@Getter
-public class StoreReqDto {
+public record StoreReqDto(
+        String address,
+        String franchiseName
+) {
 
-    private String address;
-    private String franchiseName;
 }

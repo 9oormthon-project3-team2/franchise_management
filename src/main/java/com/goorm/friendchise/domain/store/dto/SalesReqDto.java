@@ -1,11 +1,10 @@
 package com.goorm.friendchise.domain.store.dto;
 
-import lombok.Getter;
 
-@Getter
-public class SalesReqDto {
+public record SalesReqDto(
+        String today,
+        String dailySales,
+        String writer
+) {
 
-    private String today;
-    private String dailySales;
-    private String writer;
 }

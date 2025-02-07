@@ -1,13 +1,11 @@
 package com.goorm.friendchise.domain.store.application;
 
-import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.domain.store.dto.res.KakaoApiAddressResDto;
 import com.goorm.friendchise.domain.store.dto.res.KakaoApiRes;
 import com.goorm.friendchise.domain.store.exception.NotFoundAddressException;
 import com.goorm.friendchise.domain.store.infrastructure.SalesRepository;
 import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
-import com.goorm.friendchise.global.config.WebClientConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,7 @@ public class StoreService {
         KakaoApiRes query = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(findPosition)
-                        .queryParam("query", req.getAddress())
+                        .queryParam("query", req.address())
                         .build())
                 .retrieve()
                 .bodyToMono(KakaoApiRes.class)

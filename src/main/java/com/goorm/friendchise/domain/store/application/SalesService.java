@@ -28,10 +28,10 @@ public class SalesService {
 
     public void registerSales(Long storeId, SalesReqDto reqDto){
         Store store = findIfStoreExists(storeId);
-        LocalDate date = LocalDate.parse(reqDto.getToday());
-        Long dailySales = Long.valueOf(reqDto.getDailySales());
+        LocalDate date = LocalDate.parse(reqDto.today());
+        Long dailySales = Long.valueOf(reqDto.dailySales());
 
-        Sales sales = new Sales(date, dailySales, reqDto.getWriter(), store);
+        Sales sales = new Sales(date, dailySales, reqDto.writer(), store);
         salesRepository.save(sales);
     }
 
