@@ -35,7 +35,7 @@ public class WebClientConfig {
     @Qualifier("openaiWebClient")
     public WebClient openaiWebClient() {
         return WebClient.builder()
-                .baseUrl("https://api.openai.com/v1")
+                .baseUrl("https://api.openai.com/v1/chat/completions")
                 .defaultHeaders(httpHeaders -> {
                     httpHeaders.set("Authorization", "Bearer " + openaiAuthorization);
                     httpHeaders.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);

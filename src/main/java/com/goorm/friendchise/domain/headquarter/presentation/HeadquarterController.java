@@ -8,14 +8,17 @@ import com.goorm.friendchise.domain.headquarter.appilcation.HeadquarterService;
 import com.goorm.friendchise.domain.headquarter.dto.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.HeadquarterResDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/headquarter")
 public class HeadquarterController {
     private final HeadquarterService headquarterService;
@@ -25,6 +28,8 @@ public class HeadquarterController {
     public ResponseEntity<HeadquarterResDto> createHeadquarter(@Valid @RequestBody HeadquarterReqDto headquarterReqDto) {
         return ResponseEntity.ok().body(headquarterService.createHeadquarter(headquarterReqDto));
     }
+
+    // path variable의 id를 다 fracnhiseName으로 바꾸거나 없애야 할까..
 
     @GetMapping("/{id}")
     public ResponseEntity<HeadquarterResDto> getHeadquarter(@PathVariable Long id) {
@@ -47,5 +52,14 @@ public class HeadquarterController {
         return ResponseEntity.ok().body(itemService.createItems(headquarterId, itemReqDtoList));
     }
 
+//    @GetMapping("/store-recommendation")
+//    public ResponseEntity<Void> getRecommendResult(
+//            @RequestParam @NotNull Double y,
+//            @RequestParam @NotNull Double x,
+//            @RequestParam(required = false) List<String> category
+//    ) {
+////        return headquarterService.getRecommendResult(y, x, category);
+//
+//    }
 
 }

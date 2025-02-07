@@ -19,6 +19,7 @@ public enum ErrorCode {
 	// Headquarter Error
 	FRANCHISE_NAME_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 존재하는 프랜차이즈 이름입니다."),
 	HEADQUARTER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 프랜차이즈 본사입니다."),
+    FRANCHISE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 프랜차이즈입니다."),
 
 	// STORE
 	STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 매장을 찾을 수 없습니다."),
