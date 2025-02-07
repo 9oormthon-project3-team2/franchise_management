@@ -1,5 +1,7 @@
 package com.goorm.friendchise.domain.manager.application;
 
+import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
+import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
@@ -10,12 +12,17 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
+import com.goorm.friendchise.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+
+import static com.goorm.friendchise.domain.manager.domain.Role.STORE;
+import static com.goorm.friendchise.global.exception.ErrorCode.HEADQUARTER_NOT_FOUND;
+import static com.goorm.friendchise.global.exception.ErrorCode.INVALID_PARAMETER;
 
 @Transactional
 @Service
@@ -25,15 +32,32 @@ public class ManagerService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final TokenProvider tokenProvider;
 	private final AuthService authService;
+	private final HeadquarterRepository headquarterRepository;
 
 	private static final Duration REFRESH_TOKEN_EXP = Duration.ofDays(1);
 	private static final Duration ACCESS_TOKEN_EXP = Duration.ofHours(1);
 
 	public ManagerPersistResponse create(ManageCreateRequest request) {
+		if (request.role().equals(STORE)) {
+			validateHeadquarterId(request.headquarterId(), request.authNum());
+		}
+
 		String encodedPassword = bCryptPasswordEncoder.encode(request.password());
 		Manager manager = Manager.create(request.username(), encodedPassword, request.role());
 		Long id = managerRepository.save(manager).getId();
 		return ManagerPersistResponse.of(id);
+	}
+
+	private void validateHeadquarterId(Long headquarterId, String authNum) {
+		if (headquarterId == null)
+			throw new CustomException(INVALID_PARAMETER);
+
+		Headquarter hq = headquarterRepository.findById(headquarterId)
+			.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
+
+		// TODO Headquarter 개발 이후에 추가
+//		if (!hq.getAuthNum().equals(authNum))
+//			throw new HeadquarterAuthNotMatchException();
 	}
 
 	public ManagerTokenResponse login(ManageLoginRequest request) {

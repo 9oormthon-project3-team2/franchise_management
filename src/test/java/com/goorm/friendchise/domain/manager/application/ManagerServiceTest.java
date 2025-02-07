@@ -1,12 +1,13 @@
 package com.goorm.friendchise.domain.manager.application;
 
+import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
+import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
-import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.jwt.JwtProperties;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -29,7 +29,10 @@ class ManagerServiceTest {
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
 		AuthService authService = new AuthService(managerRepository);
-		managerService = new ManagerService(managerRepository, bCryptPasswordEncoder, tokenProvider, authService);
+		HeadquarterRepository headquarterRepository = new FakeHeadquarterRepository();
+		managerService = new ManagerService(
+			managerRepository, bCryptPasswordEncoder,
+			tokenProvider, authService, headquarterRepository);
 
 		managerRepository.save(
 			Manager.create("test", "test1234", Role.HEADQUARTER)

@@ -19,6 +19,12 @@ public record ManageCreateRequest(
 
 	@Schema(description = "역할", example = "HEADQUARTER", requiredMode = REQUIRED)
 	@NotNull
-	Role role
+	Role role,
+
+	@Schema(description = "본사ID", example = "1")
+	Long headquarterId,
+
+	@Schema(description = "역할", example = "12345678")
+	String authNum
 ) {
 }
