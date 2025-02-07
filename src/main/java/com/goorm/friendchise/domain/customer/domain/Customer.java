@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -30,7 +30,8 @@ public class Customer {
     private String password;
 
     @ElementCollection
-    private ArrayList<Achievement> achievements;
+    @Builder.Default
+    private Set<Achievement> achievements = new HashSet<>();
 
     public void updatePassword(String password) {this.password=password;}
 }

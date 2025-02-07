@@ -16,7 +16,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 
 import java.util.List;
-
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
