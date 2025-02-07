@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.store.domain;
 
+import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -30,4 +31,14 @@ public class Store extends BaseEntity {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Sales> salesList = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "headquarter_id", nullable = false)
+    private Headquarter headquarter;
+
+
+    // 양방향 연관관계 편의 메소드, Store 저장할 때 한번 호출 필요
+    public void setHeadquarter(Headquarter headquarter) {
+        this.headquarter = headquarter;
+        headquarter.addStore(this);
+    }
 }

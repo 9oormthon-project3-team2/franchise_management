@@ -1,6 +1,7 @@
 package com.goorm.friendchise.domain.headquarter.domain;
 
 import com.goorm.friendchise.domain.headquarter.Item.domain.Item;
+import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,9 @@ public class Headquarter extends BaseEntity {
     @OneToMany(mappedBy = "headquarter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Item> items;
 
+    @OneToMany(mappedBy = "headquarter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Store> stores;
+
     public static Headquarter of(String franchiseName) {
         return Headquarter.builder()
                 .franchiseName(franchiseName)
@@ -39,5 +43,9 @@ public class Headquarter extends BaseEntity {
     public void addItem(Item item) {
         this.items.add(item);
         item.setHeadquarter(this);
+    }
+
+    public void addStore(Store store) {
+        this.stores.add(store);
     }
 }
