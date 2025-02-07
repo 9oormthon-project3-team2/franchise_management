@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record HeadquarterReqDto (
-        @NotBlank @Size(min = 1, max = 50) String franchiseName
+        @NotBlank(message = "프랜차이즈 이름은 필수입니다.")
+        @Size(max = 50, message = "프랜차이즈 이름은 50자 이하로 입력해주세요.")
+        String franchiseName
 ) {
     public static HeadquarterReqDto of(String franchiseName) {
         return new HeadquarterReqDto(franchiseName);
