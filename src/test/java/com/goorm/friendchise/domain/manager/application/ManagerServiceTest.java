@@ -155,4 +155,17 @@ class ManagerServiceTest {
 		assertEquals(HEADQUARTER, manager.getRole());
 		assertNull(manager.getManageId());
 	}
+
+	@Test
+	@DisplayName("findManagerByUsername은 존재하지 않는 username으로 조회시 ManagerNotFoundException")
+	void findManagerByUsername_ManagerNotFoundException() {
+		// given
+		String inputName = "notExist";
+
+		// then
+		Assertions.assertThrows(
+			ManagerNotFoundException.class,
+			() -> managerService.findManagerByUsername(inputName)
+		);
+	}
 }
