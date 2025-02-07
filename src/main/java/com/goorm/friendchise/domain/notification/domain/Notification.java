@@ -16,15 +16,7 @@ public class Notification {
 	private Long id;
 
 	@Column(nullable = false)
-	private Long targetId;
-
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private NotificationTarget targetType;
-
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private NotificationType notificationType;
+	private Long targetId; // 매장 ID (무조건 STORE)
 
 	@Column(nullable = false, length = 100)
 	private String title;
@@ -35,11 +27,9 @@ public class Notification {
 	@Column(nullable = false)
 	private boolean isRead;
 
-	public static Notification create(Long targetId, NotificationTarget targetType, NotificationType notificationType, String title, String content) {
+	public static Notification create(Long storeId, String title, String content) {
 		return Notification.builder()
-			.targetId(targetId)
-			.targetType(targetType)
-			.notificationType(notificationType)
+			.targetId(storeId)
 			.title(title)
 			.content(content)
 			.isRead(false)

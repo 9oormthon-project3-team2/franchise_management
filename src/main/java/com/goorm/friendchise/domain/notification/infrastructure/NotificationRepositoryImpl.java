@@ -2,7 +2,6 @@ package com.goorm.friendchise.domain.notification.infrastructure;
 
 import com.goorm.friendchise.domain.notification.domain.Notification;
 import com.goorm.friendchise.domain.notification.domain.NotificationRepository;
-import com.goorm.friendchise.domain.notification.domain.NotificationTarget;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +12,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NotificationRepositoryImpl implements NotificationRepository {
 	private final JpaNotificationRepository jpaNotificationRepository;
+
+	@Override
+	public List<Notification> findAll() {
+		return jpaNotificationRepository.findAll();
+	}
 
 	@Override
 	public Notification save(Notification notification) {
@@ -28,10 +32,5 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 	@Override
 	public void delete(Long id) {
 		jpaNotificationRepository.deleteById(id);
-	}
-
-	@Override
-	public List<Notification> findByTargetTypeAndTargetId(NotificationTarget targetType, Long targetId) {
-		return jpaNotificationRepository.findByTargetTypeAndTargetId(targetType, targetId);
 	}
 }
