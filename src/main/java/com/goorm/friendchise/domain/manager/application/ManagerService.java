@@ -48,7 +48,7 @@ public class ManagerService {
 		return ManagerPersistResponse.of(id);
 	}
 
-	private void validateHeadquarterId(Long headquarterId, String authNum) {
+	private void validateHeadquarterId(Long headquarterId, String certificationNumber) {
 		if (headquarterId == null)
 			throw new CustomException(INVALID_PARAMETER);
 
@@ -56,7 +56,7 @@ public class ManagerService {
 			.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
 
 		// TODO Headquarter 개발 이후에 추가
-//		if (!hq.getAuthNum().equals(authNum))
+//		if (!hq.getCertificationNumber().equals(certificationNumber))
 //			throw new HeadquarterAuthNotMatchException();
 	}
 
