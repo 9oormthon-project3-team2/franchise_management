@@ -37,7 +37,6 @@ public class CustomerService {
         return CustomerTokenResponse.of("", "");
     }
 
-    @Transactional(readOnly = true)
     public CustomerDetailResponse detail(String username)
     {
         return CustomerDetailResponse.from(findCustomerByUsername(username));
