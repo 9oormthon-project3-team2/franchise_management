@@ -39,7 +39,7 @@ public class NotificationController {
 
 	// SSE 구독 (매장 실시간 알림 받기)
 	@GetMapping("/subscribe/{targetId}")
-	public SseEmitter subscribe(@PathVariable Long targetId) {
+	public SseEmitter subscribe(@PathVariable("targetId") Long targetId) {
 		return notificationService.subscribe(targetId);
 	}
 }
