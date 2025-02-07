@@ -1,15 +1,14 @@
 package com.goorm.friendchise.domain.store.domain;
 
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
+import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
-import com.goorm.friendchise.domain.store.dto.res.StoreRegisterDto;
 import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,9 @@ public class Store extends BaseEntity {
     private Double pointY;
     private String franchiseName;
 
+    @Column(name = "manage_id")
+    private Long manageId;
+
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Sales> salesList = new ArrayList<>();
 
@@ -43,22 +45,23 @@ public class Store extends BaseEntity {
     }
 
     @Builder
-    private Store(String address, String dong, Double pointX, Double pointY, String franchiseName) {
-        this.address = address;
-        this.dong = dong;
-        this.pointX = pointX;
-        this.pointY = pointY;
-        this.franchiseName = franchiseName;
+    public Store(StoreReqDto reqDto, Headquarter headquarter, Manager manager) {
+        this.address = reqDto.address();
+        this.dong = reqDto.dong();
+        this.pointX = Double.valueOf(reqDto.x());
+        this.pointY = Double.valueOf(reqDto.y());
+        this.franchiseName = reqDto.franchiseName();
+        this.manageId = manager.getId();
+        setHeadquarter(headquarter);
     }
 
-    public static Store createStore(StoreRegisterDto storeRegisterDto, Headquarter headquarter) {
-        Store store = Store.builder()
-                .address(storeRegisterDto.address())
-                .dong(storeRegisterDto.dong())
-                .pointX(storeRegisterDto.pointX())
-                .pointY(storeRegisterDto.pointY())
-                .build();
-        store.setHeadquarter(headquarter); // headquarter 측 리스트에도 추가하기 위해 사용
-        return store;
+    public void updateStore(StoreReqDto reqDto, Headquarter headquarter) {
+        this.address = reqDto.address();
+        this.dong = reqDto.dong();
+        this.pointX = Double.valueOf(reqDto.x());
+        this.pointY = Double.valueOf(reqDto.y());
+        this.franchiseName = reqDto.franchiseName();
+        setHeadquarter(headquarter);
     }
+
 }

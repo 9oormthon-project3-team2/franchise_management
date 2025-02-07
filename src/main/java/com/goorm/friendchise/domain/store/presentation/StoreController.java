@@ -2,10 +2,12 @@ package com.goorm.friendchise.domain.store.presentation;
 
 import com.goorm.friendchise.domain.store.application.StoreService;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
-import lombok.Getter;
+import com.goorm.friendchise.domain.store.dto.res.KakaoApiAddressResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,21 +16,32 @@ public class StoreController {
 
     private final StoreService storeService;
 
-//    @PostMapping
-//    public ResponseEntity searchAddress(@RequestParam String address) {
-//
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity getStore() {
-//
-//    }
-//
-//    @PutMapping("/{storeId}")
-//    public ResponseEntity updateStore(@PathVariable("storeId") String storeId) {
-//
-//    }
-//
-//    @DeleteMapping("/{storeId}")
-//    public ResponseEntity deleteStore(@PathVariable("storeId") String storeId) {}
+    @GetMapping("/search")
+    public ResponseEntity<List<KakaoApiAddressResDto>> searchAddress(@RequestParam String address) {
+        return ResponseEntity.ok(storeService.searchAddress(address));
+    }
+
+    @PostMapping
+    public ResponseEntity createStore(@RequestBody StoreReqDto reqDto) {
+        storeService.createStore(reqDto);
+        return ResponseEntity.ok("Store created successfully.");
+    }
+
+    @GetMapping
+    public ResponseEntity getStore() {
+        return ResponseEntity.ok(storeService.getStoreInfo());
+    }
+
+    @PutMapping()
+    public ResponseEntity updateStore(@RequestBody StoreReqDto storeReqDto) {
+        storeService.updateStoreInfo(storeReqDto);
+        return ResponseEntity.ok("Store updated successfully!");
+    }
+
+    @DeleteMapping("/{storeId}")
+    public ResponseEntity deleteStore(@PathVariable("storeId") String storeId) {
+        storeService.deleteStore();
+
+        return ResponseEntity.ok("Store deleted successfully!");
+    }
 }

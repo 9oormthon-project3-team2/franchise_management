@@ -24,7 +24,8 @@ public enum ErrorCode {
 	// STORE
 	STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 매장을 찾을 수 없습니다."),
 	SALES_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 매출을 찾을 수 없습니다."),
-	NOT_FOUND_ADDRESS(HttpStatus.BAD_REQUEST, "해당 주소와 관련된 주소를 찾을 수 없습니다.");
+	NOT_FOUND_ADDRESS(HttpStatus.BAD_REQUEST, "해당 주소와 관련된 주소를 찾을 수 없습니다."),
+	NOT_VALID_STORE_AUTHENTICATION(HttpStatus.FORBIDDEN, "해당 매장에 대한 권한이 없습니다.");
 
 	private final HttpStatus status;
 	private final String message;
