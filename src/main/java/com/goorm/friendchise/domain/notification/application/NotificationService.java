@@ -95,7 +95,7 @@ public class NotificationService {
 
 	// 본사에 속한 매장 ID 목록 조회 (예제용, 실제 DB 조회 필요)
 	private List<Long> findStoresByHeadquarter(Long headquarterId) {
-		return List.of(101L, 102L);
+		return List.of(10101L, 10102L);
 	}
 
 	public List<ReceivedNotificationResponse> getNotificationsByTarget(Long targetId) {
