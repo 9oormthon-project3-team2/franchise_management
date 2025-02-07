@@ -11,7 +11,7 @@ public record CustomerCreateRequest(
         String username,
 
         @NotBlank(message = "비밀번호는 필수입니다.")
-        @Size(min = 8, max = 100, message = "비밀번호는 최소 8자 이상, 최대 100자 이하로 입력해야 합니다.")
+        @Size(min = 8, max = 15, message = "비밀번호는 최소 8자 이상, 최대 15자 이하로 입력해야 합니다.")
         String password)
 {
 

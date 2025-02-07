@@ -11,21 +11,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomerServiceTest {
     private CustomerService customerService;
-
+    private Customer customer;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
     @BeforeEach
     void setUp() {
         CustomerRepository customerRepository = new FakeCustomerRepository();
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        CustomerCreateRequest request=new CustomerCreateRequest("testUser","testPassword");
         customerService = new CustomerService(customerRepository, bCryptPasswordEncoder);
+        customerService.create(request);
+        customer=customerRepository.findByUsername("testUser").orElseThrow();
 
-        customerRepository.save(
-                Customer.builder().username("testUser").password("testPassword").build()
-        );
     }
 
     @Test
@@ -40,7 +40,7 @@ public class CustomerServiceTest {
         CustomerCreateRequest request
                 = CustomerCreateRequest.builder().username("testUser").password("testPassword").build();
         assertThrows(CustomerException.class, () -> customerService.create(request));
-    }
+        }
 
     @Test
     void 유저가져오기(){
@@ -49,5 +49,35 @@ public class CustomerServiceTest {
         assertEquals(1L, detail.id());
     }
 
+    @Test
+    void 비밀번호_업데이트_성공_(){
 
+        customerService.updatePassword("testUser","newPassword");
+        assertTrue(bCryptPasswordEncoder.matches("newPassword", customer.getPassword()));
+
+    }
+
+    @Test
+    void 비밀번호_업데이트_실패_null(){
+        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser",null));
+
+    }
+
+    @Test
+    void 비밀번호_업데이트_실패_Blank_값(){
+        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser",""));
+
+    }
+    @Test
+    void 비밀번호_업데이트_실패_공백이있음(){
+        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser","new Password"));
+
+    }
+    @Test
+    void 비밀번호_업데이트_실패_길이제한(){
+        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser","nesdsdsddsPassword"));
+        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser","123"));
+
+
+    }
 }

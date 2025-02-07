@@ -9,7 +9,7 @@ public record CustomerLoginRequest(
         String username,
 
         @NotBlank()
-        @Size(min = 8, max = 100)
+        @Size(min = 8, max = 15)
         String password)
 {
 }

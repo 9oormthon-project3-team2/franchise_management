@@ -47,7 +47,7 @@ public class CustomerService {
     public void updatePassword(String username, String newPassword)
     {
         Customer customer=findCustomerByUsername(username);
-        if (newPassword == null || newPassword.isBlank()) {
+        if (newPassword == null || newPassword.isBlank()||newPassword.contains(" ")||newPassword.length()>15||newPassword.length()<8) {
             throw new CustomerException(ErrorCode.INVALID_PASSWORD);
         }
         customer.updatePassword(bCryptPasswordEncoder.encode(newPassword));
