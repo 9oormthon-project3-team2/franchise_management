@@ -1,8 +1,10 @@
 package com.goorm.friendchise.domain.notification.application;
 
 import com.goorm.friendchise.domain.notification.domain.*;
+import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
 import com.goorm.friendchise.domain.notification.event.PromotionCreatedEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,16 +14,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class NotificationService {
 	private final NotificationRepository repository;
 	private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
 	@EventListener
 	public void handlePromotionCreated(PromotionCreatedEvent promotion) {
+		log.info("프로모션 생성 이벤트 감지 완료: {}", promotion);
+
 		Long headquarterId = promotion.getPromotion().getHeadquarterId();
 		String title = promotion.getPromotion().getTitle();
 		String content = promotion.getPromotion().getContent();
@@ -31,6 +37,9 @@ public class NotificationService {
 		for (Long storeId : storeIds) {
 			Notification notification = Notification.create(storeId, title, content);
 			repository.save(notification);
+
+			log.info("알림 저장 완료: {}", notification.getTitle());
+
 			sendSse(storeId, title, content);
 		}
 	}
@@ -40,7 +49,7 @@ public class NotificationService {
 		if (emitter == null) return;
 
 		try {
-			emitter.send(SseEmitter.event().name("notification").data(content));
+			emitter.send(SseEmitter.event().name("Promotion").data(content));
 		} catch (IOException e) {
 			emitters.remove(targetId);
 		}
@@ -49,8 +58,28 @@ public class NotificationService {
 	public SseEmitter subscribe(Long targetId) {
 		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 		emitters.put(targetId, emitter);
-		emitter.onCompletion(() -> emitters.remove(targetId));
-		emitter.onTimeout(() -> emitters.remove(targetId));
+
+		log.info("해당 매장 구독 완료 {}", targetId);
+
+		// 더미 이벤트 전송 (연결 유지 확인용)
+		try {
+			emitter.send(SseEmitter.event().name("dummy").data("SSE 연결됨"));
+			log.info("SSE 초기 더미 이벤트 전송 완료: targetId = {}", targetId);
+		} catch (IOException e) {
+			log.error("SSE 초기 이벤트 전송 실패: {}", e.getMessage());
+			emitters.remove(targetId);
+		}
+
+		emitter.onCompletion(() -> {
+			log.info("SSE 연결 종료: targetId = {}", targetId);
+			emitters.remove(targetId);
+		});
+
+		emitter.onTimeout(() -> {
+			log.info("SSE 타임아웃 발생: targetId = {}", targetId);
+			emitters.remove(targetId);
+		});
+
 		return emitter;
 	}
 
