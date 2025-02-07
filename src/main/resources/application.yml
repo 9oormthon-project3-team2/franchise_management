@@ -23,6 +23,10 @@ spring:
     defer-datasource-initialization: true
     show-sql: true
     open-in-view: false
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/testdb
+
+
+kakao:
+  apiKey: 3e2d0f887476a817abf1ff2202213b11
+  api:
+    findPosition: /search/address.json
+    convert-position-into-info: /geo/coord2regioncode.JSON
