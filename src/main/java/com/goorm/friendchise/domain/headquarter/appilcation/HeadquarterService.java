@@ -6,6 +6,8 @@ import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.headquarter.dto.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.HeadquarterResDto;
+import com.goorm.friendchise.domain.headquarter.dto.StoreDto;
+import com.goorm.friendchise.domain.headquarter.dto.StoreIdDto;
 import com.goorm.friendchise.domain.store.dto.res.KakaoApiRes;
 import com.goorm.friendchise.global.auth.util.DistanceCalculator;
 import com.goorm.friendchise.global.exception.CustomException;
@@ -63,6 +65,13 @@ public class HeadquarterService {
     @Transactional
     public void deleteHeadquarter(Long id) {
         headquarterRepository.deleteById(id);
+    }
+
+    public List<StoreIdDto> getStoreIdList(Long id) {
+        Headquarter headquarter = findHeadquarterById(id);
+        return headquarter.getStores().stream()
+                .map(store -> StoreIdDto.of(store.getId()))
+                .toList();
     }
 
     public void getRecommendResult(Double y, Double x, List<String> category) {
