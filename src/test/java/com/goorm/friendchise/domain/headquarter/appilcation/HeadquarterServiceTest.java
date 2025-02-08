@@ -2,8 +2,8 @@ package com.goorm.friendchise.domain.headquarter.appilcation;
 
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
-import com.goorm.friendchise.domain.headquarter.dto.HeadquarterReqDto;
-import com.goorm.friendchise.domain.headquarter.dto.HeadquarterResDto;
+import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDto;
+import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
 import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class HeadquarterServiceTest {
     private HeadquarterService headquarterService;

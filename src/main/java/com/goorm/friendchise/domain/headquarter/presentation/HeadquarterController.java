@@ -1,14 +1,12 @@
 package com.goorm.friendchise.domain.headquarter.presentation;
 
 import com.goorm.friendchise.domain.headquarter.Item.application.ItemService;
-import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDto;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
 import com.goorm.friendchise.domain.headquarter.appilcation.HeadquarterService;
-import com.goorm.friendchise.domain.headquarter.dto.HeadquarterReqDto;
-import com.goorm.friendchise.domain.headquarter.dto.HeadquarterResDto;
+import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDto;
+import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -53,12 +51,12 @@ public class HeadquarterController {
     }
 
 //    @GetMapping("/store-recommendation")
-//    public ResponseEntity<Void> getRecommendResult(
+//    public ResponseEntity<Void> getRecommendationResult(
 //            @RequestParam @NotNull Double y,
 //            @RequestParam @NotNull Double x,
 //            @RequestParam(required = false) List<String> category
 //    ) {
-////        return headquarterService.getRecommendResult(y, x, category);
+////        return headquarterService.requestSameFranchiseData(y, x, category);
 //
 //    }
 
