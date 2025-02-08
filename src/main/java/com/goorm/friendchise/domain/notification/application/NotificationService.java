@@ -33,17 +33,20 @@ public class NotificationService {
 
 		List<Long> storeIds = findStoresByHeadquarter(headquarterId);
 
-		for (Long storeId : storeIds) {
-			saveNotification(storeId, title, content);
-			sendSse(storeId, title, content);
-		}
+		List<Notification> notifications = storeIds.stream()
+			.map(storeId -> Notification.create(storeId, title, content))
+			.toList();
+
+		saveAllNotification(notifications);
+
+		storeIds.forEach(storeId -> sendSse(storeId, title, content));
+
 	}
 
 	@Transactional
-	public void saveNotification(Long storeId, String title, String content) {
-		Notification notification = Notification.create(storeId, title, content);
-		repository.save(notification);
-		log.info("알림 저장 완료: {}", notification.getTitle());
+	public void saveAllNotification(List<Notification> notifications) {
+		repository.saveAll(notifications);
+		log.info("알림 {}개 저장 완료", notifications.size());
 	}
 
 	private void sendSse(Long targetId, String title, String content) {
