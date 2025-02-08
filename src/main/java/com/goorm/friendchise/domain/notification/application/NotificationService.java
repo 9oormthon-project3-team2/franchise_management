@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class NotificationService {
 	private final NotificationRepository repository;
@@ -34,14 +33,20 @@ public class NotificationService {
 
 		List<Long> storeIds = findStoresByHeadquarter(headquarterId);
 
-		for (Long storeId : storeIds) {
-			Notification notification = Notification.create(storeId, title, content);
-			repository.save(notification);
+		List<Notification> notifications = storeIds.stream()
+			.map(storeId -> Notification.create(storeId, title, content))
+			.toList();
 
-			log.info("알림 저장 완료: {}", notification.getTitle());
+		saveAllNotification(notifications);
 
-			sendSse(storeId, title, content);
-		}
+		storeIds.forEach(storeId -> sendSse(storeId, title, content));
+
+	}
+
+	@Transactional
+	public void saveAllNotification(List<Notification> notifications) {
+		repository.saveAll(notifications);
+		log.info("알림 {}개 저장 완료", notifications.size());
 	}
 
 	private void sendSse(Long targetId, String title, String content) {
@@ -49,9 +54,11 @@ public class NotificationService {
 		if (emitter == null) return;
 
 		try {
+			log.info("SSE 전송 시작: targetId={}, title={}", targetId, title);
 			emitter.send(SseEmitter.event().name("Promotion").data(content));
 		} catch (IOException e) {
 			emitters.remove(targetId);
+			log.error("SSE 전송 실패", e);
 		}
 	}
 
@@ -83,12 +90,14 @@ public class NotificationService {
 		return emitter;
 	}
 
+	@Transactional
 	public void markAsRead(Long notificationId) {
 		Notification notification = repository.findById(notificationId)
 			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
 		notification.markAsRead();
 	}
 
+	@Transactional
 	public void deleteNotification(Long notificationId) {
 		repository.delete(notificationId);
 	}

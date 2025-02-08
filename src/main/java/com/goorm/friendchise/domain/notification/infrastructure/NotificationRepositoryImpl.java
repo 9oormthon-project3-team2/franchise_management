@@ -29,6 +29,11 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 	}
 
 	@Override
+	public List<Notification> saveAll(List<Notification> notifications) {
+		return jpaNotificationRepository.saveAll(notifications);
+	}
+
+	@Override
 	public Optional<Notification> findById(Long id) {
 		return jpaNotificationRepository.findById(id);
 	}

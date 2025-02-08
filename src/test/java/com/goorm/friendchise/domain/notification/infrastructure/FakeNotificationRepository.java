@@ -38,6 +38,12 @@ public class FakeNotificationRepository implements NotificationRepository {
 	}
 
 	@Override
+	public List<Notification> saveAll(List<Notification> notifications) {
+		notifications.forEach(this::save);
+		return notifications;
+	}
+
+	@Override
 	public Optional<Notification> findById(Long id) {
 		return notifications.stream()
 			.filter(notification -> notification.getId().equals(id))
