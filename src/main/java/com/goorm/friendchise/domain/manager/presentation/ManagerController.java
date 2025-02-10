@@ -6,6 +6,7 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.global.auth.dto.request.TokenReissueRequest;
+import com.goorm.friendchise.global.auth.dto.response.AccessTokenResponse;
 import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -76,10 +77,10 @@ public class ManagerController {
 	}
 
 	@PostMapping("/reissue")
-	public ResponseEntity<TokenResponse> reissue(
+	public ResponseEntity<AccessTokenResponse> reissue(
 		@RequestBody TokenReissueRequest request
 	) {
-		TokenResponse response = managerService.reissue(request);
+		AccessTokenResponse response = managerService.reissue(request);
 		return ResponseEntity.ok(response);
 	}
 

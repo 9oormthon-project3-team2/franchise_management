@@ -6,10 +6,14 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
-import com.goorm.friendchise.global.auth.dto.request.TokenReissueRequest;
-import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
+import com.goorm.friendchise.domain.manager.exception.TokenNotFoundException;
 import com.goorm.friendchise.global.auth.application.AuthService;
+import com.goorm.friendchise.global.auth.domain.RefreshToken;
+import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
+import com.goorm.friendchise.global.auth.dto.request.TokenReissueRequest;
+import com.goorm.friendchise.global.auth.dto.response.AccessTokenResponse;
+import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +30,7 @@ public class ManagerService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final TokenProvider tokenProvider;
 	private final AuthService authService;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	private static final Duration REFRESH_TOKEN_EXP = Duration.ofDays(1);
 	private static final Duration ACCESS_TOKEN_EXP = Duration.ofHours(1);
@@ -43,10 +48,14 @@ public class ManagerService {
 		manager.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
 		String role = manager.getRole().name();
-		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, role);
 		String accessToken = tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role);
+		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, role);
 
-		return TokenResponse.of(refreshToken, accessToken);
+		refreshTokenRepository.save(
+			RefreshToken.of(refreshToken, manager.getId(), manager.getRole())
+		);
+
+		return TokenResponse.of(accessToken, refreshToken);
 	}
 
 	public ManagerDetailResponse detail(String username) {
@@ -80,17 +89,17 @@ public class ManagerService {
 			.orElseThrow(ManagerNotFoundException::new);
 	}
 
-
-	public TokenResponse reissue(TokenReissueRequest request) {
+	public AccessTokenResponse reissue(TokenReissueRequest request) {
 		String inputRefreshToken = request.refreshToken();
 
 		String username = tokenProvider.getUsername(inputRefreshToken);
-		Manager manager = findManagerByUsername(username);
 
-		String role = manager.getRole().name();
-		String refreshToken = tokenProvider.generateToken(username, REFRESH_TOKEN_EXP, role);
+		String role = refreshTokenRepository.findByRefreshToken(inputRefreshToken)
+			.orElseThrow(TokenNotFoundException::new)
+			.getRole()
+			.name();
+
 		String accessToken = tokenProvider.generateToken(username, ACCESS_TOKEN_EXP, role);
-
-		return TokenResponse.of(refreshToken, accessToken);
+		return AccessTokenResponse.of(accessToken);
 	}
 }
