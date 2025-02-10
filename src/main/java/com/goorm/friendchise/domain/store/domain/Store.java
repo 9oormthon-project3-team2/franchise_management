@@ -1,5 +1,4 @@
 package com.goorm.friendchise.domain.store.domain;
-
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -15,6 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class Store extends BaseEntity {
 
     @Id

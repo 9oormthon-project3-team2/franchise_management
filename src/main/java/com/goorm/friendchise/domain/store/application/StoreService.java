@@ -1,5 +1,7 @@
 package com.goorm.friendchise.domain.store.application;
 
+
+
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.domain.store.dto.res.KakaoApiAddressResDto;
 import com.goorm.friendchise.domain.store.dto.res.KakaoApiRes;
@@ -10,13 +12,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
 public class StoreService {
+
 
     @Value("${kakao.api.findPosition}")
     private String findPosition;
@@ -52,4 +55,5 @@ public class StoreService {
                 })
                 .collect(Collectors.toList());
     }
+
 }

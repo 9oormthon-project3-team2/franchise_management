@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.store.presentation;
 
+
 import com.goorm.friendchise.domain.store.application.SalesService;
 import com.goorm.friendchise.domain.store.domain.Sales;
 import com.goorm.friendchise.domain.store.dto.SalesDetailedResDto;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,5 +38,4 @@ public class SalesController {
     public ResponseEntity<SalesDetailedResDto> getDetailedSale(@PathVariable("storeId") Long storeId, @PathVariable("salesId") Long salesId) {
         return ResponseEntity.ok(salesService.getSalesInfo(storeId, salesId));
     }
-
 }
