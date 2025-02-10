@@ -32,6 +32,7 @@ public class StoreRecommendationService {
     }
 
 
+    // TODO: y, x 대신 상권을 String으로 받아서 rentalFeeMap에서 해당 상권의 임대료 데이터를 가져오기
     public ChatCompletionResponseDto getRecommendation(List<String> userSelectedCategory, Double y, Double x) {
         Mono<Map<String, KakaoApiResultDto>> mono = kakaoApiService.getTotalPlaceData(userSelectedCategory, y, x);
         Map<String, KakaoApiResultDto> totalPlaceData = mono.block();
