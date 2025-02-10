@@ -1,4 +1,4 @@
-package com.goorm.friendchise.domain.headquarter.appilcation;
+package com.goorm.friendchise.domain.headquarter.application;
 
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto;
 import org.junit.jupiter.api.Test;

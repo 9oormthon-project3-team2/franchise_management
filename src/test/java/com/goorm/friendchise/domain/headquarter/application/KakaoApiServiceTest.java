@@ -1,13 +1,8 @@
-package com.goorm.friendchise.domain.headquarter.appilcation;
+package com.goorm.friendchise.domain.headquarter.application;
 
-import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
 class KakaoApiServiceTest {
