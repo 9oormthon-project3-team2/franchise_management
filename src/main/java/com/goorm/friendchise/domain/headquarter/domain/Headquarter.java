@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,6 +33,10 @@ public class Headquarter extends BaseEntity {
     @NotNull
     @Column(length = 50)
     private String subCategory;
+
+    @NotNull
+    @Builder.Default
+    private String certificationNumber = UUID.randomUUID().toString();
 
     // Headquarter의 persist, remove 시 Item도 같이 처리
     @Builder.Default
