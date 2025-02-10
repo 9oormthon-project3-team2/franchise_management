@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@EntityScan(basePackages = "com.goorm.friendchise.domain.headquarter")
-@EnableJpaRepositories(basePackages = "com.goorm.friendchise.domain.headquarter")
+@EntityScan(basePackages = {"com.goorm.friendchise.domain.headquarter", "com.goorm.friendchise.domain.store"})
+@EnableJpaRepositories(basePackages = {"com.goorm.friendchise.domain.headquarter", "com.goorm.friendchise.domain.store"})
 @Import({ItemService.class, HeadquarterRepositoryImpl.class})
 class ItemServiceTest {
 
@@ -49,6 +49,8 @@ class ItemServiceTest {
         Headquarter headquarter = Headquarter.builder()
                 .franchiseName("testHeadquarter")
                 .items(new ArrayList<>())
+                .category("testCategory")
+                .subCategory("testSubCategory")
                 .build();
         headquarterRepository.save(headquarter);
 

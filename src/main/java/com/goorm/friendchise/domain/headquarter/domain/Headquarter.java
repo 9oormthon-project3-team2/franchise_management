@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,26 +25,28 @@ public class Headquarter extends BaseEntity {
     private String franchiseName;
 
     @NotNull
-    @Column(unique = true)
-    private Long managerId;
-
-    @NotNull
     @Column(length = 50)
     private String category;
 
+    // 세부 카테고리는 없을 수 있음 -> 이 경우 empty string으로 저장
+    @NotNull
     @Column(length = 50)
     private String subCategory;
 
     // Headquarter의 persist, remove 시 Item도 같이 처리
+    @Builder.Default
     @OneToMany(mappedBy = "headquarter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "headquarter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Store> stores;
+    private List<Store> stores = new ArrayList<>();
 
-    public static Headquarter of(String franchiseName) {
+    public static Headquarter of(String franchiseName, String category, String subCategory) {
         return Headquarter.builder()
                 .franchiseName(franchiseName)
+                .category(category)
+                .subCategory(subCategory)
                 .build();
     }
 

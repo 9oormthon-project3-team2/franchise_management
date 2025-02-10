@@ -2,18 +2,25 @@ package com.goorm.friendchise.domain.headquarter.dto.headquarter;
 
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record HeadquarterReqDto (
         @NotBlank(message = "프랜차이즈 이름은 필수입니다.")
         @Size(max = 50, message = "프랜차이즈 이름은 50자 이하로 입력해주세요.")
-        String franchiseName
+        String franchiseName,
+
+        @NotBlank(message = "상위 카테고리는 필수입니다.")
+        String category,
+
+        @NotNull
+        String subCategory
 ) {
-    public static HeadquarterReqDto of(String franchiseName) {
-        return new HeadquarterReqDto(franchiseName);
+    public static HeadquarterReqDto of(String franchiseName, String category, String subCategory) {
+        return new HeadquarterReqDto(franchiseName, category, subCategory);
     }
 
     public static Headquarter toEntity(HeadquarterReqDto headquarterReqDto) {
-        return Headquarter.of(headquarterReqDto.franchiseName());
+        return Headquarter.of(headquarterReqDto.franchiseName(), headquarterReqDto.category(), headquarterReqDto.subCategory());
     }
 }

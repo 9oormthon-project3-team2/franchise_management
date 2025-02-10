@@ -27,7 +27,7 @@ class HeadquarterServiceTest {
     @DisplayName("성공적으로 본사를 생성한다.")
     void createHeadquarter() {
         // given
-        HeadquarterReqDto headquarterReqDto = HeadquarterReqDto.of("test");
+        HeadquarterReqDto headquarterReqDto = HeadquarterReqDto.of("test", "testCategory", "");
 
         // when
         HeadquarterResDto headquarter = headquarterService.createHeadquarter(headquarterReqDto);
@@ -46,7 +46,7 @@ class HeadquarterServiceTest {
         headquarterRepository.save(headquarter);
 
         // when, then
-        HeadquarterReqDto headquarterReqDto = HeadquarterReqDto.of("test");
+        HeadquarterReqDto headquarterReqDto = HeadquarterReqDto.of("test", "testCategory", "testSubCategory");
         assertThatThrownBy(() -> headquarterService.createHeadquarter(headquarterReqDto))
                 .isInstanceOf(CustomException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FRANCHISE_NAME_DUPLICATION);
@@ -93,7 +93,7 @@ class HeadquarterServiceTest {
         Long id = savedHeadquarter.getId();
 
         // when
-        HeadquarterResDto updatedHeadquarter = headquarterService.updateHeadquarter(id, HeadquarterReqDto.of("newTest"));
+        HeadquarterResDto updatedHeadquarter = headquarterService.updateHeadquarter(id, HeadquarterReqDto.of("newTest", "testCategory", "testSubCategory"));
 
         // then
         assertThat(updatedHeadquarter.franchiseName()).isEqualTo("newTest");
