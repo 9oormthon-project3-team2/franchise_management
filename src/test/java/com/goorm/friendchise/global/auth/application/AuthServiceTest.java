@@ -1,6 +1,6 @@
 package com.goorm.friendchise.global.auth.application;
 
-import com.goorm.friendchise.domain.auth.infrastructure.FakeRefreshTokenRepository;
+import com.goorm.friendchise.global.auth.infrastructure.FakeRefreshTokenRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;

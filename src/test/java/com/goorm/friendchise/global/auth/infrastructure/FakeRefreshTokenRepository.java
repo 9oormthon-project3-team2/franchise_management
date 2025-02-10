@@ -1,4 +1,4 @@
-package com.goorm.friendchise.domain.auth.infrastructure;
+package com.goorm.friendchise.global.auth.infrastructure;
 
 import com.goorm.friendchise.global.auth.domain.RefreshToken;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
