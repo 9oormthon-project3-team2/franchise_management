@@ -1,4 +1,4 @@
-package com.goorm.friendchise.global.auth.dto;
+package com.goorm.friendchise.global.auth.dto.response;
 
 import lombok.Builder;
 

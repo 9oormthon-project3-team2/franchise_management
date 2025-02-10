@@ -5,7 +5,8 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
-import com.goorm.friendchise.global.auth.dto.TokenResponse;
+import com.goorm.friendchise.global.auth.dto.request.TokenReissueRequest;
+import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -73,4 +74,13 @@ public class ManagerController {
 		managerService.delete();
 		return ResponseEntity.noContent().build();
 	}
+
+	@PostMapping("/reissue")
+	public ResponseEntity<TokenResponse> reissue(
+		@RequestBody TokenReissueRequest request
+	) {
+		TokenResponse response = managerService.reissue(request);
+		return ResponseEntity.ok(response);
+	}
+
 }

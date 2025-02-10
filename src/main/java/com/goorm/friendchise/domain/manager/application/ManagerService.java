@@ -6,7 +6,8 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
-import com.goorm.friendchise.global.auth.dto.TokenResponse;
+import com.goorm.friendchise.global.auth.dto.request.TokenReissueRequest;
+import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
@@ -77,5 +78,19 @@ public class ManagerService {
 	public Manager findManagerByUsername(String username) {
 		return managerRepository.findByUsername(username)
 			.orElseThrow(ManagerNotFoundException::new);
+	}
+
+
+	public TokenResponse reissue(TokenReissueRequest request) {
+		String inputRefreshToken = request.refreshToken();
+
+		String username = tokenProvider.getUsername(inputRefreshToken);
+		Manager manager = findManagerByUsername(username);
+
+		String role = manager.getRole().name();
+		String refreshToken = tokenProvider.generateToken(username, REFRESH_TOKEN_EXP, role);
+		String accessToken = tokenProvider.generateToken(username, ACCESS_TOKEN_EXP, role);
+
+		return TokenResponse.of(refreshToken, accessToken);
 	}
 }
