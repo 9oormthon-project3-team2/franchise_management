@@ -5,7 +5,7 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
-import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
+import com.goorm.friendchise.global.auth.dto.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +34,7 @@ public class ManagerController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<ManagerTokenResponse> login(
+	public ResponseEntity<TokenResponse> login(
 		@RequestBody ManageLoginRequest request
 	) {
 		return ResponseEntity.ok(managerService.login(request));
