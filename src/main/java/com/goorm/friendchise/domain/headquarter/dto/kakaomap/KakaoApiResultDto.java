@@ -1,4 +1,4 @@
-package com.goorm.friendchise.domain.headquarter.dto.kakao;
+package com.goorm.friendchise.domain.headquarter.dto.kakaomap;
 
 import java.util.List;
 

@@ -12,6 +12,6 @@ class KakaoApiServiceTest {
 
     @Test
     void getTotalPlaceData() {
-        storeRecommendationService.getTotalPlaceData();
+        System.out.println(storeRecommendationService.getTotalPlaceData());
     }
 }

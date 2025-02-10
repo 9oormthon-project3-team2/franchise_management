@@ -1,10 +1,9 @@
-package com.goorm.friendchise.domain.headquarter.dto.kakao;
+package com.goorm.friendchise.domain.headquarter.dto.kakaomap;
 
 public record KakaoPlaceDto(
         String placeName,
+        String addressName,
         String distance,
-        String categoryName,
-        String categoryGroupCode,
         String categoryGroupName,
         String x,
         String y
