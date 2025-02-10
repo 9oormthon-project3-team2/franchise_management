@@ -26,13 +26,13 @@ public class Headquarter extends BaseEntity {
     private String franchiseName;
 
     @NotNull
-    @Column(length = 50)
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     // 세부 카테고리는 없을 수 있음 -> 이 경우 empty string으로 저장
     @NotNull
-    @Column(length = 50)
-    private String subCategory;
+    @Enumerated(EnumType.STRING)
+    private SubCategory subCategory;
 
     @NotNull
     @Builder.Default
@@ -47,7 +47,7 @@ public class Headquarter extends BaseEntity {
     @OneToMany(mappedBy = "headquarter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Store> stores = new ArrayList<>();
 
-    public static Headquarter of(String franchiseName, String category, String subCategory) {
+    public static Headquarter of(String franchiseName, Category category, SubCategory subCategory) {
         return Headquarter.builder()
                 .franchiseName(franchiseName)
                 .category(category)

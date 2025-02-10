@@ -1,6 +1,10 @@
 package com.goorm.friendchise.domain.headquarter.domain;
 
+import com.goorm.friendchise.global.exception.CustomException;
+import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 @Getter
 public enum Category {
@@ -20,5 +24,14 @@ public enum Category {
 
     Category(String value) {
         this.value = value;
+    }
+
+    public static Category fromString(String value) {
+        for (Category category : Category.values()) {
+            if (category.getValue().equalsIgnoreCase(value)) {
+                return category;
+            }
+        }
+        throw new CustomException(ErrorCode.FRANCHISE_CATEGORY_NOT_FOUND);
     }
 }

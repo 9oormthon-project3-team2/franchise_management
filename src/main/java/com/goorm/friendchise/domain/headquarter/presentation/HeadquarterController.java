@@ -36,7 +36,7 @@ public class HeadquarterController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<HeadquarterResDto> updateHeadquarter(@PathVariable Long id, @Valid @RequestBody HeadquarterReqDto headquarterReqDto) {
-        return ResponseEntity.ok().body(headquarterService.updateHeadquarter(id, headquarterReqDto));
+        return ResponseEntity.ok().body(headquarterService.updateHeadquarterName(id, headquarterReqDto));
     }
 
     @DeleteMapping("/{id}")

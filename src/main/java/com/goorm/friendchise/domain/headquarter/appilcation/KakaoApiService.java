@@ -96,6 +96,7 @@ public class KakaoApiService {
     public Mono<Map<String, KakaoApiResultDto>> getTotalPlaceData(List<String> userSelectedCategory, Double y, Double x) {
         // TODO: franchiseName, category, subCategory SecurityContextHolder 에서 가져와서 keyword로 사용
 
+        // TODO: 각 api 호출 프로세스를 메소드로 분리하는 리팩토링
         // sample data
         String franchiseName = "맥도날드";
         String category = "패스트푸드";

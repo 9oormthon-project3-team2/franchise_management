@@ -5,8 +5,10 @@ import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDto;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
 import com.goorm.friendchise.domain.headquarter.appilcation.HeadquarterService;
+import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
+import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import com.goorm.friendchise.domain.headquarter.infrastructure.HeadquarterRepositoryImpl;
 import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
 import org.assertj.core.api.Assertions;
@@ -49,8 +51,8 @@ class ItemServiceTest {
         Headquarter headquarter = Headquarter.builder()
                 .franchiseName("testHeadquarter")
                 .items(new ArrayList<>())
-                .category("testCategory")
-                .subCategory("testSubCategory")
+                .category(Category.CAFE)
+                .subCategory(SubCategory.NONE)
                 .build();
         headquarterRepository.save(headquarter);
 

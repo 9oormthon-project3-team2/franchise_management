@@ -45,7 +45,7 @@ public class HeadquarterService {
     }
 
     @Transactional
-    public HeadquarterResDto updateHeadquarter(Long id, HeadquarterReqDto headquarterReqDto) {
+    public HeadquarterResDto updateHeadquarterName(Long id, HeadquarterReqDto headquarterReqDto) {
         Headquarter headquarter = findHeadquarterById(id);
         headquarter.updateFranchiseName(headquarterReqDto.franchiseName());
         return HeadquarterResDto.from(headquarter);

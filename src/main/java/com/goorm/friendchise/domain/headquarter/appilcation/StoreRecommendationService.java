@@ -1,25 +1,17 @@
 package com.goorm.friendchise.domain.headquarter.appilcation;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.goorm.friendchise.domain.headquarter.domain.HeadquarterUserDetailsImpl;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoPlaceDto;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor

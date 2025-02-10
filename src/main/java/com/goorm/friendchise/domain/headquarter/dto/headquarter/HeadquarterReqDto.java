@@ -1,6 +1,8 @@
 package com.goorm.friendchise.domain.headquarter.dto.headquarter;
 
+import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
+import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,6 +23,9 @@ public record HeadquarterReqDto (
     }
 
     public static Headquarter toEntity(HeadquarterReqDto headquarterReqDto) {
-        return Headquarter.of(headquarterReqDto.franchiseName(), headquarterReqDto.category(), headquarterReqDto.subCategory());
+        return Headquarter.of(
+                headquarterReqDto.franchiseName(),
+                Category.fromString(headquarterReqDto.category),
+                SubCategory.fromString(headquarterReqDto.subCategory));
     }
 }
