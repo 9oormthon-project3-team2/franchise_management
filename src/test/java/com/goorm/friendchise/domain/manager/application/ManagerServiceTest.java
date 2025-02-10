@@ -36,8 +36,8 @@ class ManagerServiceTest {
 		ManagerRepository managerRepository = new FakeManagerRepository();
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
-		AuthService authService = new AuthService(managerRepository);
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
+		AuthService authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository);
 		managerService = new ManagerService(managerRepository, bCryptPasswordEncoder,
 			tokenProvider, authService, refreshTokenRepository);
 

@@ -3,7 +3,6 @@ package com.goorm.friendchise.domain.manager.exception;
 import com.goorm.friendchise.global.exception.CustomException;
 
 import static com.goorm.friendchise.global.exception.ErrorCode.TOKEN_NOT_FOUND;
-import static com.goorm.friendchise.global.exception.ErrorCode.USER_NOT_FOUND;
 
 public class TokenNotFoundException extends CustomException {
 	public TokenNotFoundException() {
