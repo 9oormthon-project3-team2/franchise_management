@@ -3,7 +3,7 @@ package com.goorm.friendchise.domain.headquarter.presentation;
 import com.goorm.friendchise.domain.headquarter.Item.application.ItemService;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
-import com.goorm.friendchise.domain.headquarter.appilcation.HeadquarterService;
+import com.goorm.friendchise.domain.headquarter.application.HeadquarterService;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
 import jakarta.validation.Valid;

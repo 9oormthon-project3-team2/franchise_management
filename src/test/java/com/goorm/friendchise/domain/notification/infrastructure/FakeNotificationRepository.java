@@ -51,7 +51,7 @@ public class FakeNotificationRepository implements NotificationRepository {
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void deleteById(Long id) {
 		notifications.removeIf(n -> n.getId().equals(id));
 	}
 }
