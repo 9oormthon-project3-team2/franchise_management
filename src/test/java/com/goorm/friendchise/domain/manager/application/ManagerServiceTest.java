@@ -47,7 +47,6 @@ class ManagerServiceTest {
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
-		;
 		AuthService authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository);
 		this.headquarterRepository = new FakeHeadquarterRepository();
 		managerService = new ManagerService(
@@ -141,7 +140,6 @@ class ManagerServiceTest {
 			() -> managerService.create(request)
 		);
 	}
-
 
 	@Test
 	@DisplayName("detail은 입력된 username으로 ManagerDetailResponse를 반환")
