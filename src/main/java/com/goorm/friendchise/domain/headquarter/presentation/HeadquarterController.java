@@ -40,8 +40,8 @@ public class HeadquarterController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteHeadquarter(@PathVariable Long id) {
-        headquarterService.deleteHeadquarter(id);
+    public ResponseEntity<Void> deleteHeadquarter() {
+        headquarterService.deleteHeadquarter();
         return ResponseEntity.ok().body(null);
     }
 

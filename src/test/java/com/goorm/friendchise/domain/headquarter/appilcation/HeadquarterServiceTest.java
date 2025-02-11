@@ -140,7 +140,7 @@ class HeadquarterServiceTest {
         Long id = savedHeadquarter.getId();
 
         // when
-        headquarterService.deleteHeadquarter(id);
+        headquarterService.deleteHeadquarter();
 
         // then
         assertThat(headquarterRepository.findById(id).isEmpty()).isTrue();

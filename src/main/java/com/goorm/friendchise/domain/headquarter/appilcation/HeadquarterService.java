@@ -60,13 +60,13 @@ public class HeadquarterService {
     }
 
     @Transactional
-    public void deleteHeadquarter(Long id) {
+    public void deleteHeadquarter() {
         Manager currentManager = getCurrentManager();
         Headquarter headquarter = findHeadquarterById(currentManager);
 
         findIfMine(headquarter, currentManager);
 
-        headquarterRepository.deleteById(id);
+        headquarterRepository.deleteById(currentManager.getManageId());
     }
 
     @Transactional(readOnly = true)
