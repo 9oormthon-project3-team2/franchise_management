@@ -38,38 +38,45 @@ class HeadquarterServiceTest {
 		Headquarter headquarter = Headquarter.builder()
 			.franchiseName("test franchise")
 			.build();
-
-		Store store1 = Store.createStore(StoreRegisterDto.of("서울 강남구", "삼성동", 127.0, 37.5, "프랜차이즈 A"), headquarter);
-		Store store2 = Store.createStore(StoreRegisterDto.of("서울 서초구", "서초동", 128.0, 38.0, "프랜차이즈 B"), headquarter);
-
-
-		headquarter.addStore(store1);
-		headquarter.addStore(store2);
-
 		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
-		Long id = savedHeadquarter.getId();
+
+		StoreRegisterDto storeRegisterDto1 = StoreRegisterDto.builder()
+			.address("서울시 강남구")
+			.dong("삼성동")
+			.pointX(127.123)
+			.pointY(37.321)
+			.build();
+
+		StoreRegisterDto storeRegisterDto2 = StoreRegisterDto.builder()
+			.address("서울시 서초구")
+			.dong("서초동")
+			.pointX(127.456)
+			.pointY(37.654)
+			.build();
+
+		Store store1 = Store.createStore(storeRegisterDto1, savedHeadquarter);
+		Store store2 = Store.createStore(storeRegisterDto2, savedHeadquarter);
 
 		// when
-		List<StoreIdDto> storeIdDtos = headquarterService.getStoreIdList(id);
+		List<StoreIdDto> storeIds = headquarterService.getStoreIdList(savedHeadquarter.getId());
 
 		// then
-		assertThat(storeIdDtos).hasSize(2);
-		assertThat(storeIdDtos).extracting(StoreIdDto::id).containsExactlyInAnyOrder(
-			store1.getId(), store2.getId());
+		assertThat(storeIds).hasSize(2);
+		assertThat(storeIds).extracting(StoreIdDto::id)
+			.containsExactlyInAnyOrder(store1.getId(), store2.getId());
 	}
 
 	@Test
 	@DisplayName("존재하지 않는 본사의 매장 ID 목록을 조회하면 예외를 던진다.")
-	void getStoreIdList_ThrowsException_WhenHeadquarterNotFound() {
+	void getStoreIdList_headquarterNotFound() {
 		// given
-		Long invalidHeadquarterId = 999L;
+		Long nonExistentId = 999L;
 
-		// when & then
-		assertThatThrownBy(() -> headquarterService.getStoreIdList(invalidHeadquarterId))
+		// when, then
+		assertThatThrownBy(() -> headquarterService.getStoreIdList(nonExistentId))
 			.isInstanceOf(CustomException.class)
 			.hasFieldOrPropertyWithValue("errorCode", ErrorCode.HEADQUARTER_NOT_FOUND);
 	}
-
 
 	@Test
 	@DisplayName("성공적으로 본사를 생성한다.")
