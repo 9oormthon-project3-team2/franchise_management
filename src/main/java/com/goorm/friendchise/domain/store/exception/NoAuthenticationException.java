@@ -5,6 +5,6 @@ import com.goorm.friendchise.global.exception.ErrorCode;
 
 public class NoAuthenticationException extends CustomException {
     public NoAuthenticationException() {
-        super(ErrorCode.NOT_VALID_STORE_AUTHENTICATION);
+        super(ErrorCode.NOT_VALID_AUTHENTICATION);
     }
 }

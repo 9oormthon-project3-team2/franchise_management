@@ -10,6 +10,7 @@ import com.goorm.friendchise.domain.store.dto.res.KakaoApiAddressResDto;
 import com.goorm.friendchise.domain.store.dto.res.KakaoApiRes;
 import com.goorm.friendchise.domain.store.exception.NoAuthenticationException;
 import com.goorm.friendchise.domain.store.exception.NotFoundAddressException;
+import com.goorm.friendchise.domain.store.exception.StoreNotFoundException;
 import com.goorm.friendchise.domain.store.infrastructure.SalesRepository;
 import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
 import com.goorm.friendchise.global.auth.application.AuthService;
@@ -59,12 +60,14 @@ public class StoreService {
         return getCollect(query);
     }
 
+    @Transactional
     public void createStore(StoreReqDto req) {
         Manager currentManager = getCurrentManager();
         Headquarter headquarter = findHeadquarterByHeadQuarterName(req.headQuarterName());
 
         Store store = new Store(req, headquarter, currentManager);
         storeRepository.save(store);
+        currentManager.updateManageId(store.getId());
     }
 
     @Transactional(readOnly = true)
@@ -79,8 +82,10 @@ public class StoreService {
     public void updateStoreInfo(StoreReqDto req) {
         Manager currentManager = getCurrentManager();
         Headquarter headquarter = findHeadquarterByHeadQuarterName(req.headQuarterName());
-
         Store store = findIfStoreExists(currentManager);
+
+        findIfMine(store, currentManager);
+
         store.updateStore(req, headquarter);
     }
 
@@ -115,6 +120,9 @@ public class StoreService {
     }
 
     private Store findIfStoreExists(Manager currentManager) {
+        if(currentManager.getManageId() == null)
+            throw new StoreNotFoundException();
+
         return storeRepository.findById(currentManager.getManageId()).orElseThrow(NoAuthenticationException::new);
     }
 

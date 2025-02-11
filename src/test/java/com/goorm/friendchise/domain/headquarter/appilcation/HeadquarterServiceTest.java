@@ -7,6 +7,7 @@ import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
 import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
+import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +20,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class HeadquarterServiceTest {
     private HeadquarterService headquarterService;
     private HeadquarterRepository headquarterRepository;
+    private AuthService authService;
     @BeforeEach
     void setup() {
         headquarterRepository = new FakeHeadquarterRepository();
-        headquarterService = new HeadquarterService(headquarterRepository);
+        headquarterService = new HeadquarterService(authService, headquarterRepository);
     }
 
     @Test
@@ -92,7 +94,7 @@ class HeadquarterServiceTest {
         Long id = savedHeadquarter.getId();
 
         // when
-        HeadquarterResDto headquarterResDto = headquarterService.getHeadquarter(id);
+        HeadquarterResDto headquarterResDto = headquarterService.getHeadquarter();
 
         // then
         assertThat(headquarterResDto.franchiseName()).isEqualTo("test");
@@ -105,7 +107,7 @@ class HeadquarterServiceTest {
         Long id = 10L;
 
         // when, then
-        assertThatThrownBy(() -> headquarterService.getHeadquarter(id))
+        assertThatThrownBy(() -> headquarterService.getHeadquarter())
                 .isInstanceOf(CustomException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.HEADQUARTER_NOT_FOUND);
     }
@@ -121,7 +123,7 @@ class HeadquarterServiceTest {
         Long id = savedHeadquarter.getId();
 
         // when
-        HeadquarterResDto updatedHeadquarter = headquarterService.updateHeadquarterName(id, HeadquarterReqDto.of("newTest", "testCategory", "testSubCategory"));
+        HeadquarterResDto updatedHeadquarter = headquarterService.updateHeadquarterName(HeadquarterReqDto.of("newTest", "testCategory", "testSubCategory"));
 
         // then
         assertThat(updatedHeadquarter.franchiseName()).isEqualTo("newTest");

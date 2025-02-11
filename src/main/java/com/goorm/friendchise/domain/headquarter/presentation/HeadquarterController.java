@@ -29,17 +29,17 @@ public class HeadquarterController {
 
     // path variable의 id를 다 fracnhiseName으로 바꾸거나 없애야 할까..
 
-    @GetMapping("/{id}")
-    public ResponseEntity<HeadquarterResDto> getHeadquarter(@PathVariable Long id) {
-        return ResponseEntity.ok().body(headquarterService.getHeadquarter(id));
+    @GetMapping
+    public ResponseEntity<HeadquarterResDto> getHeadquarter() {
+        return ResponseEntity.ok().body(headquarterService.getHeadquarter());
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<HeadquarterResDto> updateHeadquarter(@PathVariable Long id, @Valid @RequestBody HeadquarterReqDto headquarterReqDto) {
-        return ResponseEntity.ok().body(headquarterService.updateHeadquarterName(id, headquarterReqDto));
+    @PutMapping("/update")
+    public ResponseEntity<HeadquarterResDto> updateHeadquarter(@Valid @RequestBody HeadquarterReqDto headquarterReqDto) {
+        return ResponseEntity.ok().body(headquarterService.updateHeadquarterName(headquarterReqDto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     public ResponseEntity<Void> deleteHeadquarter(@PathVariable Long id) {
         headquarterService.deleteHeadquarter(id);
         return ResponseEntity.ok().body(null);
