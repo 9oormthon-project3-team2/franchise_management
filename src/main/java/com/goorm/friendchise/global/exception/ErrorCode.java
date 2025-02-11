@@ -15,11 +15,10 @@ public enum ErrorCode {
 	RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리소스를 찾을 수 없습니다."),
 	URL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 URL을 찾을 수 없습니다."),
 	DUPLICATE_LOGIN_ID(HttpStatus.BAD_REQUEST,"중복된 아이디입니다."),
-	INVALID_PASSWORD(HttpStatus.BAD_REQUEST,"유효하지 않은 비밀번호입니다."),
-	LOGIN_FAIL(HttpStatus.UNAUTHORIZED,"아이디 또는 비밀번호가 틀립니다."),
+    	INVALID_PASSWORD(HttpStatus.BAD_REQUEST,"유효하지 않은 비밀번호입니다."),
+    	LOGIN_FAIL(HttpStatus.UNAUTHORIZED,"아이디 또는 비밀번호가 틀립니다."),
 	PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 	TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않거나 만료된 토큰입니다."),
-	NOT_VALID_AUTHENTICATION(HttpStatus.BAD_REQUEST, "소유한 회사가 아닙니다."),
 
 	// Headquarter Error
 	FRANCHISE_NAME_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 존재하는 프랜차이즈 이름입니다."),
