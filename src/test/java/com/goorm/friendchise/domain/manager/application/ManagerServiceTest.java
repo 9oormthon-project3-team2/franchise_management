@@ -14,6 +14,8 @@ import com.goorm.friendchise.domain.manager.exception.HeadquarterAuthNotMatchExc
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
 import com.goorm.friendchise.global.auth.application.AuthService;
+import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
+import com.goorm.friendchise.global.auth.infrastructure.FakeRefreshTokenRepository;
 import com.goorm.friendchise.global.auth.jwt.JwtProperties;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import org.junit.jupiter.api.Assertions;
@@ -44,12 +46,13 @@ class ManagerServiceTest {
 		ManagerRepository managerRepository = new FakeManagerRepository();
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
-		AuthService authService = new AuthService(managerRepository);
+		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
+		;
+		AuthService authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository);
 		this.headquarterRepository = new FakeHeadquarterRepository();
 		managerService = new ManagerService(
-			managerRepository, bCryptPasswordEncoder,
-			tokenProvider, authService, headquarterRepository);
-
+			managerRepository, bCryptPasswordEncoder, tokenProvider,
+			authService, refreshTokenRepository, headquarterRepository);
 
 		managerRepository.save(
 			Manager.create("test", "test1234", HEADQUARTER)
