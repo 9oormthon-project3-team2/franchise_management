@@ -1,5 +1,8 @@
 package com.goorm.friendchise.domain.headquarter.dto.store;
 
+import lombok.Builder;
+
+@Builder
 public record StoreIdDto(
         Long id
 ) {
