@@ -1,26 +1,19 @@
 package com.goorm.friendchise.domain.headquarter.Item.application;
 
-import com.goorm.friendchise.domain.headquarter.Item.domain.ItemRepository;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDto;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
-import com.goorm.friendchise.domain.headquarter.appilcation.HeadquarterService;
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import com.goorm.friendchise.domain.headquarter.infrastructure.HeadquarterRepositoryImpl;
-import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -29,7 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
