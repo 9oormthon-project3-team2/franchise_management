@@ -8,7 +8,6 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
-import com.goorm.friendchise.domain.manager.exception.HeadquarterAuthNotMatchException;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.domain.RefreshToken;
@@ -42,6 +41,7 @@ public class ManagerService {
 	private static final Duration ACCESS_TOKEN_EXP = Duration.ofHours(1);
 
 	public ManagerPersistResponse create(ManageCreateRequest request) {
+		// STORE일 경우 HQ의 certificationNumber 비교
 		if (request.role().equals(STORE)) {
 			Long headquarterId = request.headquarterId();
 			if (headquarterId == null)
