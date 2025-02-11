@@ -2,6 +2,7 @@ package com.goorm.friendchise.domain.notification.application;
 
 import com.goorm.friendchise.domain.headquarter.dto.store.StoreIdDto;
 import com.goorm.friendchise.domain.notification.domain.Notification;
+import com.goorm.friendchise.domain.notification.dto.response.NotificationDetailResponse;
 import com.goorm.friendchise.domain.notification.infrastructure.FakeNotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,11 +42,12 @@ class NotificationManagerTest {
 	@DisplayName("특정 타겟 ID로 알림을 조회할 수 있다.")
 	void getNotificationsByTarget() {
 		// Given
-		Notification notification1 = repository.save(Notification.create(101L, "Title1", "Content1"));
-		Notification notification2 = repository.save(Notification.create(101L, "Title2", "Content2"));
+		Notification notification1 = repository.save(Notification.create(10101L, "Title1", "Content1"));
+		Notification notification2 = repository.save(Notification.create(10101L, "Title2", "Content2"));
+		Notification notification3 = repository.save(Notification.create(10102L, "Title2", "Content2"));
 
 		// When
-		List<Notification> foundNotifications = notificationManager.getNotificationsByTarget(101L);
+		List<NotificationDetailResponse> foundNotifications = notificationManager.getNotificationsByTarget(10101L);
 
 		// Then
 		assertThat(foundNotifications).hasSize(2);
