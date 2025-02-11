@@ -51,7 +51,7 @@ jobs:
             export JWT_ISSUER="${{ secrets.JWT_ISSUER }}"
             export JWT_SECRET="${{ secrets.JWT_SECRET }}"
             export KAKAO_API_KEY="${{ secrets.KAKAO_API_KEY }}"
-            
+            export OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
             # 최신 애플리케이션 컨테이너 가져오기
             docker pull ${{ secrets.DOCKER_USERNAME }}/your-app:${{ github.sha }}
 
@@ -69,5 +69,6 @@ jobs:
               -e JWT_ISSUER=$JWT_ISSUER \
               -e JWT_SECRET=$JWT_SECRET \
               -e KAKAO_API_KEY=$KAKAO_API_KEY \
+              -e OPENAI_API_KEY=$OPENAI_API_KEY \
               -p 8080:8080 \
               ${{ secrets.DOCKER_USERNAME }}/your-app:${{ github.sha }}

@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 public class KakaoApiRes {
 
-    private List<Document> documentList;
-    private String meta;
+    private List<Document> documents;
+    private Meta meta;
 
     @Getter
     public static class Document {
