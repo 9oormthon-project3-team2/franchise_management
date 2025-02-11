@@ -43,25 +43,20 @@ public class ManagerService {
 
 	public ManagerPersistResponse create(ManageCreateRequest request) {
 		if (request.role().equals(STORE)) {
-			validateHeadquarterId(request.headquarterId(), request.certificationNumber());
+			Long headquarterId = request.headquarterId();
+			if (headquarterId == null)
+				throw new CustomException(INVALID_PARAMETER);
+
+			Headquarter hq = headquarterRepository.findById(headquarterId)
+				.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
+
+			hq.validateCertificationNumber(request.certificationNumber());
 		}
 
 		String encodedPassword = bCryptPasswordEncoder.encode(request.password());
 		Manager manager = Manager.create(request.username(), encodedPassword, request.role());
 		Long id = managerRepository.save(manager).getId();
 		return ManagerPersistResponse.of(id);
-	}
-
-	// TODO Headquarter 로직으로 이동
-	private void validateHeadquarterId(Long headquarterId, String certificationNumber) {
-		if (headquarterId == null)
-			throw new CustomException(INVALID_PARAMETER);
-
-		Headquarter hq = headquarterRepository.findById(headquarterId)
-			.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
-
-		if (!hq.getCertificationNumber().equals(certificationNumber))
-			throw new HeadquarterAuthNotMatchException();
 	}
 
 	public TokenResponse login(ManageLoginRequest request) {
