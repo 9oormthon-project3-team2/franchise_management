@@ -22,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
+import static com.goorm.friendchise.domain.manager.domain.Role.STORE;
 import static com.goorm.friendchise.global.exception.ErrorCode.HEADQUARTER_NOT_FOUND;
+import static com.goorm.friendchise.global.exception.ErrorCode.INVALID_PARAMETER;
 
 @Transactional
 @Service
@@ -41,6 +43,18 @@ public class ManagerService {
 	private static final String HEADQUARTER_ROLE = "HEADQUARTER";
 
 	public ManagerPersistResponse create(ManageCreateRequest request) {
+		// STORE일 경우 HQ의 certificationNumber 비교
+		if (request.role().equals(STORE)) {
+			Long headquarterId = request.headquarterId();
+			if (headquarterId == null)
+				throw new CustomException(INVALID_PARAMETER);
+
+			Headquarter hq = headquarterRepository.findById(headquarterId)
+				.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
+
+			hq.validateCertificationNumber(request.certificationNumber());
+		}
+
 		String encodedPassword = bCryptPasswordEncoder.encode(request.password());
 		Manager manager = Manager.create(request.username(), encodedPassword, request.role());
 		Long id = managerRepository.save(manager).getId();
