@@ -66,6 +66,7 @@ public class ManagerService {
 		manager.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
 		String role = manager.getRole().name();
+
 		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, role);
 		String accessToken = tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role);
 
