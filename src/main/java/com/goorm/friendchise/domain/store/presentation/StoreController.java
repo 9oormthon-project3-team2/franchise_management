@@ -1,6 +1,7 @@
 package com.goorm.friendchise.domain.store.presentation;
 
 import com.goorm.friendchise.domain.store.application.StoreService;
+
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.domain.store.dto.res.KakaoApiAddressResDto;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,9 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+
 @RequestMapping("/store")
+
 public class StoreController {
 
     private final StoreService storeService;

@@ -6,9 +6,11 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
-import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.global.auth.application.AuthService;
+import com.goorm.friendchise.global.auth.domain.RefreshToken;
+import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
+import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +27,7 @@ public class ManagerService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final TokenProvider tokenProvider;
 	private final AuthService authService;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	private static final Duration REFRESH_TOKEN_EXP = Duration.ofDays(1);
 	private static final Duration ACCESS_TOKEN_EXP = Duration.ofHours(1);
@@ -36,16 +39,20 @@ public class ManagerService {
 		return ManagerPersistResponse.of(id);
 	}
 
-	public ManagerTokenResponse login(ManageLoginRequest request) {
+	public TokenResponse login(ManageLoginRequest request) {
 		String name = request.username();
 		Manager manager = findManagerByUsername(name);
 		manager.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
 		String role = manager.getRole().name();
-		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, role);
 		String accessToken = tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role);
+		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, role);
 
-		return ManagerTokenResponse.of(refreshToken, accessToken);
+		refreshTokenRepository.save(
+			RefreshToken.of(refreshToken, manager.getId(), manager.getRole())
+		);
+
+		return TokenResponse.of(accessToken, refreshToken);
 	}
 
 	public ManagerDetailResponse detail(String username) {

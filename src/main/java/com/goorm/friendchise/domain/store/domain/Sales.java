@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.store.domain;
 
+
 import com.goorm.friendchise.domain.store.dto.SalesReqDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -33,4 +34,5 @@ public class Sales {
         this.writer = writer;
         this.store = store;
     }
+
 }
