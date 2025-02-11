@@ -18,7 +18,7 @@ public class StoreController {
     private final StoreService storeService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<KakaoApiAddressResDto>> searchAddress(@RequestParam String address) {
+    public ResponseEntity<List<KakaoApiAddressResDto>> searchAddress(@RequestParam(name = "address") String address) {
         return ResponseEntity.ok(storeService.searchAddress(address));
     }
 

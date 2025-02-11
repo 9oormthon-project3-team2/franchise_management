@@ -17,6 +17,7 @@ import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoreService {
@@ -53,7 +55,9 @@ public class StoreService {
                 .bodyToMono(KakaoApiRes.class)
                 .block();
 
-        if(query == null || query.getDocumentList().isEmpty()) {
+        log.info("address: {}", address);
+        log.info("message: {}", query.getDocuments().get(0).getAddress_type());
+        if(query == null || query.getDocuments().isEmpty()) {
             throw new NotFoundAddressException();
         }
 
@@ -100,7 +104,7 @@ public class StoreService {
     }
 
     private static List<KakaoApiAddressResDto> getCollect(KakaoApiRes query) {
-        return query.getDocumentList().stream()
+        return query.getDocuments().stream()
                 .map(doc -> {
                     String address = doc.getAddress().getAddress_name();
                     String roadAddress = doc.getRoad_address().getAddress_name();
