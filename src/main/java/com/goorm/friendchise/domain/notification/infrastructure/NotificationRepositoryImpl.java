@@ -2,6 +2,7 @@ package com.goorm.friendchise.domain.notification.infrastructure;
 
 import com.goorm.friendchise.domain.notification.domain.Notification;
 import com.goorm.friendchise.domain.notification.domain.NotificationRepository;
+import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -40,7 +41,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 
 	// 알림 객체 삭제로 개선 필요
 	@Override
-	public void delete(Long id) {
+	public void deleteById(Long id) {
 		jpaNotificationRepository.deleteById(id);
 	}
 }
