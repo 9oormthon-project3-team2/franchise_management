@@ -60,7 +60,7 @@ public class TokenProvider {
 			.setSubject(username)
 			.claim("username", username)
 			.claim("role", role)
-			.claim("userId", userId)
+			.claim("userId", userId.toString())
 			.claim("category", category)
 			.claim("subCategory", subCategory)
 			.signWith(HS256, jwtProperties.getSecretKey())
@@ -105,6 +105,21 @@ public class TokenProvider {
 	public String getUsername(String token) {
 		Claims claims = getClaims(token);
 		return claims.get("username", String.class);
+	}
+
+	public String getHeadquarterManagerId(String token) {
+		Claims claims = getClaims(token);
+		return claims.get("userId", String.class);
+	}
+
+	public String getHeadquarterCategory(String token) {
+		Claims claims = getClaims(token);
+		return claims.get("category", String.class);
+	}
+
+	public String getHeadquarterSubCategory(String token) {
+		Claims claims = getClaims(token);
+		return claims.get("subCategory", String.class);
 	}
 
 	private Claims getClaims(String token) {
