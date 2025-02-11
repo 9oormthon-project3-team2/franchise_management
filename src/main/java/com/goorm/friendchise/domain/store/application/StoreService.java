@@ -85,8 +85,8 @@ public class StoreService {
     @Transactional
     public void updateStoreInfo(StoreReqDto req) {
         Manager currentManager = getCurrentManager();
-        Headquarter headquarter = findHeadquarterByHeadQuarterName(req.headQuarterName());
         Store store = findIfStoreExists(currentManager);
+        Headquarter headquarter = findHeadquarterByHeadQuarterName(req.headQuarterName());
 
         findIfMine(store, currentManager);
 
