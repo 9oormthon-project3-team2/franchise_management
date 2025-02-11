@@ -57,6 +57,8 @@ public class ManagerService {
 		Headquarter hq = headquarterRepository.findById(headquarterId)
 			.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
 
+		System.out.println(hq.getCertificationNumber());
+		System.out.println(certificationNumber);
 		if (!hq.getCertificationNumber().equals(certificationNumber))
 			throw new HeadquarterAuthNotMatchException();
 	}

@@ -26,6 +26,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.UUID;
+
 import static com.goorm.friendchise.domain.manager.domain.Role.HEADQUARTER;
 import static com.goorm.friendchise.domain.manager.domain.Role.STORE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,12 +45,11 @@ class ManagerServiceTest {
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
 		AuthService authService = new AuthService(managerRepository);
-		HeadquarterRepository headquarterRepository = new FakeHeadquarterRepository();
+		this.headquarterRepository = new FakeHeadquarterRepository();
 		managerService = new ManagerService(
 			managerRepository, bCryptPasswordEncoder,
 			tokenProvider, authService, headquarterRepository);
 
-		this.headquarterRepository = new FakeHeadquarterRepository();
 
 		managerRepository.save(
 			Manager.create("test", "test1234", HEADQUARTER)
@@ -88,16 +89,17 @@ class ManagerServiceTest {
 			.franchiseName("Mcdonald")
 			.category(Category.FASTFOOD)
 			.subCategory(SubCategory.NONE)
+			.certificationNumber(UUID.randomUUID().toString())
 			.build();
 
-		headquarterRepository.save(mcdonald);
+		Headquarter saved = headquarterRepository.save(mcdonald);
 
 		ManageCreateRequest request = ManageCreateRequest.builder()
 			.username("request")
 			.password("test1234")
 			.role(STORE)
-			.headquarterId(mcdonald.getId())
-			.certificationNumber(mcdonald.getCertificationNumber())
+			.headquarterId(saved.getId())
+			.certificationNumber(saved.getCertificationNumber())
 			.build();
 
 		// when
@@ -112,14 +114,22 @@ class ManagerServiceTest {
 	@DisplayName("create는 store의 Headquarter의 certificationNumber가 일치하지 않으면 예외를 발생")
 	void validateHeadquarterId_HeadquarterAuthNotMatchException() {
 		// given
-		Headquarter mcdonald = Headquarter.of("Mcdonald", Category.FASTFOOD, SubCategory.NONE);
+		Headquarter mcdonald = Headquarter.builder()
+			.id(1L)
+			.franchiseName("Mcdonald")
+			.category(Category.FASTFOOD)
+			.subCategory(SubCategory.NONE)
+			.certificationNumber(UUID.randomUUID().toString())
+			.build();
+
+		Headquarter saved = headquarterRepository.save(mcdonald);
 
 		ManageCreateRequest request = ManageCreateRequest.builder()
 			.username("request")
 			.password("test1234")
 			.role(STORE)
-			.headquarterId(mcdonald.getId())
-			.certificationNumber("NOT-MATCH")
+			.headquarterId(saved.getId())
+			.certificationNumber("NOT_MATCH")
 			.build();
 
 		// then
