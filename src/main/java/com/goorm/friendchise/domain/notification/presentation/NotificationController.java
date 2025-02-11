@@ -2,14 +2,15 @@ package com.goorm.friendchise.domain.notification.presentation;
 
 import com.goorm.friendchise.domain.notification.application.NotificationManager;
 import com.goorm.friendchise.domain.notification.application.NotificationSseService;
+import com.goorm.friendchise.domain.notification.dto.response.NotificationDetailResponse;
 import com.goorm.friendchise.domain.notification.dto.response.NotificationResponse;
-import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/notifications")
@@ -20,8 +21,8 @@ public class NotificationController {
 
 	// 특정 targetId에 대한 알림 목록 조회 API
 	@GetMapping("/{targetId}")
-	public ResponseEntity<List<ReceivedNotificationResponse>> getNotifications(@PathVariable("targetId") Long targetId) {
-		List<ReceivedNotificationResponse> notifications = notificationManager.getNotificationsByTarget(targetId);
+	public ResponseEntity<List<NotificationDetailResponse>> getNotifications(@PathVariable("targetId") Long targetId) {
+		List<NotificationDetailResponse> notifications = notificationManager.getNotificationsByTarget(targetId);
 		return ResponseEntity.ok(notifications);
 	}
 

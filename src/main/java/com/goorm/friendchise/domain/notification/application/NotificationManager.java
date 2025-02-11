@@ -3,6 +3,7 @@ package com.goorm.friendchise.domain.notification.application;
 import com.goorm.friendchise.domain.headquarter.dto.store.StoreIdDto;
 import com.goorm.friendchise.domain.notification.domain.Notification;
 import com.goorm.friendchise.domain.notification.domain.NotificationRepository;
+import com.goorm.friendchise.domain.notification.dto.response.NotificationDetailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,16 @@ public class NotificationManager {
 		repository.deleteById(notificationId);
 	}
 
-	public List<Notification> getNotificationsByTarget(Long targetId) {
-		return repository.findByTargetId(targetId);
+	public List<NotificationDetailResponse> getNotificationsByTarget(Long targetId) {
+		List<Notification> notifications = repository.findByTargetId(targetId);
+		return notifications.stream()
+			.map(notification -> NotificationDetailResponse.builder()
+				.id(notification.getId())
+				.targetId(notification.getTargetId())
+				.title(notification.getTitle())
+				.content(notification.getContent())
+				.isRead(notification.isRead())
+				.build())
+			.collect(Collectors.toList());
 	}
 }
