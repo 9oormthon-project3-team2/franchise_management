@@ -15,7 +15,6 @@ import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
 import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import com.goorm.friendchise.global.exception.CustomException;
-import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,13 +52,12 @@ public class ManagerService {
 		Manager manager = findManagerByUsername(name);
 		manager.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
+		Long manageId = manager.getManageId();
 		String role = manager.getRole().name();
 		String accessToken = tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role);
 		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, role);
 
-		// TODO manageId==null 핸들
-		if(role.equals(HEADQUARTER_ROLE)) {
-			Long manageId = manager.getManageId();
+		if (role.equals(HEADQUARTER_ROLE) && manageId != null) {
 			Headquarter headquarter = headquarterRepository.findById(manageId)
 				.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
 			accessToken = tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role, manager.getId(),
