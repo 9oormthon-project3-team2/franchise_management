@@ -1,5 +1,7 @@
 package com.goorm.friendchise.domain.manager.application;
 
+import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
+import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
@@ -12,12 +14,16 @@ import com.goorm.friendchise.global.auth.domain.RefreshToken;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
 import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
+import com.goorm.friendchise.global.exception.CustomException;
+import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+
+import static com.goorm.friendchise.global.exception.ErrorCode.HEADQUARTER_NOT_FOUND;
 
 @Transactional
 @Service
@@ -28,9 +34,12 @@ public class ManagerService {
 	private final TokenProvider tokenProvider;
 	private final AuthService authService;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final HeadquarterRepository headquarterRepository;
 
 	private static final Duration REFRESH_TOKEN_EXP = Duration.ofDays(1);
 	private static final Duration ACCESS_TOKEN_EXP = Duration.ofHours(1);
+
+	private static final String HEADQUARTER_ROLE = "HEADQUARTER";
 
 	public ManagerPersistResponse create(ManageCreateRequest request) {
 		String encodedPassword = bCryptPasswordEncoder.encode(request.password());
@@ -47,6 +56,15 @@ public class ManagerService {
 		String role = manager.getRole().name();
 		String accessToken = tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role);
 		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, role);
+
+		// TODO manageId==null 핸들
+		if(role.equals(HEADQUARTER_ROLE)) {
+			Long manageId = manager.getManageId();
+			Headquarter headquarter = headquarterRepository.findById(manageId)
+				.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
+			accessToken = tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role, manager.getId(),
+				headquarter.getCategory().getValue(), headquarter.getSubCategory().getValue());
+		}
 
 		refreshTokenRepository.save(
 			RefreshToken.of(refreshToken, manager.getId(), manager.getRole())
