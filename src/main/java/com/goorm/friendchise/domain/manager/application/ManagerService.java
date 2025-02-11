@@ -9,6 +9,7 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerTokenResponse;
+import com.goorm.friendchise.domain.manager.exception.HeadquarterAuthNotMatchException;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
@@ -39,7 +40,7 @@ public class ManagerService {
 
 	public ManagerPersistResponse create(ManageCreateRequest request) {
 		if (request.role().equals(STORE)) {
-			validateHeadquarterId(request.headquarterId(), request.authNum());
+			validateHeadquarterId(request.headquarterId(), request.certificationNumber());
 		}
 
 		String encodedPassword = bCryptPasswordEncoder.encode(request.password());
@@ -48,6 +49,7 @@ public class ManagerService {
 		return ManagerPersistResponse.of(id);
 	}
 
+	// TODO Headquarter 로직으로 이동
 	private void validateHeadquarterId(Long headquarterId, String certificationNumber) {
 		if (headquarterId == null)
 			throw new CustomException(INVALID_PARAMETER);
@@ -55,9 +57,8 @@ public class ManagerService {
 		Headquarter hq = headquarterRepository.findById(headquarterId)
 			.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
 
-		// TODO Headquarter 개발 이후에 추가
-//		if (!hq.getCertificationNumber().equals(certificationNumber))
-//			throw new HeadquarterAuthNotMatchException();
+		if (!hq.getCertificationNumber().equals(certificationNumber))
+			throw new HeadquarterAuthNotMatchException();
 	}
 
 	public ManagerTokenResponse login(ManageLoginRequest request) {

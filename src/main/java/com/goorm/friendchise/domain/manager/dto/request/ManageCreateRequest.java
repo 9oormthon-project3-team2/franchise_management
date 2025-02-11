@@ -24,7 +24,7 @@ public record ManageCreateRequest(
 	@Schema(description = "본사ID", example = "1")
 	Long headquarterId,
 
-	@Schema(description = "역할", example = "12345678")
-	String authNum
+	@Schema(description = "인증번호", example = "12345678")
+	String certificationNumber
 ) {
 }

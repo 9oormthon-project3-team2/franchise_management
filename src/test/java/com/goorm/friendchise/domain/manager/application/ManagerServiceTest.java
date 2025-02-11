@@ -1,12 +1,16 @@
 package com.goorm.friendchise.domain.manager.application;
 
+import com.goorm.friendchise.domain.headquarter.domain.Category;
+import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
+import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
+import com.goorm.friendchise.domain.manager.exception.HeadquarterAuthNotMatchException;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
 import com.goorm.friendchise.global.auth.application.AuthService;
@@ -23,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static com.goorm.friendchise.domain.manager.domain.Role.HEADQUARTER;
+import static com.goorm.friendchise.domain.manager.domain.Role.STORE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ManagerServiceTest {
 	private ManagerService managerService;
+	private HeadquarterRepository headquarterRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -41,6 +47,8 @@ class ManagerServiceTest {
 		managerService = new ManagerService(
 			managerRepository, bCryptPasswordEncoder,
 			tokenProvider, authService, headquarterRepository);
+
+		this.headquarterRepository = new FakeHeadquarterRepository();
 
 		managerRepository.save(
 			Manager.create("test", "test1234", HEADQUARTER)
@@ -70,6 +78,57 @@ class ManagerServiceTest {
 		assertNotNull(response);
 		assertEquals(2L, response.id());
 	}
+
+	@Test
+	@DisplayName("create는 store의 Headquarter의 certificationNumber가 일치하면 예외를 발생시키지 않음")
+	void validateHeadquarterId_success() {
+		// given
+		Headquarter mcdonald = Headquarter.builder()
+			.id(1L)
+			.franchiseName("Mcdonald")
+			.category(Category.FASTFOOD)
+			.subCategory(SubCategory.NONE)
+			.build();
+
+		headquarterRepository.save(mcdonald);
+
+		ManageCreateRequest request = ManageCreateRequest.builder()
+			.username("request")
+			.password("test1234")
+			.role(STORE)
+			.headquarterId(mcdonald.getId())
+			.certificationNumber(mcdonald.getCertificationNumber())
+			.build();
+
+		// when
+		ManagerPersistResponse response = managerService.create(request);
+
+		// then
+		assertNotNull(response);
+		assertEquals(2L, response.id());
+	}
+
+	@Test
+	@DisplayName("create는 store의 Headquarter의 certificationNumber가 일치하지 않으면 예외를 발생")
+	void validateHeadquarterId_HeadquarterAuthNotMatchException() {
+		// given
+		Headquarter mcdonald = Headquarter.of("Mcdonald", Category.FASTFOOD, SubCategory.NONE);
+
+		ManageCreateRequest request = ManageCreateRequest.builder()
+			.username("request")
+			.password("test1234")
+			.role(STORE)
+			.headquarterId(mcdonald.getId())
+			.certificationNumber("NOT-MATCH")
+			.build();
+
+		// then
+		Assertions.assertThrows(
+			HeadquarterAuthNotMatchException.class,
+			() -> managerService.create(request)
+		);
+	}
+
 
 	@Test
 	@DisplayName("detail은 입력된 username으로 ManagerDetailResponse를 반환")
