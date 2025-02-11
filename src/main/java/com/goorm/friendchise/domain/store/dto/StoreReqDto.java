@@ -6,8 +6,8 @@ public record StoreReqDto(
         String roadAddress,
         String zoneNumber,
         String dong,
-        String x,
-        String y,
+        Double x,
+        Double y,
         String franchiseName,
         String headQuarterName
 ) {

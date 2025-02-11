@@ -30,6 +30,7 @@ public enum ErrorCode {
 	STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 매장을 찾을 수 없습니다."),
 	SALES_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 매출을 찾을 수 없습니다."),
 	NOT_FOUND_ADDRESS(HttpStatus.BAD_REQUEST, "해당 주소와 관련된 주소를 찾을 수 없습니다."),
+	NOT_VALID_STORE_AUTHENTICATION(HttpStatus.BAD_REQUEST, "소유한 매장이 아닙니다."),
 
 	// WebClient
 	WEBCLIENT_ERROR(HttpStatus.BAD_REQUEST, "API 호출 도중 에러가 발생했습니다.");
