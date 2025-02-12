@@ -4,6 +4,8 @@ import com.goorm.friendchise.domain.headquarter.dto.headquarter.StoreRecommendRe
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoPlaceDto;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto;
+import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto.Choice;
+import com.goorm.friendchise.domain.headquarter.dto.openai.ChatMessage;
 import com.goorm.friendchise.domain.headquarter.util.JsonHashMapConverter;
 import com.goorm.friendchise.domain.headquarter.util.PlaceData;
 import com.goorm.friendchise.global.exception.CustomException;
@@ -45,6 +47,12 @@ public class StoreRecommendationService {
         List<String> userSelectedCategory = getUserSelectedCategory(req);
 
         Mono<Map<String, KakaoApiResultDto>> mono = kakaoApiService.getTotalPlaceData(userSelectedCategory, req.y(), req.x());
+
+        if(mono == null) { // 반경 500m 내 동일한 프랜차이즈 매장이 존재할 경우
+            Choice choice = Choice.of(ChatMessage.of("assistant", "반경 500m 내 동일한 프랜차이즈 매장이 존재합니다."));
+            return ChatCompletionResponseDto.of(List.of(choice), new ChatCompletionResponseDto.Usage(0, 0));
+        }
+
         Map<String, KakaoApiResultDto> totalPlaceData = mono.block();
 
     //        String address = totalPlaceData.get("반경 200m 내 버스정류장").documents().get(0).addressName();

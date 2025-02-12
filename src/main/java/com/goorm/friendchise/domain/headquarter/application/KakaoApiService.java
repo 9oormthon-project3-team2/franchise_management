@@ -1,5 +1,7 @@
 package com.goorm.friendchise.domain.headquarter.application;
 
+import com.goorm.friendchise.domain.headquarter.domain.Category;
+import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoRegionDto;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoRegionListDto;
@@ -30,7 +32,6 @@ public class KakaoApiService {
     public KakaoApiResultDto requestPlaceDataByKeywordSync(String keyword, Double y, Double x, int radius) {
         String uri = makeKeywordSearchAPIUri(keyword, y, x, radius);
 
-        // TODO: 예외처리, 재시도 등 로직 필요
         return webClient.get()
                 .uri(uri)
                 .retrieve()
@@ -97,8 +98,8 @@ public class KakaoApiService {
         // TODO: 각 api 호출 프로세스를 메소드로 분리하는 리팩토링
         // sample data
         String franchiseName = "맥도날드";
-        String category = "패스트푸드";
-        Optional<String> subCategory = null;
+        Category category = Category.FASTFOOD;
+        SubCategory subCategory = SubCategory.NONE;
 
         // 1. 동일 프랜차이즈 매장 검색
         KakaoApiResultDto sameFranchiseStoreResult = requestPlaceDataByKeywordSync(franchiseName, y, x, 500);
@@ -110,10 +111,10 @@ public class KakaoApiService {
 
         // 2. 동일 업종 경쟁 매장 검색
         Mono<KakaoApiResultDto> sameCategoryStoreResult;
-        if(!subCategory.isPresent()) { // subCategory가 없으면 category로 검색
-            sameCategoryStoreResult =  requestPlaceDataByKeywordAsync(category, y, x, 1000);
+        if(subCategory.equals(SubCategory.NONE)) { // subCategory가 없으면 category로 검색
+            sameCategoryStoreResult =  requestPlaceDataByKeywordAsync(category.getValue(), y, x, 1000);
         } else {
-            sameCategoryStoreResult = requestPlaceDataByKeywordAsync(subCategory.get(), y, x, 1000);
+            sameCategoryStoreResult = requestPlaceDataByKeywordAsync(subCategory.getValue(), y, x, 1000);
         }
         totalSearchResults.put("반경 1km 내 동일 업종 경쟁 매장", sameCategoryStoreResult);
 
