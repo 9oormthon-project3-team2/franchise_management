@@ -13,7 +13,6 @@ import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
 import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
-import com.goorm.friendchise.domain.store.dto.res.StoreRegisterDto;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
 import com.goorm.friendchise.global.auth.infrastructure.FakeRefreshTokenRepository;
