@@ -11,6 +11,8 @@ import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterR
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
+import com.goorm.friendchise.domain.store.domain.Store;
+import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.domain.store.dto.res.StoreRegisterDto;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
@@ -60,35 +62,51 @@ class HeadquarterServiceTest {
 	@DisplayName("성공적으로 본사에 속한 매장의 ID 목록을 조회한다.")
 	void getStoreIdList_Success() {
 		// given
-//		Headquarter headquarter = Headquarter.builder()
-//			.franchiseName("test franchise")
-//			.build();
-//		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
-//
-//		StoreRegisterDto storeRegisterDto1 = StoreRegisterDto.builder()
-//			.address("서울시 강남구")
-//			.dong("삼성동")
-//			.pointX(127.123)
-//			.pointY(37.321)
-//			.build();
-//
-//		StoreRegisterDto storeRegisterDto2 = StoreRegisterDto.builder()
-//			.address("서울시 서초구")
-//			.dong("서초동")
-//			.pointX(127.456)
-//			.pointY(37.654)
-//			.build();
-//
-//		Store store1 = Store.createStore(storeRegisterDto1, savedHeadquarter);
-//		Store store2 = Store.createStore(storeRegisterDto2, savedHeadquarter);
-//
-//		// when
-//		List<StoreIdDto> storeIds = headquarterService.getStoreIdList(savedHeadquarter.getId());
-//
-//		// then
-//		assertThat(storeIds).hasSize(2);
-//		assertThat(storeIds).extracting(StoreIdDto::id)
-//			.containsExactlyInAnyOrder(store1.getId(), store2.getId());
+		Manager manager = Manager.create("test", "test1234", HEADQUARTER);
+		Manager savedManager = managerRepository.save(manager);
+		setContextHolder(savedManager);
+
+		Headquarter headquarter = Headquarter.builder()
+				.franchiseName("test")
+				.category(Category.FASTFOOD)
+				.subCategory(SubCategory.NONE)
+				.build();
+		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
+		savedManager.updateManageId(savedHeadquarter.getId());
+
+		StoreReqDto storeRegisterDto1 = StoreReqDto.builder()
+				.address("서울시 강남구")
+				.roadAddress("서울시 강남구 삼성동")
+				.zoneNumber("04930")
+				.dong("삼성동")
+				.x(127.123)
+				.y(37.321)
+				.franchiseName("맥도날드 삼성점")
+				.headQuarterName("맥도날드")
+				.build();
+
+
+		StoreReqDto storeRegisterDto2 = StoreReqDto.builder()
+				.address("서울시 중곡동 140-6")
+				.roadAddress("서울시 광진구 천호대로116 9")
+				.dong("중곡동")
+				.x(127.456)
+				.y(37.654)
+				.franchiseName("맥도날드 중곡점")
+				.headQuarterName("맥도날드")
+				.build();
+
+		Store store1 = new Store(storeRegisterDto1, savedHeadquarter, savedManager);
+		Store store2 = new Store(storeRegisterDto2, savedHeadquarter, savedManager);
+
+		// when
+		List<StoreIdDto> storeIds = headquarterService.getStoreIdList(savedHeadquarter.getId());
+
+		// then
+		assertThat(storeIds).hasSize(2);
+		assertThat(storeIds).extracting(StoreIdDto::id)
+				.containsExactlyInAnyOrder(store1.getId(), store2.getId());
+
 	}
 
 	@Test
