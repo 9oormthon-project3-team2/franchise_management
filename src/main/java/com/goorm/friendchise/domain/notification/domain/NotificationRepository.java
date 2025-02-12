@@ -14,5 +14,5 @@ public interface NotificationRepository {
 
 	Optional<Notification> findById(Long id);
 
-	void delete(Long id);
+	void deleteById(Long id);
 }
