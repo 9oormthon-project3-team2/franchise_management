@@ -3,6 +3,7 @@ package com.goorm.friendchise.domain.manager.presentation;
 import com.goorm.friendchise.domain.manager.application.ManagerService;
 import com.goorm.friendchise.domain.manager.dto.request.ManageCreateRequest;
 import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
+import com.goorm.friendchise.domain.manager.dto.request.ManagerPasswordRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.global.auth.application.AuthService;
@@ -65,9 +66,9 @@ public class ManagerController {
 
 	@PutMapping("/update/password")
 	public ResponseEntity<Void> updatePassword(
-		@RequestParam String newPassword
+		@RequestBody ManagerPasswordRequest request
 	) {
-		managerService.updatePassword(newPassword);
+		managerService.updatePassword(request.password());
 		return ResponseEntity.noContent().build();
 	}
 
