@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -180,21 +181,21 @@ class HeadquarterServiceTest {
 
 	private Long createManagerAndHeadquarter() {
 		Manager manager = Manager.create("test", "test1234", HEADQUARTER);
-
-		// 1. 여기서 contextHolder를
-//		managerRepository.save(manager);
-//		setContextHolder(manager);
+		Manager savedManager = managerRepository.save(manager);
+		setContextHolder(savedManager);
 
 		Headquarter headquarter = Headquarter.builder()
-			.franchiseName("test")
+				.franchiseName("test")
+				.category(Category.FASTFOOD)
+				.subCategory(SubCategory.NONE)
 			.build();
 		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
-		manager.updateManageId(savedHeadquarter.getId());
+		savedManager.updateManageId(savedHeadquarter.getId());
 
 		// 원래는 manager create 하고 바로 save 해야 하지만 그렇게 하면 managerId 업데이트가 repository에서 꺼내올 때 반영이 안되므로
 		// 근데 왜 안되는거지
-		managerRepository.save(manager);
-		setContextHolder(manager);
+//		managerRepository.save(manager);
+//		setContextHolder(manager);
 		return savedHeadquarter.getId();
 	}
 
