@@ -8,68 +8,96 @@ import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDt
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
 import com.goorm.friendchise.domain.headquarter.dto.store.StoreIdDto;
 import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
+import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
-import com.goorm.friendchise.domain.store.dto.res.StoreRegisterDto;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@ExtendWith(MockitoExtension.class)
 class HeadquarterServiceTest {
+
+    @InjectMocks
 	private HeadquarterService headquarterService;
+
+	@Mock
 	private HeadquarterRepository headquarterRepository;
+
+	@Mock
 	private AuthService authService;
+
+	private Manager manager;
 
 	@BeforeEach
 	void setup() {
+		manager = Manager.create("username", "password", Role.STORE);
+		ReflectionTestUtils.setField(manager, "id", 1L);
+		ReflectionTestUtils.setField(manager, "manageId", 1L);
+		Mockito.when(authService.findManagerByAuth()).thenReturn(manager);
+
 		headquarterRepository = new FakeHeadquarterRepository();
 		headquarterService = new HeadquarterService(authService, headquarterRepository);
 	}
 
-//	@Test
-//	@DisplayName("성공적으로 본사에 속한 매장의 ID 목록을 조회한다.")
-//	void getStoreIdList_Success() {
-//		// given
-//		Headquarter headquarter = Headquarter.builder()
-//			.franchiseName("test franchise")
-//			.build();
-//		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
-//
-//		StoreReqDto storeRegisterDto1 = StoreReqDto.builder()
-//				.address("서울시 강남구")
-//				.roadAddress("서울시 강남구 삼성동")
-//				.zoneNumber()
-//				.dong("삼성동")
-//				.x(127.123)
-//				.y(37.321)
-//
-//
-//		StoreReqDto storeRegisterDto2 = StoreReqDto.builder()
-//			.address("서울시 서초구")
-//			.dong("서초동")
-//			.x(127.456)
-//			.y(37.654)
-//			.build();
-//
-//		Store store1 = new Store(storeRegisterDto1, savedHeadquarter);
-//		Store store2 = new Store(storeRegisterDto2, savedHeadquarter);
-//
-//		// when
-//		List<StoreIdDto> storeIds = headquarterService.getStoreIdList(savedHeadquarter.getId());
-//
-//		// then
-//		assertThat(storeIds).hasSize(2);
-//		assertThat(storeIds).extracting(StoreIdDto::id)
-//			.containsExactlyInAnyOrder(store1.getId(), store2.getId());
-//	}
+	@Test
+	@DisplayName("성공적으로 본사에 속한 매장의 ID 목록을 조회한다.")
+	void getStoreIdList_Success() {
+		// given
+
+		Headquarter headquarter = Headquarter.builder()
+			.franchiseName("맥도날드")
+			.build();
+		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
+
+		StoreReqDto storeRegisterDto1 = StoreReqDto.builder()
+				.address("서울시 강남구")
+				.roadAddress("서울시 강남구 삼성동")
+				.zoneNumber("04930")
+				.dong("삼성동")
+				.x(127.123)
+				.y(37.321)
+				.franchiseName("맥도날드 삼성점")
+				.headQuarterName("맥도날드")
+				.build();
+
+
+		StoreReqDto storeRegisterDto2 = StoreReqDto.builder()
+				.address("서울시 중곡동 140-6")
+				.roadAddress("서울시 광진구 천호대로116 9")
+				.dong("중곡동")
+				.x(127.456)
+				.y(37.654)
+				.franchiseName("맥도날드 중곡점")
+				.headQuarterName("맥도날드")
+				.build();
+
+		Store store1 = new Store(storeRegisterDto1, savedHeadquarter, manager);
+		Store store2 = new Store(storeRegisterDto2, savedHeadquarter, manager);
+
+		// when
+		List<StoreIdDto> storeIds = headquarterService.getStoreIdList(savedHeadquarter.getId());
+
+		// then
+		assertThat(storeIds).hasSize(2);
+		assertThat(storeIds).extracting(StoreIdDto::id)
+			.containsExactlyInAnyOrder(store1.getId(), store2.getId());
+	}
 
 	@Test
 	@DisplayName("존재하지 않는 본사의 매장 ID 목록을 조회하면 예외를 던진다.")
@@ -147,7 +175,6 @@ class HeadquarterServiceTest {
 			.franchiseName("test")
 			.build();
 		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
-		Long id = savedHeadquarter.getId();
 
 		// when
 		HeadquarterResDto headquarterResDto = headquarterService.getHeadquarter();
@@ -160,7 +187,6 @@ class HeadquarterServiceTest {
 	@DisplayName("존재하지 않는 본사를 조회할 경우 예외를 던진다.")
 	void getHeadquarter_notFound() {
 		// given
-		Long id = 10L;
 
 		// when, then
 		assertThatThrownBy(() -> headquarterService.getHeadquarter())
@@ -176,7 +202,6 @@ class HeadquarterServiceTest {
 			.franchiseName("test")
 			.build();
 		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
-		Long id = savedHeadquarter.getId();
 
 		// when
 		HeadquarterResDto updatedHeadquarter = headquarterService.updateHeadquarterName(HeadquarterReqDto.of("newTest", "testCategory", "testSubCategory"));
