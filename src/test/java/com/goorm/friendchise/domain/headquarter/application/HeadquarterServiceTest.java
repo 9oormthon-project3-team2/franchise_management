@@ -181,14 +181,19 @@ class HeadquarterServiceTest {
 	private Long createManagerAndHeadquarter() {
 		Manager manager = Manager.create("test", "test1234", HEADQUARTER);
 
+		// 1. 여기서 contextHolder를
+//		managerRepository.save(manager);
+//		setContextHolder(manager);
+
 		Headquarter headquarter = Headquarter.builder()
 			.franchiseName("test")
 			.build();
 		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
 		manager.updateManageId(savedHeadquarter.getId());
 
-		// 원래는 manager create 하고 바로 save 해야 하지만 그렇게 하면 managerId 업데이트가 contextHolder에 반영이 안되므로
-		Manager savedManager = managerRepository.save(manager);
+		// 원래는 manager create 하고 바로 save 해야 하지만 그렇게 하면 managerId 업데이트가 repository에서 꺼내올 때 반영이 안되므로
+		// 근데 왜 안되는거지
+		managerRepository.save(manager);
 		setContextHolder(manager);
 		return savedHeadquarter.getId();
 	}

@@ -17,12 +17,12 @@ import java.util.Map;
 class KakaoApiServiceTest {
 
     @Autowired
-    private KakaoApiService storeRecommendationService;
+    private KakaoApiService kakaoApiService;
 
     // api key에 ip 허용이 안되어서 아직 카카오 API 호출을 못함
     @Test
     void getTotalPlaceData() {
-        Mono<Map<String, KakaoApiResultDto>> totalPlaceData = storeRecommendationService.getTotalPlaceData(List.of("백화점", "학교"), 37.55185670851289, 126.96979548002724);
+        Mono<Map<String, KakaoApiResultDto>> totalPlaceData = kakaoApiService.getTotalPlaceData(List.of("백화점", "학교"), 37.55185670851289, 126.96979548002724);
         Map<String, KakaoApiResultDto> result = totalPlaceData.block();
         System.out.println(result);
     }
@@ -30,7 +30,14 @@ class KakaoApiServiceTest {
     @Test
     @DisplayName("반경 500m 내 동일한 프랜차이즈 매장이 존재할 경우")
     void getTotalPlaceData_FranchiseStoreExist() {
-        Mono<Map<String, KakaoApiResultDto>> totalPlaceData = storeRecommendationService.getTotalPlaceData(List.of("백화점", "학교"), 37.49864658673187, 127.02873329209403);
+        Mono<Map<String, KakaoApiResultDto>> totalPlaceData = kakaoApiService.getTotalPlaceData(List.of("백화점", "학교"), 37.49864658673187, 127.02873329209403);
         Assertions.assertThat(totalPlaceData).isNull();
+    }
+
+    @Test
+    @DisplayName("반경 500m 내 동일한 프랜차이즈 매장이 존재할 경우")
+    void 테스트() {
+        KakaoApiResultDto result = kakaoApiService.requestPlaceDataByKeywordSync("맥도날드", 37.49864658673187, 127.02873329209403, 500);
+        System.out.println(result);
     }
 }

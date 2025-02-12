@@ -1,0 +1,2 @@
+SHOW CREATE TABLE manager;
+SHOW CREATE TABLE headquarter;
