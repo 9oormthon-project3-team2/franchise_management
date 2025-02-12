@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 
 public class JsonHashMapConverter {
-    public static HashMap<String, HashMap<String, Integer>> convertJsonToHashmap(String fileName) {
+    public static HashMap<String, HashMap<String, List<PlaceData>>> convertJsonToHashmap(String fileName) {
         try {
             ClassLoader classLoader = JsonHashMapConverter.class.getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream(fileName);
@@ -16,7 +17,7 @@ public class JsonHashMapConverter {
             }
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(inputStream,
-                    new TypeReference<HashMap<String, HashMap<String, Integer>>>() {});
+                    new TypeReference<HashMap<String, HashMap<String, List<PlaceData>>>>() {});
         } catch (Exception e) {
             throw new IllegalArgumentException("JSON 파일을 파싱하는데 실패했습니다: " + fileName);
         }
