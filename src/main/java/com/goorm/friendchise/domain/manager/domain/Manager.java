@@ -33,7 +33,7 @@ public class Manager extends BaseEntity implements UserDetails {
 	@Column(nullable = false, unique = true, length = 50)
 	private String username;
 
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 200)
 	private String password;
 
 	@Column(nullable = false)
