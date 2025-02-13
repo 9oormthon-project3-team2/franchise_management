@@ -31,5 +31,6 @@ public class CommercialArea {
     private BigDecimal rentalFee;
 
     @NotNull
+    @Column(columnDefinition = "Geometry")
     private Polygon geom;
 }
