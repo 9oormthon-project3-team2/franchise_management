@@ -9,23 +9,19 @@ import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoPlaceDto;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto.Choice;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatMessage;
-import com.goorm.friendchise.domain.headquarter.util.JsonHashMapConverter;
-import com.goorm.friendchise.domain.headquarter.util.PlaceData;
-import com.goorm.friendchise.domain.manager.domain.Manager;
-import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StoreRecommendationService {
     private final KakaoApiService kakaoApiService;
     private final OpenAiApiService openAiApiService;
@@ -39,6 +35,11 @@ public class StoreRecommendationService {
      */
     public ChatCompletionResponseDto getRecommendation(StoreRecommendReqDto req) {
         // franchiseName, category, subCategory SecurityContextHolder 에서 가져와서 keyword로 사용
+        StringBuilder sb = new StringBuilder();
+        CommercialArea area = getCommercialArea(req.x(), req.y());
+        BigDecimal rentalFee = area.getRentalFee();
+        sb.append("m² 당 임대료: ").append(rentalFee).append("\n");
+        
         Headquarter headquarter = headquarterService.getHeadquarterByContext();
 
         List<String> userSelectedCategory = getUserSelectedCategory(req);
@@ -56,19 +57,6 @@ public class StoreRecommendationService {
         }
 
         Map<String, KakaoApiResultDto> totalPlaceData = mono.block();
-        String data = getUserRoleMessage(req.x(), req.y(), totalPlaceData).toString();
-
-        return openAiApiService.requestChatCompletionApi(data);
-    }
-
-    /*
-     * 카카오 API로부터 받은 데이터와 임대료 데이터를 사용하여 사용자 역할 메시지(질문)를 생성한다.
-     * @param req 사용자의 좌표
-     * @param totalPlaceData 사용자의 좌표를 기준으로 가져온 주변 매장 데이터
-     * @return StringBuilder
-     */
-    private StringBuilder getUserRoleMessage(double x, double y, Map<String, KakaoApiResultDto> totalPlaceData) {
-        StringBuilder sb = new StringBuilder();
         totalPlaceData.forEach((key, value) -> {
             List<KakaoPlaceDto> documents = value.documents();
             sb.append(key).append(": [");
@@ -76,12 +64,28 @@ public class StoreRecommendationService {
             sb.append("]\n");
         });
 
-        // 임대료 정보
-        CommercialArea area = getCommercialArea(x, y);
-        BigDecimal rentalFee = area.getRentalFee();
-        sb.append("m^2 당 임대료: ").append(rentalFee).append("\n");
-        return sb;
+        String data = sb.toString();
+        log.info("openAi api에 사용될 데이터 메시지: {}", data);
+
+        return openAiApiService.requestChatCompletionApi(data);
     }
+
+//    /*
+//     * 카카오 API로부터 받은 데이터와 임대료 데이터를 사용하여 사용자 역할 메시지(질문)를 생성한다.
+//     * @param req 사용자의 좌표
+//     * @param totalPlaceData 사용자의 좌표를 기준으로 가져온 주변 매장 데이터
+//     * @return StringBuilder
+//     */
+//    private StringBuilder appendData(double x, double y, Map<String, KakaoApiResultDto> totalPlaceData) {
+//        StringBuilder sb = new StringBuilder();
+//        totalPlaceData.forEach((key, value) -> {
+//            List<KakaoPlaceDto> documents = value.documents();
+//            sb.append(key).append(": [");
+//            documents.stream().map(KakaoPlaceDto::distance).forEach(distance -> sb.append(distance).append(", "));
+//            sb.append("]\n");
+//        });
+//        return sb;
+//    }
 
     private CommercialArea getCommercialArea(double x, double y) {
         String point = String.format("POINT(%f %f)", y, x);
