@@ -14,7 +14,10 @@ public enum ErrorCode {
 	TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "타입이 일치하지 않습니다."),
 	RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리소스를 찾을 수 없습니다."),
 	URL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 URL을 찾을 수 없습니다."),
-
+	NEAR_STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "가까운 매장을 찾을 수 없습니다."),
+	//Customer Error
+	RECOMMEND_API_TIMEOUT(HttpStatus.BAD_REQUEST, "추천 API 호출 중 타임아웃 발생"),
+	UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"알 수 없는 에러"),
 	// Auth Error
 	DUPLICATE_LOGIN_ID(HttpStatus.BAD_REQUEST,"중복된 아이디입니다."),
 	INVALID_PASSWORD(HttpStatus.BAD_REQUEST,"유효하지 않은 비밀번호입니다."),
