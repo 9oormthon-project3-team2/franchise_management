@@ -5,9 +5,12 @@ import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoRegionDto;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoRegionListDto;
+import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -92,14 +95,15 @@ public class KakaoApiService {
                 .bodyToMono(KakaoApiResultDto.class);
     }
 
-    public Mono<Map<String, KakaoApiResultDto>> getTotalPlaceData(List<String> userSelectedCategory, Double y, Double x) {
-        // TODO: franchiseName, category, subCategory SecurityContextHolder 에서 가져와서 keyword로 사용
-
+    public Mono<Map<String, KakaoApiResultDto>> getTotalPlaceData(
+            String franchiseName,
+            Category category,
+            SubCategory subCategory,
+            List<String> userSelectedCategory,
+            Double y,
+            Double x
+    ) {
         // TODO: 각 api 호출 프로세스를 메소드로 분리하는 리팩토링
-        // sample data
-        String franchiseName = "맥도날드";
-        Category category = Category.FASTFOOD;
-        SubCategory subCategory = SubCategory.NONE;
 
         // 1. 동일 프랜차이즈 매장 검색
         KakaoApiResultDto sameFranchiseStoreResult = requestPlaceDataByKeywordSync(franchiseName, y, x, 500);
@@ -144,27 +148,6 @@ public class KakaoApiService {
 
     }
 
-    // 필요 없을 것 같음..사용하지 않는다면 다음 PR에 제거 예정
-    public List<String> getHdongFromCoord(Double y, Double x) {
-        String uri = makeCoord2RegionAPIUri(y, x);
-
-        KakaoRegionListDto result = webClient.get()
-                .uri(uri)
-                .retrieve()
-                .bodyToMono(KakaoRegionListDto.class)
-                .block();
-        if(result == null || result.documents().isEmpty()) {
-            throw new CustomException(ErrorCode.COORDINATE_NOT_SUPPORTED);
-        }
-        if(result.documents().size() <= 1) {
-            throw new CustomException(ErrorCode.COORDINATE_NOT_SUPPORTED);
-        }
-
-        KakaoRegionDto hDongDocument = result.documents().get(1);
-        return List.of(hDongDocument.guName(), hDongDocument.hDongName());
-    }
-
-
     // 키워드로 장소 검색하기 API URI 생성
     private String makeKeywordSearchAPIUri(String keyword, Double y, Double x, int radius) {
         return UriComponentsBuilder.fromPath("/search/keyword.json")
@@ -187,14 +170,6 @@ public class KakaoApiService {
                 .queryParam("radius", radius) // 값 조정 필요
                 .queryParam("size", 10)
                 .queryParam("sort", "distance")
-                .build()
-                .toUriString();
-    }
-
-    private String makeCoord2RegionAPIUri(Double y, Double x) {
-        return UriComponentsBuilder.fromPath("/v2/local/geo/coord2regioncode.json")
-                .queryParam("x", x)
-                .queryParam("y", y)
                 .build()
                 .toUriString();
     }

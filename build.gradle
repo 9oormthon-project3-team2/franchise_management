@@ -47,6 +47,9 @@ dependencies {
     //mock
     testImplementation 'org.mockito:mockito-core'
 
+    // spatial query
+    implementation 'org.hibernate.orm:hibernate-spatial'
+
 }
 
 tasks.named('test') {
