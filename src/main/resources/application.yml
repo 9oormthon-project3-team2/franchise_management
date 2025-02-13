@@ -39,13 +39,3 @@ kakao:
 jwt:
   issuer: ${JWT_ISSUER}
   secret: ${JWT_SECRET}
-
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
