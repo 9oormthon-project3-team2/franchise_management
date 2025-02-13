@@ -33,6 +33,6 @@ public enum CategoryGroupCode {
                 return categoryGroupCode;
             }
         }
-        throw new CustomException(ErrorCode.INFRA_CATEGORY_NOT_FOUND);
+        return null;
     }
 }

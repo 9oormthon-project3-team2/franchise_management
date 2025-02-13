@@ -123,6 +123,7 @@ public class KakaoApiService {
         // 4. 사용자가 선택한 카테고리로 검색
         for(String selectedCategory : userSelectedCategory) {
             CategoryGroupCode categoryGroupCode = CategoryGroupCode.fromString(selectedCategory);
+            if(categoryGroupCode == null) continue;
             Mono<KakaoApiResultDto> userDefinedResult = requestPlaceDataByCategoryAsync(categoryGroupCode.getCode(), y, x, 500);
             totalSearchResults.put("반경 500m 내 " + selectedCategory, userDefinedResult);
         }
