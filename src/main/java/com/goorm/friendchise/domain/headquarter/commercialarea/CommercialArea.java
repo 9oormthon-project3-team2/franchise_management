@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.geo.Polygon;
+import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
 

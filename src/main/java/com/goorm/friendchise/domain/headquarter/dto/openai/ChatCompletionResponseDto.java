@@ -1,5 +1,8 @@
 package com.goorm.friendchise.domain.headquarter.dto.openai;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -23,6 +26,8 @@ public record ChatCompletionResponseDto(
 
     @Getter
     @RequiredArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Usage {
         private final int promptTokens;
         private final int completionTokens;

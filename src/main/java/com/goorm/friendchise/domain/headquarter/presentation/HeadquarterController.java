@@ -4,8 +4,11 @@ import com.goorm.friendchise.domain.headquarter.Item.application.ItemService;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
 import com.goorm.friendchise.domain.headquarter.application.HeadquarterService;
+import com.goorm.friendchise.domain.headquarter.application.StoreRecommendationService;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
+import com.goorm.friendchise.domain.headquarter.dto.headquarter.StoreRecommendReqDto;
+import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ import java.util.List;
 public class HeadquarterController {
     private final HeadquarterService headquarterService;
     private final ItemService itemService;
+    private final StoreRecommendationService storeRecommendationService;
 
     @PostMapping("/register")
     public ResponseEntity<HeadquarterResDto> createHeadquarter(@Valid @RequestBody HeadquarterReqDto headquarterReqDto) {
@@ -50,14 +54,9 @@ public class HeadquarterController {
         return ResponseEntity.ok().body(itemService.createItems(headquarterId, itemReqDtoList));
     }
 
-//    @GetMapping("/store-recommendation")
-//    public ResponseEntity<Void> getRecommendationResult(
-//            @RequestParam @NotNull Double y,
-//            @RequestParam @NotNull Double x,
-//            @RequestParam(required = false) List<String> category
-//    ) {
-////        return headquarterService.requestSameFranchiseData(y, x, category);
-//
-//    }
+    @PostMapping("/store-recommendation")
+    public ResponseEntity<ChatCompletionResponseDto> getRecommendationResult(@RequestBody StoreRecommendReqDto req) {
+        return ResponseEntity.ok().body(storeRecommendationService.getRecommendation(req));
+    }
 
 }

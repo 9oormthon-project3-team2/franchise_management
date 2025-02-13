@@ -3,21 +3,12 @@ package com.goorm.friendchise.domain.headquarter.application;
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
-import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoRegionDto;
-import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoRegionListDto;
-import com.goorm.friendchise.domain.manager.domain.Manager;
-import com.goorm.friendchise.global.auth.application.AuthService;
-import com.goorm.friendchise.global.exception.CustomException;
-import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service

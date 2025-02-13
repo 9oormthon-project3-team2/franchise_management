@@ -84,7 +84,8 @@ public class StoreRecommendationService {
     }
 
     private CommercialArea getCommercialArea(double x, double y) {
-        List<CommercialArea> area = commercialAreaRepository.findByPoint(x, y);
+        String point = String.format("POINT(%f %f)", y, x);
+        List<CommercialArea> area = commercialAreaRepository.findByPoint(point);
         if(area.isEmpty()) {
             throw new CustomException(ErrorCode.REGION_NOT_SUPPORTED);
         }

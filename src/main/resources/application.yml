@@ -23,6 +23,7 @@ spring:
     defer-datasource-initialization: true
     show-sql: true
     open-in-view: false
+    database-platform: org.hibernate.spatial.dialect.MySQL8SpatialDialect
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -39,3 +40,12 @@ jwt:
   issuer: ${JWT_ISSUER}
   secret: ${JWT_SECRET}
 
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
