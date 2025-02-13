@@ -22,7 +22,7 @@ public class OpenAiApiService {
             "모든 대괄호 안의 숫자는 선택된 (y, x) 좌표로부터의 거리(m)를 의미합니다. 예: \"반경 1km 내 동일 업종 경쟁 매장: [160, 340, 820]\"은 해당 경쟁 매장이 현재 위치에서 각각 160m, 340m, 820m 떨어져 있음을 뜻합니다.\n" +
             "주어진 데이터를 바탕으로 예상 매출과 m²당 임대료를 비교하여 추천 점수를 산출하고, 그 이유를 설명하세요.";
 
-    public ChatCompletionResponseDto requestChatCompletionApi(String data) {
+    public ChatCompletionResponseDto requestChatCompletion(String data) {
         ChatMessage developerRoleMsg = ChatMessage.of(OpenAiRole.DEVELOPER.getValue(), initialSettingMessage);
         ChatMessage userRoleMsg = ChatMessage.of(OpenAiRole.USER.getValue(), data);
         ChatCompletionRequestDto chatCompletionRequestDto = ChatCompletionRequestDto.of(OpenAiModel.GPT_4o_MINI.getValue(), List.of(developerRoleMsg, userRoleMsg));

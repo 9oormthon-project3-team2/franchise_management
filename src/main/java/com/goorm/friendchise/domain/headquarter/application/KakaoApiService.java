@@ -53,7 +53,7 @@ public class KakaoApiService {
             CategoryGroupCode categoryGroupCode = CategoryGroupCode.fromString(selectedCategory);
             if(categoryGroupCode == null) continue;
             Mono<KakaoApiResultDto> userDefinedResult = kakaoApiClient.requestPlaceDataByCategoryAsync(categoryGroupCode.getCode(), y, x, 500);
-            totalSearchResults.put("반경 500m 내 " + selectedCategory, userDefinedResult);
+            totalSearchResults.put("반경 500m 내 " + categoryGroupCode.getValue(), userDefinedResult);
         }
 
         // 5. 결과 합치기

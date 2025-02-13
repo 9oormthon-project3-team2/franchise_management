@@ -2,9 +2,7 @@ package com.goorm.friendchise.domain.headquarter.commercialarea;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
@@ -18,6 +16,8 @@ import java.math.BigDecimal;
                 @Index(name = "geom", columnList = "geom")
         }
 )
+@Builder
+@AllArgsConstructor
 public class CommercialArea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

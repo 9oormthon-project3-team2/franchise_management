@@ -49,9 +49,6 @@ dependencies {
 
     // spatial query
     implementation 'org.hibernate.orm:hibernate-spatial'
-
-    // WebClient mocking을 위한 mockwebserver
-    testImplementation 'com.squareup.okhttp3:mockwebserver:5.0.0-alpha.14'
 }
 
 tasks.named('test') {

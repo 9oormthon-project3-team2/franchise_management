@@ -2,6 +2,7 @@ package com.goorm.friendchise.domain.headquarter.application;
 
 import com.goorm.friendchise.domain.headquarter.commercialarea.CommercialArea;
 import com.goorm.friendchise.domain.headquarter.commercialarea.CommercialAreaRepository;
+import com.goorm.friendchise.domain.headquarter.commercialarea.CommercialAreaService;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.StoreRecommendReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
@@ -16,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class StoreRecommendationService {
     private final KakaoApiService kakaoApiService;
     private final OpenAiApiService openAiApiService;
-    private final CommercialAreaRepository commercialAreaRepository;
+    private final CommercialAreaService commercialAreaService;
     private final HeadquarterService headquarterService;
 
     /*
@@ -37,7 +37,7 @@ public class StoreRecommendationService {
     public ChatCompletionResponseDto getRecommendation(StoreRecommendReqDto req) {
         // franchiseName, category, subCategory SecurityContextHolder 에서 가져와서 keyword로 사용
         StringBuilder sb = new StringBuilder();
-        CommercialArea area = getCommercialArea(req.x(), req.y());
+        CommercialArea area = commercialAreaService.getCommercialArea(req.x(), req.y());
         sb.append("m² 당 임대료: ").append(area.getRentalFee()).append("\n");
         
         Headquarter headquarter = headquarterService.getHeadquarterByContext();
@@ -71,16 +71,7 @@ public class StoreRecommendationService {
         String data = sb.toString();
         log.info("openAi api에 사용될 데이터 메시지: {}", data);
 
-        return openAiApiService.requestChatCompletionApi(data);
-    }
-
-    private CommercialArea getCommercialArea(double x, double y) {
-        String point = String.format("POINT(%f %f)", y, x);
-        List<CommercialArea> area = commercialAreaRepository.findByPoint(point);
-        if(area.isEmpty()) {
-            throw new CustomException(ErrorCode.REGION_NOT_SUPPORTED);
-        }
-        return area.get(0);
+        return openAiApiService.requestChatCompletion(data);
     }
 
     private static List<String> getUserSelectedCategory(StoreRecommendReqDto req) {
