@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,9 +61,11 @@ public class StoreRecommendationService {
         // 카카오 API로부터 받아온 데이터를 OpenAI API에 넘길 데이터로 파싱
         totalPlaceData.forEach((key, value) -> {
             List<KakaoPlaceDto> documents = value.documents();
-            sb.append(key).append(": [");
-            documents.stream().map(KakaoPlaceDto::distance).forEach(distance -> sb.append(distance).append(", "));
-            sb.append("]\n");
+            String distances = documents.stream()
+                    .map(KakaoPlaceDto::distance)
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(", "));
+            sb.append(key).append(": [").append(distances).append("]\n");
         });
 
         String data = sb.toString();
