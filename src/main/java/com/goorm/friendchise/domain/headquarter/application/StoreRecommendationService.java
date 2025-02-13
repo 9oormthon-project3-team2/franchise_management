@@ -37,8 +37,7 @@ public class StoreRecommendationService {
         // franchiseName, category, subCategory SecurityContextHolder 에서 가져와서 keyword로 사용
         StringBuilder sb = new StringBuilder();
         CommercialArea area = getCommercialArea(req.x(), req.y());
-        BigDecimal rentalFee = area.getRentalFee();
-        sb.append("m² 당 임대료: ").append(rentalFee).append("\n");
+        sb.append("m² 당 임대료: ").append(area.getRentalFee()).append("\n");
         
         Headquarter headquarter = headquarterService.getHeadquarterByContext();
 
@@ -57,6 +56,8 @@ public class StoreRecommendationService {
         }
 
         Map<String, KakaoApiResultDto> totalPlaceData = mono.block();
+
+        // 카카오 API로부터 받아온 데이터를 OpenAI API에 넘길 데이터로 파싱
         totalPlaceData.forEach((key, value) -> {
             List<KakaoPlaceDto> documents = value.documents();
             sb.append(key).append(": [");
@@ -69,23 +70,6 @@ public class StoreRecommendationService {
 
         return openAiApiService.requestChatCompletionApi(data);
     }
-
-//    /*
-//     * 카카오 API로부터 받은 데이터와 임대료 데이터를 사용하여 사용자 역할 메시지(질문)를 생성한다.
-//     * @param req 사용자의 좌표
-//     * @param totalPlaceData 사용자의 좌표를 기준으로 가져온 주변 매장 데이터
-//     * @return StringBuilder
-//     */
-//    private StringBuilder appendData(double x, double y, Map<String, KakaoApiResultDto> totalPlaceData) {
-//        StringBuilder sb = new StringBuilder();
-//        totalPlaceData.forEach((key, value) -> {
-//            List<KakaoPlaceDto> documents = value.documents();
-//            sb.append(key).append(": [");
-//            documents.stream().map(KakaoPlaceDto::distance).forEach(distance -> sb.append(distance).append(", "));
-//            sb.append("]\n");
-//        });
-//        return sb;
-//    }
 
     private CommercialArea getCommercialArea(double x, double y) {
         String point = String.format("POINT(%f %f)", y, x);

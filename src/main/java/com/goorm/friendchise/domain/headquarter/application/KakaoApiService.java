@@ -2,6 +2,7 @@ package com.goorm.friendchise.domain.headquarter.application;
 
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
+import com.goorm.friendchise.domain.headquarter.dto.kakaomap.CategoryGroupCode;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -115,13 +116,14 @@ public class KakaoApiService {
 
         // 3. 버스 정류장, 지하철역 검색
         Mono<KakaoApiResultDto> busStopResult = requestPlaceDataByKeywordAsync("버스정류장", y, x, 200);
-        Mono<KakaoApiResultDto> subwayStationResult = requestPlaceDataByKeywordAsync("지하철역", y, x, 500);
+        Mono<KakaoApiResultDto> subwayStationResult = requestPlaceDataByCategoryAsync(CategoryGroupCode.SUBWAY.getCode(), y, x, 500);
         totalSearchResults.put("반경 200m 내 버스정류장", busStopResult);
         totalSearchResults.put("반경 500m 내 지하철역", subwayStationResult);
 
         // 4. 사용자가 선택한 카테고리로 검색
         for(String selectedCategory : userSelectedCategory) {
-            Mono<KakaoApiResultDto> userDefinedResult = requestPlaceDataByKeywordAsync(selectedCategory, y, x, 500);
+            CategoryGroupCode categoryGroupCode = CategoryGroupCode.fromString(selectedCategory);
+            Mono<KakaoApiResultDto> userDefinedResult = requestPlaceDataByCategoryAsync(categoryGroupCode.getCode(), y, x, 500);
             totalSearchResults.put("반경 500m 내 " + selectedCategory, userDefinedResult);
         }
 
