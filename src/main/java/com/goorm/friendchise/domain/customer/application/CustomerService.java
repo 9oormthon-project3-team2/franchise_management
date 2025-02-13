@@ -86,25 +86,20 @@ public class CustomerService {
         return customerRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomerException(ErrorCode.USER_NOT_FOUND));
     }
-    public String findNearestStoreWithCache(CustomerRecommendStoreRequest customerRecommendStoreRequest){
+    public String findNearestStoreWithCache(CustomerRecommendStoreRequest customerRecommendStoreRequest)
+    {
         String address = customerRecommendStoreRequest.address();
 
         String cacheKey = CACHE_PREFIX + address;
         String cachedAddress = redisTemplate.opsForValue().get(cacheKey);
-        if(cachedAddress != null){
-            double elapsedTime = Duration.between(serviceStartTime, Instant.now()).toMillis(); // 실행 시간(ms)
-            log.info("✅ 1차 캐싱 확인됨! 캐시된 매장: " + cachedAddress +"응답시간: " +elapsedTime/1000+"초");
+        if(cachedAddress != null)
+            return logCacheHit("1차",cachedAddress);
 
-            return cachedAddress;
-        }
         int attempt;
         for (attempt = 0; attempt < MAX_RETRY; attempt++) {
             cachedAddress = redisTemplate.opsForValue().get(cacheKey);
-            if (cachedAddress != null) {
-                double elapsedTime = Duration.between(serviceStartTime, Instant.now()).toMillis(); // 실행 시간(ms)
-                log.info("✅ 2차 캐싱 확인됨! 캐시된 매장: " + cachedAddress +"응답시간: " +elapsedTime/1000+"초");
-                return cachedAddress;
-            }
+            if(cachedAddress != null)
+                return logCacheHit("2차",cachedAddress);
 
             String nearestAddress = findNearestStore(address,customerRecommendStoreRequest.franchiseName());
             if (nearestAddress != null) {
@@ -134,11 +129,8 @@ public class CustomerService {
         synchronized (lock){
             try{
                 String cachedAddress = redisTemplate.opsForValue().get(cacheKey);
-                if (cachedAddress != null) {
-                    double elapsedTime = Duration.between(serviceStartTime, Instant.now()).toMillis(); // 실행 시간(ms)
-                    log.info("✅ 3차 캐싱 확인됨! 캐시된 매장: " + cachedAddress +" 응답시간: " +elapsedTime/1000+"초");
-                    return cachedAddress+" cached";
-                }
+                if(cachedAddress != null)
+                    return logCacheHit("3차",cachedAddress);
                 Store nearestStore=calculateNearestStore(address,franchiseName);
                 redisTemplate.opsForValue().set(cacheKey, nearestStore.getAddress(), CACHE_EXPIRATION, TimeUnit.MINUTES);
                 return nearestStore.getAddress();
@@ -165,5 +157,13 @@ public class CustomerService {
                             .orElseThrow(() -> new CustomerException(ErrorCode.NEAR_STORE_NOT_FOUND));
                 })
                 .join();
+    }
+
+    private String logCacheHit(String cacheLevel, String cachedAddress) {
+        double elapsedTime = Duration.between(serviceStartTime, Instant.now()).toMillis(); // 실행 시간(ms)
+        log.info("✅ {} 캐싱 확인됨! 캐시된 매장: {} 응답시간: {}초", cacheLevel, cachedAddress, elapsedTime / 1000);
+        if(cacheLevel.equals("3차"))
+            cachedAddress+=" cached";
+        return cachedAddress;
     }
 }
