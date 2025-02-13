@@ -16,8 +16,15 @@ public class FakePromotionRepository implements PromotionRepository {
 
 	@Override
 	public void save(Promotion promotion) {
-		new Promotion(sequence.getAndIncrement(), promotion.getHeadquarterId(), promotion.getTitle(), promotion.getContent(), LocalDateTime.of(2025, 3, 1, 9, 0), LocalDateTime.of(2025, 3, 7, 20, 0));
-		promotions.add(promotion);
+		Promotion newPromotion = new Promotion(
+			sequence.getAndIncrement(),
+			promotion.getHeadquarterId(),
+			promotion.getTitle(),
+			promotion.getContent(),
+			promotion.getStartDate(),
+			promotion.getEndDate()
+		);
+		promotions.add(newPromotion);
 	}
 
 	@Override

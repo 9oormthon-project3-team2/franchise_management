@@ -42,7 +42,10 @@ public enum ErrorCode {
 	NOT_FOUND_ADDRESS(HttpStatus.BAD_REQUEST, "해당 주소와 관련된 주소를 찾을 수 없습니다."),
 
 	// WebClient
-	WEBCLIENT_ERROR(HttpStatus.BAD_REQUEST, "API 호출 도중 에러가 발생했습니다.");
+	WEBCLIENT_ERROR(HttpStatus.BAD_REQUEST, "API 호출 도중 에러가 발생했습니다."),
+
+	// PROMOTION
+	NO_AUTHENTICATION_ERROR(HttpStatus.BAD_REQUEST, "본사가 아니므로 권한이 없습니다.");
 
 	private final HttpStatus status;
 	private final String message;
