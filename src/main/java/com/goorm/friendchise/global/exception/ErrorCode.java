@@ -18,6 +18,7 @@ public enum ErrorCode {
 	//Customer Error
 	RECOMMEND_API_TIMEOUT(HttpStatus.BAD_REQUEST, "추천 API 호출 중 타임아웃 발생"),
 	UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"알 수 없는 에러"),
+	LOCATION_NOT_FOUND(HttpStatus.NOT_FOUND, "저장되어 있는 위치 정보가 없습니다"),
 	// Auth Error
 	DUPLICATE_LOGIN_ID(HttpStatus.BAD_REQUEST,"중복된 아이디입니다."),
 	INVALID_PASSWORD(HttpStatus.BAD_REQUEST,"유효하지 않은 비밀번호입니다."),

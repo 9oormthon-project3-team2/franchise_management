@@ -32,7 +32,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class CustomerServiceTest {
 
 
         customerService = new CustomerService(customerRepository, bCryptPasswordEncoder,fakeStoreRepository,
-                kaKaoApiService,redisTemplate,authService);
+                kaKaoApiService,redisTemplate,authService,null);
         customerService.create(request);
 
         customer=customerRepository.findByUsername("testUser").orElseThrow();
@@ -141,7 +140,7 @@ public class CustomerServiceTest {
     @Test
     void 로그인_테스트(){
         CustomerLoginRequest customerLoginRequest=new CustomerLoginRequest("testUser","testPassword");
-        TokenResponse rToken =customerService.login(customerLoginRequest);
+        TokenResponse rToken =customerService.login(customerLoginRequest,null);
         assertEquals(rToken.refreshToken(),
                 refreshTokenRepository.findByRefreshToken(rToken.refreshToken()).orElseThrow().getRefreshToken());
     }
