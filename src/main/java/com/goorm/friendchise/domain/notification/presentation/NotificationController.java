@@ -1,14 +1,10 @@
 package com.goorm.friendchise.domain.notification.presentation;
 
-import com.goorm.friendchise.domain.customer.exception.CustomerException;
-import com.goorm.friendchise.domain.manager.domain.Manager;
-import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.notification.application.NotificationManager;
 import com.goorm.friendchise.domain.notification.application.NotificationSseService;
 import com.goorm.friendchise.domain.notification.dto.response.NotificationResponse;
 import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
 import com.goorm.friendchise.global.auth.application.AuthService;
-import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,22 +21,9 @@ public class NotificationController {
 	private final AuthService authService;
 
 	// 스토어 - 해당 스토어에 발생한 알림 조회
-	@GetMapping("/{my}")
+	@GetMapping("/my")
 	public ResponseEntity<List<ReceivedNotificationResponse>> getNotifications() {
-		Manager manager = authService.findManagerByAuth();
-
-		if (manager.getRole() != Role.STORE) {
-			throw new CustomerException(ErrorCode.NO_HEADQUARTER_AUTHENTICATION_ERROR);
-		}
-
-		Long storeId = manager.getManageId();
-
-		if (storeId == null) {
-			throw new CustomerException(ErrorCode.STORE_NOT_FOUND);
-		}
-
-		List<ReceivedNotificationResponse> notifications = notificationManager.getNotificationsByTarget(storeId);
-
+		List<ReceivedNotificationResponse> notifications = notificationManager.getNotifications();
 		return ResponseEntity.ok(notifications);
 	}
 
