@@ -13,6 +13,7 @@ import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,15 +50,25 @@ public class PromotionService {
 		log.info("프로모션 이벤트 발행 완료: {}", promotion.getTitle());
 	}
 
-	public List<PromotionDetailResponse> getPromotionsByHeadquarter(Long headquarterId) {
-		List<Promotion> promotions = promotionRepository.findByHeadquarterId(headquarterId);
-		return promotions.stream()
+	@Transactional(readOnly = true)
+	public ResponseEntity<List<PromotionDetailResponse>> getMyHeadquarterPromotions() {
+		Manager manager = authService.findManagerByAuth();
+		Long headquarterId = manager.getManageId();
+
+		if (headquarterId == null) {
+			throw new IllegalStateException("본사 정보가 없습니다.");
+		}
+
+		List<PromotionDetailResponse> promotions = promotionRepository.findByHeadquarterId(headquarterId).stream()
 			.map(promotion -> PromotionDetailResponse.builder()
 				.id(promotion.getId())
 				.title(promotion.getTitle())
 				.content(promotion.getContent())
 				.startDate(promotion.getStartDate())
 				.endDate(promotion.getEndDate())
-				.build()).collect(Collectors.toList());
+				.build())
+			.collect(Collectors.toList());
+
+		return ResponseEntity.ok(promotions);
 	}
 }

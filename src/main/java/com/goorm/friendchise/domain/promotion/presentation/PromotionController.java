@@ -21,9 +21,8 @@ public class PromotionController {
 		return ResponseEntity.ok("프로모션이 성공적으로 생성되었습니다.");
 	}
 
-	@GetMapping("/headquarter/{headquarterId}")
-	public ResponseEntity<List<PromotionDetailResponse>> getPromotionsByHeadquarter(@PathVariable Long headquarterId) {
-		List<PromotionDetailResponse> promotions = promotionService.getPromotionsByHeadquarter(headquarterId);
-		return ResponseEntity.ok(promotions);
+	@GetMapping("/my")
+	public ResponseEntity<List<PromotionDetailResponse>> getMyHeadquarterPromotions() {
+		return promotionService.getMyHeadquarterPromotions();
 	}
 }
