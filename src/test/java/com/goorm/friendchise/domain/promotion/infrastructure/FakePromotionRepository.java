@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class FakePromotionRepository implements PromotionRepository {
 	private final List<Promotion> promotions = Collections.synchronizedList(new ArrayList<>());
@@ -40,5 +41,12 @@ public class FakePromotionRepository implements PromotionRepository {
 	@Override
 	public void delete(Long id) {
 		promotions.removeIf(promotion -> promotion.getId().equals(id));
+	}
+
+	@Override
+	public List<Promotion> findByHeadquarterId(Long headquarterId) {
+		return promotions.stream()
+			.filter(promotion -> promotion.getHeadquarterId().equals(headquarterId))
+			.collect(Collectors.toList());
 	}
 }
