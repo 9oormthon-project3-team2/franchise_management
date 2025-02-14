@@ -35,6 +35,7 @@ public enum ErrorCode {
 	FRANCHISE_SUBCATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 하위 카테고리입니다."),
 	COORDINATE_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "좌표에 해당하는 행정동을 찾을 수 없습니다."),
 	REGION_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "매장 입점 추천 서비스를 지원하지 않는 지역입니다."),
+	INFRA_CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 주변 인프라 탐색 카테고리를 찾을 수 없습니다."),
 
 	// STORE
 	STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 매장을 찾을 수 없습니다."),

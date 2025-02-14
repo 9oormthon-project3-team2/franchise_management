@@ -41,11 +41,9 @@ public class HeadquarterService {
 
     @Transactional(readOnly = true)
     public HeadquarterResDto getHeadquarter() {
-        Manager currentManager = getCurrentManager();
-        Headquarter headquarter = findHeadquarterById(currentManager);
+        Headquarter headquarter = getHeadquarterByContext();
         return HeadquarterResDto.from(headquarter);
     }
-
 
 
     @Transactional
@@ -72,11 +70,16 @@ public class HeadquarterService {
 
     @Transactional(readOnly = true)
     public List<StoreIdDto> getStoreIdList(Long id) {
-        Manager currentManager = getCurrentManager();
-        Headquarter headquarter = findHeadquarterById(currentManager);
+        Headquarter headquarter = getHeadquarterByContext();
         return headquarter.getStores().stream()
                 .map(store -> StoreIdDto.of(store.getId()))
                 .toList();
+    }
+
+    public Headquarter getHeadquarterByContext() {
+        Manager currentManager = getCurrentManager();
+        Headquarter headquarter = findHeadquarterById(currentManager);
+        return headquarter;
     }
 
     private void checkIfFranchiseNameExists(HeadquarterReqDto headquarterReqDto) {

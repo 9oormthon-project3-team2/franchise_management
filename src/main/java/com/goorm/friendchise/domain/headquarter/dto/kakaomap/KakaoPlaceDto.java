@@ -9,11 +9,6 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record KakaoPlaceDto(
-        String placeName,
-        String addressName,
-        String distance,
-        String categoryGroupName,
-        String x,
-        String y
+        String distance
 ) {
 }
