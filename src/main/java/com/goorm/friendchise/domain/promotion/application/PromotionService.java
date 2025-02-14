@@ -1,9 +1,14 @@
 package com.goorm.friendchise.domain.promotion.application;
 
+import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.promotion.domain.Promotion;
 import com.goorm.friendchise.domain.promotion.domain.PromotionRepository;
 import com.goorm.friendchise.domain.notification.event.PromotionCreatedEvent;
 import com.goorm.friendchise.domain.promotion.dto.request.PromotionCreateRequest;
+import com.goorm.friendchise.global.auth.application.AuthService;
+import com.goorm.friendchise.global.exception.CustomException;
+import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -17,9 +22,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class PromotionService {
 	private final PromotionRepository promotionRepository;
 	private final ApplicationEventPublisher eventPublisher;
+	private final AuthService authService;
 
 	public void createPromotion(PromotionCreateRequest request) {
-		Promotion promotion = Promotion.create(request.headquarterId(), request.title(), request.content(), request.startDate(), request.endDate());
+		Manager manager = authService.findManagerByAuth();
+
+		if (manager.getRole() != Role.HEADQUARTER) {
+			throw new CustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
+		}
+
+		Long headquarterId = manager.getManageId();
+
+		if (headquarterId == null) {
+			throw new CustomException(ErrorCode.HEADQUARTER_NOT_FOUND);
+		}
+
+		Promotion promotion = Promotion.create(headquarterId, request.title(), request.content(), request.startDate(), request.endDate());
 		promotionRepository.save(promotion);
 
 		log.info("프로모션 저장 완료: {}", promotion.getTitle());

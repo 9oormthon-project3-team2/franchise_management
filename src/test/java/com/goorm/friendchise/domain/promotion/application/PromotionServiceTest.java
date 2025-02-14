@@ -1,10 +1,13 @@
 package com.goorm.friendchise.domain.promotion.application;
 
+import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.promotion.domain.Promotion;
 import com.goorm.friendchise.domain.promotion.domain.PromotionRepository;
 import com.goorm.friendchise.domain.notification.event.PromotionCreatedEvent;
 import com.goorm.friendchise.domain.promotion.dto.request.PromotionCreateRequest;
 import com.goorm.friendchise.domain.promotion.infrastructure.FakePromotionRepository;
+import com.goorm.friendchise.global.auth.application.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,36 +23,72 @@ class PromotionServiceTest {
 	private PromotionService promotionService;
 	private PromotionRepository promotionRepository;
 	private ApplicationEventPublisher eventPublisher;
+	private AuthService authService;
+	private Manager headquarterManager;
+	private Manager storeManager;
 
 	@BeforeEach
 	void setUp() {
 		promotionRepository = new FakePromotionRepository();
 		eventPublisher = mock(ApplicationEventPublisher.class);
-		promotionService = new PromotionService(promotionRepository, eventPublisher);
+		authService = mock(AuthService.class);
+		promotionService = new PromotionService(promotionRepository, eventPublisher, authService);
+
+		headquarterManager = Manager.builder()
+			.username("testHQ")
+			.password("testHQ")
+			.role(Role.HEADQUARTER)
+			.manageId(1L)
+			.build();
+
+		storeManager = Manager.builder()
+			.username("testST")
+			.password("testST")
+			.role(Role.STORE)
+			.manageId(2L)
+			.build();
 	}
 
 	@Test
-	void createPromotion_success() {
-		// given
+	void 본사_관리자가_프로모션_생성_성공() {
+		when(authService.findManagerByAuth()).thenReturn(headquarterManager);
+
 		PromotionCreateRequest request = new PromotionCreateRequest(
-			1L, "깜짝적 봄맞이 할인 이벤트", "전 제품 30% 할인!",
+			"깜짝 봄맞이 할인 이벤트", "전 제품 30% 할인!",
 			LocalDateTime.of(2025, 3, 1, 9, 0),
 			LocalDateTime.of(2025, 3, 7, 23, 59)
 		);
 
-		// when
+		// When
 		promotionService.createPromotion(request);
 
-		// then
+		// Then
 		List<Promotion> promotions = promotionRepository.findAll();
 		assertThat(promotions).hasSize(1);
-		assertThat(promotions.get(0).getTitle()).isEqualTo("깜짝적 봄맞이 할인 이벤트");
+		assertThat(promotions.get(0).getTitle()).isEqualTo("깜짝 봄맞이 할인 이벤트");
 
 		// 이벤트가 정상적으로 발행되었는지 검증
 		ArgumentCaptor<PromotionCreatedEvent> eventCaptor = ArgumentCaptor.forClass(PromotionCreatedEvent.class);
 		verify(eventPublisher, times(1)).publishEvent(eventCaptor.capture());
 
 		PromotionCreatedEvent event = eventCaptor.getValue();
-		assertThat(event.getPromotion().getTitle()).isEqualTo("깜짝적 봄맞이 할인 이벤트");
+		assertThat(event.getPromotion().getTitle()).isEqualTo("깜짝 봄맞이 할인 이벤트");
+	}
+
+	@Test
+	void 본사_권한이_없는_사용자는_프로모션_생성_실패() {
+		// Given (매장 관리자)
+		when(authService.findManagerByAuth()).thenReturn(storeManager);
+
+		PromotionCreateRequest request = new PromotionCreateRequest(
+			"비정상 할인 이벤트", "허위 이벤트",
+			LocalDateTime.of(2025, 3, 1, 9, 0),
+			LocalDateTime.of(2025, 3, 7, 23, 59)
+		);
+
+		// When & Then (예외 발생 확인)
+		assertThatThrownBy(() -> promotionService.createPromotion(request))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("본사가 아니므로 권한이 없습니다.");
 	}
 }

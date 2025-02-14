@@ -65,6 +65,7 @@ public class HeadquarterService {
         findIfMine(headquarter, currentManager);
 
         headquarterRepository.deleteById(currentManager.getManageId());
+        currentManager.updateManageId(null);
     }
 
     @Transactional(readOnly = true)

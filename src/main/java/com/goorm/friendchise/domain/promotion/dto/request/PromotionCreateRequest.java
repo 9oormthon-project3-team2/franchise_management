@@ -10,10 +10,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 @Builder
 public record PromotionCreateRequest(
-	@Schema(description = "본사 ID", example = "101L", requiredMode = REQUIRED)
-	@NotNull
-	Long headquarterId,
-
 	@Schema(description = "프로모션 이름", example = "깜짝 할인", requiredMode = REQUIRED)
 	@NotNull
 	String title,
