@@ -46,7 +46,10 @@ public enum ErrorCode {
 	WEBCLIENT_ERROR(HttpStatus.BAD_REQUEST, "API 호출 도중 에러가 발생했습니다."),
 
 	// PROMOTION
-	NO_AUTHENTICATION_ERROR(HttpStatus.BAD_REQUEST, "본사가 아니므로 권한이 없습니다.");
+	NO_HEADQUARTER_AUTHENTICATION_ERROR(HttpStatus.BAD_REQUEST, "본사가 아니므로 권한이 없습니다."),
+
+	// NOTIFICATION
+	NO_STORE_AUTHENTICATION_ERROR(HttpStatus.BAD_REQUEST, "스토어가 아니므로 권한이 없습니다.");
 
 	private final HttpStatus status;
 	private final String message;
