@@ -28,7 +28,7 @@ public class PromotionService {
 		Manager manager = authService.findManagerByAuth();
 
 		if (manager.getRole() != Role.HEADQUARTER) {
-			throw new CustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
+			throw new CustomException(ErrorCode.NO_HEADQUARTER_AUTHENTICATION_ERROR);
 		}
 
 		Long headquarterId = manager.getManageId();
