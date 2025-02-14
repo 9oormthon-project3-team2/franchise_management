@@ -6,6 +6,7 @@ import com.goorm.friendchise.domain.promotion.domain.Promotion;
 import com.goorm.friendchise.domain.promotion.domain.PromotionRepository;
 import com.goorm.friendchise.domain.notification.event.PromotionCreatedEvent;
 import com.goorm.friendchise.domain.promotion.dto.request.PromotionCreateRequest;
+import com.goorm.friendchise.domain.promotion.dto.response.PromotionDetailResponse;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
@@ -14,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,5 +47,17 @@ public class PromotionService {
 		log.info("프로모션 저장 완료: {}", promotion.getTitle());
 		eventPublisher.publishEvent(new PromotionCreatedEvent(promotion));
 		log.info("프로모션 이벤트 발행 완료: {}", promotion.getTitle());
+	}
+
+	public List<PromotionDetailResponse> getPromotionsByHeadquarter(Long headquarterId) {
+		List<Promotion> promotions = promotionRepository.findByHeadquarterId(headquarterId);
+		return promotions.stream()
+			.map(promotion -> PromotionDetailResponse.builder()
+				.id(promotion.getId())
+				.title(promotion.getTitle())
+				.content(promotion.getContent())
+				.startDate(promotion.getStartDate())
+				.endDate(promotion.getEndDate())
+				.build()).collect(Collectors.toList());
 	}
 }
