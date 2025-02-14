@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Role {
 	HEADQUARTER("본사"),
-	STORE("매장");
-
+	STORE("매장"),
+	USER("USER");
 	private final String description;
 }

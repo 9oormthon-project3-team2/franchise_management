@@ -1,14 +1,19 @@
 package com.goorm.friendchise.domain.customer.domain;
 
 
+import com.goorm.friendchise.domain.manager.exception.PasswordNotMatchException;
 import com.goorm.friendchise.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.util.HashSet;
-import java.util.Set;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.*;
 
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -19,7 +24,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class Customer extends BaseEntity {
+public class Customer extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -35,4 +40,15 @@ public class Customer extends BaseEntity {
     private Set<Achievement> achievements = new HashSet<>();
 
     public void updatePassword(String password) {this.password=password;}
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("USER"));
+    }
+
+    public void isPasswordMatch(String inputPassword, PasswordEncoder passwordEncoder) {
+        if (!passwordEncoder.matches(inputPassword, this.password)) {
+            throw new PasswordNotMatchException();
+        }
+    }
 }

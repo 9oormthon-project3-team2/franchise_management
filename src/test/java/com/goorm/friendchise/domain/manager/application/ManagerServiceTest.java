@@ -1,5 +1,7 @@
 package com.goorm.friendchise.domain.manager.application;
 
+import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
+import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
@@ -47,9 +49,10 @@ class ManagerServiceTest {
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
+		CustomerRepository customerRepository = new FakeCustomerRepository();
 		this.headquarterRepository = new FakeHeadquarterRepository();
 		AuthService authService = new AuthService(managerRepository, tokenProvider,
-			refreshTokenRepository, headquarterRepository);
+			refreshTokenRepository, headquarterRepository,customerRepository);
 		managerService = new ManagerService(managerRepository, bCryptPasswordEncoder,
 			authService, headquarterRepository);
 

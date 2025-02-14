@@ -3,13 +3,25 @@ package com.goorm.friendchise.domain.customer.application;
 import com.goorm.friendchise.domain.customer.domain.Customer;
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
 import com.goorm.friendchise.domain.customer.dto.request.CustomerCreateRequest;
+import com.goorm.friendchise.domain.customer.dto.request.CustomerLoginRequest;
 import com.goorm.friendchise.domain.customer.dto.request.CustomerRecommendStoreRequest;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerDetailResponse;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerPersistResponse;
 import com.goorm.friendchise.domain.customer.exception.CustomerException;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeStoreRepository;
+import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
+import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
+import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
+import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
 import com.goorm.friendchise.domain.redis.config.RedisConfigTest;
+import com.goorm.friendchise.global.auth.application.AuthService;
+import com.goorm.friendchise.global.auth.domain.RefreshToken;
+import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
+import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
+import com.goorm.friendchise.global.auth.infrastructure.FakeRefreshTokenRepository;
+import com.goorm.friendchise.global.auth.jwt.JwtProperties;
+import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import com.goorm.friendchise.global.config.WebClientConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
@@ -28,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 @DataRedisTest // Redis 관련 설정만 로드
-@Import({RedisConfigTest.class,WebClientConfig.class, KaKaoApiService.class})
+@Import({RedisConfigTest.class,WebClientConfig.class,KaKaoApiService.class,TokenProvider.class,JwtProperties.class})
 // 테스트용 Redis 설정만 Import
 public class CustomerServiceTest {
     private CustomerService customerService;
@@ -36,20 +52,38 @@ public class CustomerServiceTest {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
-
+    private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     private KaKaoApiService kaKaoApiService;
+    @Autowired
+    private TokenProvider tokenProvider;
     @BeforeEach
     void setUp() {
         CustomerRepository customerRepository = new FakeCustomerRepository();
+        ManagerRepository managerRepository = new FakeManagerRepository();
         FakeStoreRepository fakeStoreRepository = new FakeStoreRepository();
-        FakeKaKaoApiService fakeKaKaoApiService = new FakeKaKaoApiService();
         bCryptPasswordEncoder = new BCryptPasswordEncoder();
         CustomerCreateRequest request=new CustomerCreateRequest("testUser","testPassword");
-        customerService = new CustomerService(customerRepository, bCryptPasswordEncoder,fakeStoreRepository,kaKaoApiService,redisTemplate);
+        HeadquarterRepository headquarterRepository=new FakeHeadquarterRepository();
+        refreshTokenRepository = new FakeRefreshTokenRepository();
+
+
+
+        AuthService authService = new AuthService(managerRepository, tokenProvider,
+                refreshTokenRepository, headquarterRepository,customerRepository);
+
+
+        customerService = new CustomerService(customerRepository, bCryptPasswordEncoder,fakeStoreRepository,
+                kaKaoApiService,redisTemplate,authService);
         customerService.create(request);
+
         customer=customerRepository.findByUsername("testUser").orElseThrow();
 
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(
+                new UsernamePasswordAuthenticationToken(customer, customer.getUsername(), customer.getAuthorities())
+        );
     }
 
     @Test
@@ -76,34 +110,43 @@ public class CustomerServiceTest {
     @Test
     void 비밀번호_업데이트_성공_(){
 
-        customerService.updatePassword("testUser","newPassword");
+        customerService.updatePassword("newPassword");
         assertTrue(bCryptPasswordEncoder.matches("newPassword", customer.getPassword()));
 
     }
 
     @Test
     void 비밀번호_업데이트_실패_null(){
-        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser",null));
+        assertThrows(CustomerException.class, () -> customerService.updatePassword(null));
 
     }
 
     @Test
     void 비밀번호_업데이트_실패_Blank_값(){
-        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser",""));
+        assertThrows(CustomerException.class, () -> customerService.updatePassword(""));
 
     }
     @Test
     void 비밀번호_업데이트_실패_공백이있음(){
-        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser","new Password"));
+        assertThrows(CustomerException.class, () -> customerService.updatePassword("new Password"));
 
     }
     @Test
     void 비밀번호_업데이트_실패_길이제한(){
-        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser","nesdsdsddsPassword"));
-        assertThrows(CustomerException.class, () -> customerService.updatePassword("testUser","123"));
+        assertThrows(CustomerException.class, () -> customerService.updatePassword("nesdsdsddsPassword"));
+        assertThrows(CustomerException.class, () -> customerService.updatePassword("123"));
 
 
     }
+    @Test
+    void 로그인_테스트(){
+        CustomerLoginRequest customerLoginRequest=new CustomerLoginRequest("testUser","testPassword");
+        TokenResponse rToken =customerService.login(customerLoginRequest);
+        assertEquals(rToken.refreshToken(),
+                refreshTokenRepository.findByRefreshToken(rToken.refreshToken()).orElseThrow().getRefreshToken());
+    }
+
+
 
     @Test
     void testConcurrentFindNearestStoreWithCache() throws InterruptedException {
