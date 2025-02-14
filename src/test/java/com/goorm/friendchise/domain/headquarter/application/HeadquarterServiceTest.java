@@ -1,5 +1,7 @@
 package com.goorm.friendchise.domain.headquarter.application;
 
+import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
+import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
@@ -39,14 +41,14 @@ class HeadquarterServiceTest {
 	private HeadquarterRepository headquarterRepository;
 	private AuthService authService;
 	private ManagerRepository managerRepository;
-
 	@BeforeEach
 	void setup() {
 		headquarterRepository = new FakeHeadquarterRepository();
 		managerRepository = new FakeManagerRepository();
+		CustomerRepository customerRepository = new FakeCustomerRepository();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
-		authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository);
+		authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository,customerRepository);
 		headquarterService = new HeadquarterService(authService, headquarterRepository);
 	}
 

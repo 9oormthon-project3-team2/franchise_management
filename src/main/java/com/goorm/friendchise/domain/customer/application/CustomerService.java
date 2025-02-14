@@ -12,6 +12,8 @@ import com.goorm.friendchise.domain.customer.exception.CustomerException;
 import com.goorm.friendchise.domain.store.application.StoreService;
 import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
+import com.goorm.friendchise.global.auth.application.AuthService;
+import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.global.auth.util.DistanceCalculator;
 import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +49,7 @@ public class CustomerService {
     private static final int MAX_RETRY = 5; // 최대 재시도 횟수
     private static final long CACHE_EXPIRATION = 10; // 캐싱 지속 시간 (분)
     private static final String CACHE_PREFIX = "nearestStore:";
+    private final AuthService authService;
     // 🕒 서비스 실행 시작 시간
     private Instant serviceStartTime = Instant.now();
 
@@ -62,19 +65,22 @@ public class CustomerService {
         return CustomerPersistResponse.of(customer);
     }
 
-    public CustomerTokenResponse login(CustomerLoginRequest request) {
-        return CustomerTokenResponse.of("", "");
+    public TokenResponse login(CustomerLoginRequest request) {
+        Customer customer =findCustomerByUsername(request.username());
+        customer.isPasswordMatch(request.password(), bCryptPasswordEncoder);
+        return authService.customerLogin(customer);
     }
 
     public CustomerDetailResponse detail(String username)
     {
-        return CustomerDetailResponse.from(findCustomerByUsername(username));
+        Customer customer =findCustomerByUsername(username);
+        return CustomerDetailResponse.from(customer);
     }
 
     @Transactional
-    public void updatePassword(String username, String newPassword)
+    public void updatePassword(String newPassword)
     {
-        Customer customer=findCustomerByUsername(username);
+        Customer customer=authService.findCustomerByAuth();
         if (newPassword == null || newPassword.isBlank()||newPassword.contains(" ")||newPassword.length()>15||newPassword.length()<8) {
             throw new CustomerException(ErrorCode.INVALID_PASSWORD);
         }

@@ -99,7 +99,7 @@ public class TokenProvider {
 		if (role.equals("STORE")) {
 			return Collections.singleton(new SimpleGrantedAuthority("ROLE_STORE"));
 		}
-		return Collections.singleton(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
+		return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 	}
 
 	public String getUsername(String token) {
