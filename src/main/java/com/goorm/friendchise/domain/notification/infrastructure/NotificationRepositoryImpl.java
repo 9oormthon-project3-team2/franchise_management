@@ -20,8 +20,8 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 	}
 
 	@Override
-	public List<Notification> findByTargetId(Long targetId) {
-		return jpaNotificationRepository.findByTargetId(targetId);
+	public List<Notification> findByStoreId(Long storeId) {
+		return jpaNotificationRepository.findByStoreId(storeId);
 	}
 
 	@Override
