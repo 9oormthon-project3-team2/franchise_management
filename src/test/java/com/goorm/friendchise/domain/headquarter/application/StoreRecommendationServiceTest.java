@@ -13,6 +13,7 @@ import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionRespons
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto.Choice;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatMessage;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -50,6 +51,7 @@ class StoreRecommendationServiceTest {
 
     // 이게 맞는건지 모르겠다...
     @Test
+    @DisplayName("매장 입점 추천 여부를 받아온다.")
     void getRecommendation() {
         // given
         given(commercialAreaService.getCommercialArea(anyDouble(), anyDouble())).willReturn(CommercialArea.builder()
