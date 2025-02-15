@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class NotificationSseService {
+public class NotificationSseSender {
 	private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
 	public void sendSse(Long targetId, String title, String content) {

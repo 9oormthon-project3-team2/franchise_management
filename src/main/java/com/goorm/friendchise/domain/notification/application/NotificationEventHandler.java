@@ -17,7 +17,7 @@ import java.util.List;
 public class NotificationEventHandler {
 	private final HeadquarterService headquarterService;
 	private final NotificationManager notificationManager;
-	private final NotificationSseService notificationSseService;
+	private final NotificationSseSender notificationSseSender;
 
 	@EventListener
 	public void handlePromotionCreated(PromotionCreatedEvent promotion) {

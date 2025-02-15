@@ -1,7 +1,7 @@
 package com.goorm.friendchise.domain.notification.presentation;
 
 import com.goorm.friendchise.domain.notification.application.NotificationManager;
-import com.goorm.friendchise.domain.notification.application.NotificationSseService;
+import com.goorm.friendchise.domain.notification.application.NotificationSseSender;
 import com.goorm.friendchise.domain.notification.dto.response.NotificationResponse;
 import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
 	private final NotificationManager notificationManager;
-	private final NotificationSseService notificationSseService;
+	private final NotificationSseSender notificationSseSender;
 
 	// 스토어 - 해당 스토어에 발생한 알림 조회
 	@GetMapping("/my")
@@ -42,6 +42,6 @@ public class NotificationController {
 	// SSE 구독 (매장 실시간 알림 받기)
 	@GetMapping("/subscribe/{targetId}")
 	public SseEmitter subscribe(@PathVariable("targetId") Long targetId) {
-		return notificationSseService.subscribe(targetId);
+		return notificationSseSender.subscribe(targetId);
 	}
 }
