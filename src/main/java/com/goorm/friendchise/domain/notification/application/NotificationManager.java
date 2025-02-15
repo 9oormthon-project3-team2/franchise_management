@@ -24,16 +24,12 @@ public class NotificationManager {
 	private final NotificationRepository repository;
 	private final AuthService authService;
 
-	private Manager getAuthManager() {
-		return authService.findManagerByAuth();
-	}
-
 	private Manager getAuthStoreManager() {
-		Manager authManager = getAuthManager();
-		if (authManager.getRole() != Role.STORE) {
+		Manager manager = authService.findManagerByAuth();
+		if (manager.getRole() != Role.STORE) {
 			throw new CustomException(ErrorCode.NO_STORE_AUTHENTICATION_ERROR);
 		}
-		return authManager;
+		return manager;
 	}
 
 	public List<Notification> createNotifications(List<StoreIdDto> storeIds, String title, String content) {
