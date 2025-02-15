@@ -2,15 +2,15 @@ package com.goorm.friendchise.domain.notification.presentation;
 
 import com.goorm.friendchise.domain.notification.application.NotificationManager;
 import com.goorm.friendchise.domain.notification.application.NotificationSseService;
-import com.goorm.friendchise.domain.notification.dto.response.NotificationDetailResponse;
 import com.goorm.friendchise.domain.notification.dto.response.NotificationResponse;
+import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
+import com.goorm.friendchise.global.auth.application.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/notifications")
@@ -18,11 +18,12 @@ import java.util.stream.Collectors;
 public class NotificationController {
 	private final NotificationManager notificationManager;
 	private final NotificationSseService notificationSseService;
+	private final AuthService authService;
 
-	// 특정 targetId에 대한 알림 목록 조회 API
-	@GetMapping("/{targetId}")
-	public ResponseEntity<List<NotificationDetailResponse>> getNotifications(@PathVariable("targetId") Long targetId) {
-		List<NotificationDetailResponse> notifications = notificationManager.getNotificationsByTarget(targetId);
+	// 스토어 - 해당 스토어에 발생한 알림 조회
+	@GetMapping("/my")
+	public ResponseEntity<List<ReceivedNotificationResponse>> getNotifications() {
+		List<ReceivedNotificationResponse> notifications = notificationManager.getNotifications();
 		return ResponseEntity.ok(notifications);
 	}
 

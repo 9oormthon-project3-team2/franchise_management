@@ -1,25 +1,33 @@
 package com.goorm.friendchise.domain.notification.application;
 
 import com.goorm.friendchise.domain.headquarter.dto.store.StoreIdDto;
+import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.notification.domain.Notification;
 import com.goorm.friendchise.domain.notification.dto.response.NotificationDetailResponse;
+import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
 import com.goorm.friendchise.domain.notification.infrastructure.FakeNotificationRepository;
+import com.goorm.friendchise.global.auth.application.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 class NotificationManagerTest {
 	private NotificationManager notificationManager;
 	private FakeNotificationRepository repository;
+	private AuthService authService;
 
 	@BeforeEach
 	void setUp() {
 		repository = new FakeNotificationRepository();
-		notificationManager = new NotificationManager(repository);
+		authService = Mockito.mock(AuthService.class);
+		notificationManager = new NotificationManager(repository, authService);
 	}
 
 	@Test
@@ -39,19 +47,30 @@ class NotificationManagerTest {
 	}
 
 	@Test
-	@DisplayName("특정 타겟 ID로 알림을 조회할 수 있다.")
-	void getNotificationsByTarget() {
+	@DisplayName("로그인한 스토어 인증을 통해 알림을 조회할 수 있다")
+	void getNotifications() {
 		// Given
-		Notification notification1 = repository.save(Notification.create(10101L, "Title1", "Content1"));
-		Notification notification2 = repository.save(Notification.create(10101L, "Title2", "Content2"));
-		Notification notification3 = repository.save(Notification.create(10102L, "Title2", "Content2"));
+		Long storeId = 101L; // 테스트할 매장 ID
+		Manager mockManager = Manager.builder()
+			.manageId(storeId)
+			.role(Role.STORE)
+			.build();
+
+		when(authService.findManagerByAuth()).thenReturn(mockManager);
+
+		repository.save(Notification.create(101L, "Title1", "Content1"));
+		repository.save(Notification.create(101L, "Title2", "Content2"));
+		repository.save(Notification.create(102L, "Title3", "Content3")); // 다른 스토어 ID
 
 		// When
-		List<NotificationDetailResponse> foundNotifications = notificationManager.getNotificationsByTarget(10101L);
+		List<ReceivedNotificationResponse> foundNotifications = notificationManager.getNotifications();
 
 		// Then
-		assertThat(foundNotifications).hasSize(2);
+		assertThat(foundNotifications).hasSize(2); // storeId=101L인 알림만 조회됨
+		assertThat(foundNotifications).extracting("title").contains("Title1", "Title2");
+		verify(authService, times(1)).findManagerByAuth(); // 인증 메서드가 1회 호출되었는지 검증
 	}
+
 
 	@Test
 	@DisplayName("알림을 읽음 처리할 수 있다.")

@@ -9,6 +9,9 @@ public record ReceivedNotificationResponse(
 	String title,
 
 	@Schema(description = "알림 내용", example = "치킨 50% 할인")
-	String content
+	String content,
+
+	@Schema(description = "읽음 여부", example = "읽음")
+	Boolean isRead
 ) {
 }
