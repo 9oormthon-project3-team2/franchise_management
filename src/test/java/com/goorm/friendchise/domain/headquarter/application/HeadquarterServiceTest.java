@@ -48,7 +48,7 @@ class HeadquarterServiceTest {
 		CustomerRepository customerRepository = new FakeCustomerRepository();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
-		authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository,customerRepository);
+		authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository, customerRepository);
 		headquarterService = new HeadquarterService(authService, headquarterRepository);
 	}
 

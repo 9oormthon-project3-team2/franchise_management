@@ -49,9 +49,9 @@ public class HeadquarterController {
         return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping("/{id}/item/register")
-    public ResponseEntity<List<ItemResDto>> createItems(@PathVariable Long headquarterId ,@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
-        return ResponseEntity.ok().body(itemService.createItems(headquarterId, itemReqDtoList));
+    @PostMapping("/item/register")
+    public ResponseEntity<List<ItemResDto>> createItems(@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
+        return ResponseEntity.ok().body(itemService.createItems(itemReqDtoList));
     }
 
     @PostMapping("/store-recommendation")
