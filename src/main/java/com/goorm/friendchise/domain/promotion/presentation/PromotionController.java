@@ -22,7 +22,7 @@ public class PromotionController {
 	}
 
 	@GetMapping("/my")
-	public ResponseEntity<List<PromotionDetailResponse>> getMyHeadquarterPromotions() {
-		return promotionService.getMyHeadquarterPromotions();
+	public ResponseEntity<List<PromotionDetailResponse>> getMyPromotions() {
+		return ResponseEntity.ok(promotionService.getMyHeadquarterPromotions());
 	}
 }

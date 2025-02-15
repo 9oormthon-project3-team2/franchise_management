@@ -51,7 +51,7 @@ public class PromotionService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseEntity<List<PromotionDetailResponse>> getMyHeadquarterPromotions() {
+	public List<PromotionDetailResponse> getMyHeadquarterPromotions() {
 		Manager manager = authService.findManagerByAuth();
 		Long headquarterId = manager.getManageId();
 
@@ -59,7 +59,7 @@ public class PromotionService {
 			throw new IllegalStateException("본사 정보가 없습니다.");
 		}
 
-		List<PromotionDetailResponse> promotions = promotionRepository.findByHeadquarterId(headquarterId).stream()
+		return promotionRepository.findByHeadquarterId(headquarterId).stream()
 			.map(promotion -> PromotionDetailResponse.builder()
 				.id(promotion.getId())
 				.title(promotion.getTitle())
@@ -68,7 +68,5 @@ public class PromotionService {
 				.endDate(promotion.getEndDate())
 				.build())
 			.collect(Collectors.toList());
-
-		return ResponseEntity.ok(promotions);
 	}
 }
