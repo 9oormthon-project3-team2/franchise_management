@@ -11,4 +11,6 @@ public interface PromotionRepository {
 	Optional<Promotion> findById(Long id);
 
 	void delete(Long id);
+
+	List<Promotion> findByHeadquarterId(Long headquarterId);
 }

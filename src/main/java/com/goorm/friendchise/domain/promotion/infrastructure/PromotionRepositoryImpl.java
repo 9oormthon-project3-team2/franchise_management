@@ -32,4 +32,9 @@ public class PromotionRepositoryImpl implements PromotionRepository {
 	public void delete(Long id) {
 		jpaPromotionRepository.deleteById(id);
 	}
+
+	@Override
+	public List<Promotion> findByHeadquarterId(Long headquarterId) {
+		return jpaPromotionRepository.findByHeadquarterId(headquarterId);
+	}
 }
