@@ -22,19 +22,22 @@ public class NotificationEventHandler {
 	@EventListener
 	public void handlePromotionCreated(PromotionCreatedEvent promotion) {
 		log.info("프로모션 생성 이벤트 감지 완료: {}", promotion);
+		List<Notification> notifications = processPromotionNotification(promotion);
+		sendNotifications(notifications);
+	}
 
+	private List<Notification> processPromotionNotification(PromotionCreatedEvent promotion) {
 		Long headquarterId = promotion.getPromotion().getHeadquarterId();
 		String title = promotion.getPromotion().getTitle();
 		String content = promotion.getPromotion().getContent();
 
 		List<StoreIdDto> storeIds = headquarterService.getStoreIdList(headquarterId);
+		return notificationManager.createNotifications(storeIds, title, content);
+	}
 
-		// 알림 생성 요청
-		List<Notification> notifications = notificationManager.createNotifications(storeIds, title, content);
-
-		// SSE 전송
+	private void sendNotifications(List<Notification> notifications) {
 		notifications.forEach(notification ->
-			notificationSseService.sendSse(notification.getStoreId(), notification.getTitle(), notification.getContent())
+			notificationSseSender.sendSse(notification.getStoreId(), notification.getTitle(), notification.getContent())
 		);
 	}
 }
