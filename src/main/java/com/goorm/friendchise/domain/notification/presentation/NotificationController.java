@@ -4,7 +4,6 @@ import com.goorm.friendchise.domain.notification.application.NotificationManager
 import com.goorm.friendchise.domain.notification.application.NotificationSseService;
 import com.goorm.friendchise.domain.notification.dto.response.NotificationResponse;
 import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
-import com.goorm.friendchise.global.auth.application.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import java.util.List;
 public class NotificationController {
 	private final NotificationManager notificationManager;
 	private final NotificationSseService notificationSseService;
-	private final AuthService authService;
 
 	// 스토어 - 해당 스토어에 발생한 알림 조회
 	@GetMapping("/my")
@@ -29,14 +27,14 @@ public class NotificationController {
 
 	//  알림 읽음 처리
 	@PatchMapping("/{notificationId}/read")
-	public ResponseEntity<NotificationResponse> markAsRead(@PathVariable Long notificationId) {
+	public ResponseEntity<NotificationResponse> markAsRead(@PathVariable("notificationId") Long notificationId) {
 		notificationManager.markAsRead(notificationId);
 		return ResponseEntity.ok(new NotificationResponse(notificationId, "success", "알림이 읽음 처리되었습니다."));
 	}
 
 	//  알림 삭제
 	@DeleteMapping("/{notificationId}")
-	public ResponseEntity<NotificationResponse> deleteNotification(@PathVariable Long notificationId) {
+	public ResponseEntity<NotificationResponse> deleteNotification(@PathVariable("notificationId") Long notificationId) {
 		notificationManager.deleteNotification(notificationId);
 		return ResponseEntity.ok(new NotificationResponse(notificationId, "success", "알림이 삭제되었습니다."));
 	}
