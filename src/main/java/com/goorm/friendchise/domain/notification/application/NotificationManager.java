@@ -8,6 +8,7 @@ import com.goorm.friendchise.domain.notification.domain.Notification;
 import com.goorm.friendchise.domain.notification.domain.NotificationRepository;
 import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
 import com.goorm.friendchise.global.auth.application.AuthService;
+import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,18 @@ import java.util.stream.Collectors;
 public class NotificationManager {
 	private final NotificationRepository repository;
 	private final AuthService authService;
+
+	private Manager getAuthManager() {
+		return authService.findManagerByAuth();
+	}
+
+	private Manager getAuthStoreManager() {
+		Manager authManager = getAuthManager();
+		if (authManager.getRole() != Role.STORE) {
+			throw new CustomException(ErrorCode.NO_STORE_AUTHENTICATION_ERROR);
+		}
+		return authManager;
+	}
 
 	public List<Notification> createNotifications(List<StoreIdDto> storeIds, String title, String content) {
 		List<Notification> notifications = storeIds.stream()

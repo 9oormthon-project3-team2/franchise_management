@@ -33,6 +33,8 @@ public class NotificationEventHandler {
 		List<Notification> notifications = notificationManager.createNotifications(storeIds, title, content);
 
 		// SSE 전송
-		storeIds.forEach(storeId -> notificationSseService.sendSse(storeId.id(), title, content));
+		notifications.forEach(notification ->
+			notificationSseService.sendSse(notification.getStoreId(), notification.getTitle(), notification.getContent())
+		);
 	}
 }
