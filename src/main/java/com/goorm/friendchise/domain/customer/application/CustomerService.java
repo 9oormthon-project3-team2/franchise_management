@@ -2,13 +2,12 @@ package com.goorm.friendchise.domain.customer.application;
 
 import com.goorm.friendchise.domain.customer.domain.Customer;
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerCreateRequest;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerLoginRequest;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerRecommendStoreRequest;
+import com.goorm.friendchise.domain.customer.dto.request.*;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerDetailResponse;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerPersistResponse;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerTokenResponse;
 import com.goorm.friendchise.domain.customer.exception.CustomerException;
+import com.goorm.friendchise.domain.location.application.LocationService;
 import com.goorm.friendchise.domain.store.application.StoreService;
 import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
@@ -50,6 +49,7 @@ public class CustomerService {
     private static final long CACHE_EXPIRATION = 10; // 캐싱 지속 시간 (분)
     private static final String CACHE_PREFIX = "nearestStore:";
     private final AuthService authService;
+    private final LocationService locationService;
     // 🕒 서비스 실행 시작 시간
     private Instant serviceStartTime = Instant.now();
 
@@ -65,10 +65,19 @@ public class CustomerService {
         return CustomerPersistResponse.of(customer);
     }
 
-    public TokenResponse login(CustomerLoginRequest request) {
+    public TokenResponse login(CustomerLoginRequest request,
+                               CustomerStartLocationRequest locationRequest) {
         Customer customer =findCustomerByUsername(request.username());
         customer.isPasswordMatch(request.password(), bCryptPasswordEncoder);
+
+        locationService.saveStartLocation(locationRequest);
+
         return authService.customerLogin(customer);
+    }
+
+    public void logout(CustomerDestinationRequest request)
+    {
+        locationService.saveDestinationLocation(request);
     }
 
     public CustomerDetailResponse detail(String username)

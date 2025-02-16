@@ -2,10 +2,7 @@ package com.goorm.friendchise.domain.customer.presentation;
 
 
 import com.goorm.friendchise.domain.customer.application.CustomerService;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerCreateRequest;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerLoginRequest;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerRecommendStoreRequest;
-import com.goorm.friendchise.domain.customer.dto.request.UpdatePasswordRequest;
+import com.goorm.friendchise.domain.customer.dto.request.*;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerDetailResponse;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerPersistResponse;
 import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
@@ -24,7 +21,6 @@ public class CustomerController
 {
     private final CustomerService customerService;
 
-
     @PostMapping("/register")
     public ResponseEntity<CustomerPersistResponse> register(@RequestBody @Valid CustomerCreateRequest request) {
         CustomerPersistResponse response = customerService.create(request);
@@ -33,9 +29,17 @@ public class CustomerController
 
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid CustomerLoginRequest request) {
-        TokenResponse response = customerService.login(request);
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid CustomerLoginRequest request,
+                                               @RequestBody @Valid CustomerStartLocationRequest locationRequest) {
+        TokenResponse response = customerService.login(request,locationRequest);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<TokenResponse> logout(
+            @RequestBody @Valid CustomerDestinationRequest locationRequest) {
+        customerService.logout(locationRequest);
+        return ResponseEntity.noContent().build();
     }
 
 
