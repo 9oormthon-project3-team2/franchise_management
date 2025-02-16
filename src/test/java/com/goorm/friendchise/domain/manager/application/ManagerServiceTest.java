@@ -15,6 +15,7 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.exception.HeadquarterAuthNotMatchException;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
+import com.goorm.friendchise.domain.notification.application.NotificationSseSender;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
 import com.goorm.friendchise.global.auth.infrastructure.FakeRefreshTokenRepository;
@@ -51,10 +52,11 @@ class ManagerServiceTest {
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
 		CustomerRepository customerRepository = new FakeCustomerRepository();
 		this.headquarterRepository = new FakeHeadquarterRepository();
+		NotificationSseSender notificationSseSender = new NotificationSseSender();
 		AuthService authService = new AuthService(managerRepository, tokenProvider,
-			refreshTokenRepository, headquarterRepository,customerRepository);
+			refreshTokenRepository, headquarterRepository, customerRepository);
 		managerService = new ManagerService(managerRepository, bCryptPasswordEncoder,
-			authService, headquarterRepository);
+			authService, headquarterRepository, notificationSseSender);
 
 		managerRepository.save(
 			Manager.create("test", "test1234", HEADQUARTER)

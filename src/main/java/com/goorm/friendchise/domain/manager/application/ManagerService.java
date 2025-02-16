@@ -9,10 +9,12 @@ import com.goorm.friendchise.domain.manager.dto.request.ManageLoginRequest;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerDetailResponse;
 import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
+import com.goorm.friendchise.domain.notification.application.NotificationSseSender;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import static com.goorm.friendchise.domain.manager.domain.Role.STORE;
 import static com.goorm.friendchise.global.exception.ErrorCode.HEADQUARTER_NOT_FOUND;
 import static com.goorm.friendchise.global.exception.ErrorCode.INVALID_PARAMETER;
 
+@Slf4j
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class ManagerService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final AuthService authService;
 	private final HeadquarterRepository headquarterRepository;
+	private final NotificationSseSender notificationSseSender;
 
 	public ManagerPersistResponse create(ManageCreateRequest request) {
 		// STORE일 경우 HQ의 certificationNumber 비교
@@ -53,6 +57,11 @@ public class ManagerService {
 		String name = request.username();
 		Manager manager = findManagerByUsername(name);
 		manager.isPasswordMatch(request.password(), bCryptPasswordEncoder);
+
+		if (manager.getManageId() != null && manager.getRole().equals(STORE)) {
+			notificationSseSender.subscribe(manager.getManageId());
+			log.info("같은 스토어에 대해 매니저 재로그인 및 SSE 연결 완료");
+		}
 
 		return authService.managerLogin(manager);
 	}
