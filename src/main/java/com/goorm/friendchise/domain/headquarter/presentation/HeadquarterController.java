@@ -11,6 +11,9 @@ import com.goorm.friendchise.domain.headquarter.dto.headquarter.StoreRecommendRe
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +52,13 @@ public class HeadquarterController {
         return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping("/item/register")
+    @PageableAsQueryParam
+    @GetMapping("/items")
+    public ResponseEntity<Slice<ItemResDto>> getItems(Pageable pageable) {
+        return ResponseEntity.ok().body(itemService.getItems(pageable));
+    }
+
+    @PostMapping("/items/register")
     public ResponseEntity<List<ItemResDto>> createItems(@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
         return ResponseEntity.ok().body(itemService.createItems(itemReqDtoList));
     }

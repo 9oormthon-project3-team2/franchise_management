@@ -2,9 +2,12 @@ package com.goorm.friendchise.domain.headquarter.Item.application;
 
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
+import com.goorm.friendchise.domain.headquarter.Item.domain.Item;
+import com.goorm.friendchise.domain.headquarter.Item.domain.ItemRepository;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDto;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
+import com.goorm.friendchise.domain.headquarter.Item.infrastructure.ItemRepositoryImpl;
 import com.goorm.friendchise.domain.headquarter.application.HeadquarterService;
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
@@ -20,6 +23,8 @@ import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
 import com.goorm.friendchise.global.auth.infrastructure.FakeRefreshTokenRepository;
 import com.goorm.friendchise.global.auth.jwt.JwtProperties;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
+import com.goorm.friendchise.global.exception.CustomException;
+import com.goorm.friendchise.global.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -44,11 +51,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @EntityScan(basePackages = {"com.goorm.friendchise.domain.headquarter", "com.goorm.friendchise.domain.store"})
 @EnableJpaRepositories(basePackages = {"com.goorm.friendchise.domain.headquarter", "com.goorm.friendchise.domain.store"})
-@Import({HeadquarterRepositoryImpl.class})
+@Import({HeadquarterRepositoryImpl.class, ItemRepositoryImpl.class})
 class ItemServiceTest {
 
     @Autowired
     private HeadquarterRepository headquarterRepository;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     private AuthService authService;
     private ManagerRepository managerRepository;
@@ -58,12 +68,13 @@ class ItemServiceTest {
 
     @BeforeEach
     void setup() {
+        // authService에 의존성이 많아서(역할이 많아서)..본시/매장과 고객을 분리하고 토큰 관련 로직도 분리하는게 어떨까..?
         managerRepository = new FakeManagerRepository();
         CustomerRepository customerRepository = new FakeCustomerRepository();
         TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
         RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
         authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository, customerRepository);
-        itemService = new ItemService(headquarterRepository, authService);
+        itemService = new ItemService(headquarterRepository, itemRepository, authService);
     }
 
     private void setContextHolder(Manager manager) {
@@ -86,10 +97,6 @@ class ItemServiceTest {
         Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
         savedManager.updateManageId(savedHeadquarter.getId());
 
-        // 원래는 manager create 하고 바로 save 해야 하지만 그렇게 하면 managerId 업데이트가 repository에서 꺼내올 때 반영이 안되므로
-        // 근데 왜 안되는거지
-//		managerRepository.save(manager);
-//		setContextHolder(manager);
         return savedHeadquarter.getId();
     }
 
@@ -127,5 +134,48 @@ class ItemServiceTest {
                 .map(ItemResDto::name)
                 .collect(Collectors.toList());
         assertThat(itemNames).containsExactlyInAnyOrder("item1", "item2");
+    }
+
+
+    /*
+        pageable 기능을 fake로 구현하는건 너무 투머치인거 같고
+        Mockito를 써서 jpa의 pageable 기능을 모킹할 수는 있지만
+        pageable의 기능이 제대로 동작하는지 확인하고 싶은건데 이걸 stubbing을 하는건 의미가 없는거같은데..
+    */
+    @Test
+    @DisplayName("Headquarter에 연관된 Item들을 조회한다.")
+    void testGetItems() {
+        // given
+        Long savedHeadquarterId = createManagerAndHeadquarter();
+
+        Headquarter headquarter = headquarterRepository.findById(savedHeadquarterId)
+                .orElseThrow(() -> new CustomException(ErrorCode.HEADQUARTER_NOT_FOUND));
+        List<ItemResDto> savedItemResDtos = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            Item item = Item.builder()
+                    .name("item" + i)
+                    .price(1000)
+                    .headquarter(headquarter)
+                    .build();
+            Item savedItem = itemRepository.save(item);
+            savedItemResDtos.add(ItemResDto.fromEntity(savedItem));
+        }
+
+        // when
+        Slice<ItemResDto> itemResDtos1 = itemService.getItems(PageRequest.of(0,5));
+        Slice<ItemResDto> itemResDtos2 = itemService.getItems(PageRequest.of(1,5));
+
+        // then
+        assertThat(itemResDtos1).hasSize(5);
+        List<String> itemNames = itemResDtos1.stream()
+                .map(ItemResDto::name)
+                .collect(Collectors.toList());
+        assertThat(itemNames).containsExactlyInAnyOrder("item1", "item2", "item3", "item4", "item5");
+
+        assertThat(itemResDtos2).hasSize(5);
+        itemNames = itemResDtos2.stream()
+                .map(ItemResDto::name)
+                .collect(Collectors.toList());
+        assertThat(itemNames).containsExactlyInAnyOrder("item6", "item7", "item8", "item9", "item10");
     }
 }

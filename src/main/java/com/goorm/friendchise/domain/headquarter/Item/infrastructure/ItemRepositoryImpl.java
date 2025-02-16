@@ -2,7 +2,10 @@ package com.goorm.friendchise.domain.headquarter.Item.infrastructure;
 
 import com.goorm.friendchise.domain.headquarter.Item.domain.Item;
 import com.goorm.friendchise.domain.headquarter.Item.domain.ItemRepository;
+import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,6 +24,11 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Optional<Item> findById(Long id) {
         return jpaItemRepository.findById(id);
+    }
+
+    @Override
+    public Slice<Item> findByHeadquarter(Headquarter headquarter, Pageable pageable) {
+        return jpaItemRepository.findByHeadquarter(headquarter, pageable);
     }
 
 }
