@@ -58,11 +58,6 @@ public class ManagerService {
 		Manager manager = findManagerByUsername(name);
 		manager.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
-		if (manager.getManageId() != null && manager.getRole().equals(STORE)) {
-			notificationSseSender.subscribe(manager.getManageId());
-			log.info("같은 스토어에 대해 매니저 재로그인 및 SSE 연결 완료");
-		}
-
 		return authService.managerLogin(manager);
 	}
 

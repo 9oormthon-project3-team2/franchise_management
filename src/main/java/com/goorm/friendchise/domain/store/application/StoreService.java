@@ -73,9 +73,8 @@ public class StoreService {
         storeRepository.save(store);
 
         currentManager.updateManageId(store.getId());
-		notificationSseSender.subscribe(store.getId());
 
-		log.info("초기 스토어 생성 완료 및 SSE 연결: storeId = {}", store.getId());
+		log.info("초기 스토어 생성 완료 storeId = {}", store.getId());
 	}
 
     @Transactional(readOnly = true)
