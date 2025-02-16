@@ -15,6 +15,8 @@ import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterR
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
 import com.goorm.friendchise.domain.redis.config.RedisConfigTest;
+import com.goorm.friendchise.domain.store.domain.Store;
+import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.domain.RefreshToken;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
@@ -57,6 +59,7 @@ public class CustomerServiceTest {
     private KaKaoApiService kaKaoApiService;
     @Autowired
     private TokenProvider tokenProvider;
+
     @BeforeEach
     void setUp() {
         CustomerRepository customerRepository = new FakeCustomerRepository();
@@ -66,11 +69,11 @@ public class CustomerServiceTest {
         CustomerCreateRequest request=new CustomerCreateRequest("testUser","testPassword");
         HeadquarterRepository headquarterRepository=new FakeHeadquarterRepository();
         refreshTokenRepository = new FakeRefreshTokenRepository();
-
+        StoreRepository storeRepository = new FakeStoreRepository();
 
 
         AuthService authService = new AuthService(managerRepository, tokenProvider,
-                refreshTokenRepository, headquarterRepository,customerRepository);
+                refreshTokenRepository, headquarterRepository,customerRepository,storeRepository);
 
 
         customerService = new CustomerService(customerRepository, bCryptPasswordEncoder,fakeStoreRepository,

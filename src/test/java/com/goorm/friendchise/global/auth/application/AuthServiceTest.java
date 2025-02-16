@@ -2,10 +2,12 @@ package com.goorm.friendchise.global.auth.application;
 
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
+import com.goorm.friendchise.domain.customer.infrastructure.FakeStoreRepository;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
+import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
 import com.goorm.friendchise.global.auth.infrastructure.FakeRefreshTokenRepository;
 import com.goorm.friendchise.global.auth.jwt.JwtProperties;
@@ -32,8 +34,9 @@ class AuthServiceTest {
 		FakeManagerRepository managerRepository = new FakeManagerRepository();
 		HeadquarterRepository headquarterRepository = new FakeHeadquarterRepository();
 		CustomerRepository customerRepository = new FakeCustomerRepository();
+		StoreRepository storeRepository = new FakeStoreRepository();
 		this.authService = new AuthService(managerRepository, tokenProvider,
-			refreshTokenRepository, headquarterRepository,customerRepository);
+			refreshTokenRepository, headquarterRepository, customerRepository, storeRepository);
 
 		managerRepository.save(
 			Manager.create("test", "test1234", HEADQUARTER)

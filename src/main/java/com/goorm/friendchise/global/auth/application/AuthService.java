@@ -39,11 +39,12 @@ public class AuthService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final HeadquarterRepository headquarterRepository;
 	private final CustomerRepository customerRepository;
+	private final StoreRepository storeRepository;
+
 	private static final String HEADQUARTER_ROLE = "HEADQUARTER";
 	private static final String STORE_ROLE = "STORE";
 	private static final Duration REFRESH_TOKEN_EXP = Duration.ofDays(1);
 	private static final Duration ACCESS_TOKEN_EXP = Duration.ofHours(1);
-	private final StoreRepository storeRepository;
 
 	public Manager findManagerByAuth() {
 		try {
@@ -61,7 +62,7 @@ public class AuthService {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			String username = ((UserDetails) principal).getUsername();
 			return customerRepository.findByUsername(username)
-					.orElseThrow(ManagerNotFoundException::new);
+				.orElseThrow(ManagerNotFoundException::new);
 		} catch (Exception e) {
 			throw new CustomerException(ErrorCode.USER_NOT_FOUND);
 		}
@@ -95,7 +96,7 @@ public class AuthService {
 		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, "USER");
 
 		refreshTokenRepository.save(
-				RefreshToken.of(refreshToken, customer.getId(),Role.USER )
+			RefreshToken.of(refreshToken, customer.getId(), Role.USER)
 		);
 
 		return TokenResponse.of(accessToken, refreshToken);
