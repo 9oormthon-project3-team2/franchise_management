@@ -6,6 +6,7 @@ import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
+import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterDetailResDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
 import com.goorm.friendchise.domain.headquarter.dto.store.StoreIdDto;
@@ -22,6 +23,7 @@ import com.goorm.friendchise.global.auth.jwt.JwtProperties;
 import com.goorm.friendchise.global.auth.jwt.TokenProvider;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +43,7 @@ class HeadquarterServiceTest {
 	private HeadquarterRepository headquarterRepository;
 	private AuthService authService;
 	private ManagerRepository managerRepository;
+
 	@BeforeEach
 	void setup() {
 		headquarterRepository = new FakeHeadquarterRepository();
@@ -50,6 +53,12 @@ class HeadquarterServiceTest {
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
 		authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository, customerRepository);
 		headquarterService = new HeadquarterService(authService, headquarterRepository);
+	}
+
+	@AfterEach
+	void tearDown() {
+		SecurityContextHolder.clearContext();
+		headquarterRepository.deleteAll();
 	}
 
 	private void setContextHolder(Manager manager) {
@@ -131,10 +140,10 @@ class HeadquarterServiceTest {
 		HeadquarterReqDto headquarterReqDto = HeadquarterReqDto.of("test", "패스트푸드", "");
 
 		// when
-		HeadquarterResDto headquarter = headquarterService.createHeadquarter(headquarterReqDto);
+		 HeadquarterResDto res = headquarterService.createHeadquarter(headquarterReqDto);
 
 		// then
-		assertThat(headquarter.franchiseName()).isEqualTo("test");
+		assertThat(res.franchiseName()).isEqualTo("test");
 	}
 
 	private void createManager() {
@@ -196,7 +205,7 @@ class HeadquarterServiceTest {
 		createManagerAndHeadquarter();
 
 		// when
-		HeadquarterResDto headquarterResDto = headquarterService.getHeadquarter();
+		HeadquarterDetailResDto headquarterResDto = headquarterService.getHeadquarter();
 
 		// then
 		assertThat(headquarterResDto.franchiseName()).isEqualTo("test");
@@ -215,10 +224,6 @@ class HeadquarterServiceTest {
 		Headquarter savedHeadquarter = headquarterRepository.save(headquarter);
 		savedManager.updateManageId(savedHeadquarter.getId());
 
-		// 원래는 manager create 하고 바로 save 해야 하지만 그렇게 하면 managerId 업데이트가 repository에서 꺼내올 때 반영이 안되므로
-		// 근데 왜 안되는거지
-//		managerRepository.save(manager);
-//		setContextHolder(manager);
 		return savedHeadquarter.getId();
 	}
 
@@ -241,10 +246,10 @@ class HeadquarterServiceTest {
 		createManagerAndHeadquarter();
 
 		// when
-		HeadquarterResDto updatedHeadquarter = headquarterService.updateHeadquarterName(HeadquarterReqDto.of("newTest", "패스트푸드", ""));
+		HeadquarterResDto res = headquarterService.updateHeadquarterName(HeadquarterReqDto.of("newTest", "패스트푸드", ""));
 
 		// then
-		assertThat(updatedHeadquarter.franchiseName()).isEqualTo("newTest");
+		assertThat(res.franchiseName()).isEqualTo("newTest");
 	}
 
 	@Test

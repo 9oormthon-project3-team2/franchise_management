@@ -37,4 +37,9 @@ public class HeadquarterRepositoryImpl implements HeadquarterRepository {
         return jpaHeadquarterRepository.findByFranchiseName(franchiseName);
     }
 
+    @Override
+    public void deleteAll() {
+        jpaHeadquarterRepository.deleteAll();
+    }
+
 }

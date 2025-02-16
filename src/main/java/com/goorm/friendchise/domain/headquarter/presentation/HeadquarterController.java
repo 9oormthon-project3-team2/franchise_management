@@ -5,6 +5,7 @@ import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDtoList;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemResDto;
 import com.goorm.friendchise.domain.headquarter.application.HeadquarterService;
 import com.goorm.friendchise.domain.headquarter.application.StoreRecommendationService;
+import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterDetailResDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.StoreRecommendReqDto;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -31,13 +33,11 @@ public class HeadquarterController {
 
     @PostMapping("/register")
     public ResponseEntity<HeadquarterResDto> createHeadquarter(@Valid @RequestBody HeadquarterReqDto headquarterReqDto) {
-        return ResponseEntity.ok().body(headquarterService.createHeadquarter(headquarterReqDto));
+        return ResponseEntity.created(URI.create("/headquarter")).body(headquarterService.createHeadquarter(headquarterReqDto));
     }
 
-    // path variable의 id를 다 fracnhiseName으로 바꾸거나 없애야 할까..
-
     @GetMapping
-    public ResponseEntity<HeadquarterResDto> getHeadquarter() {
+    public ResponseEntity<HeadquarterDetailResDto> getHeadquarter() {
         return ResponseEntity.ok().body(headquarterService.getHeadquarter());
     }
 
@@ -60,7 +60,7 @@ public class HeadquarterController {
 
     @PostMapping("/items/register")
     public ResponseEntity<List<ItemResDto>> createItems(@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
-        return ResponseEntity.ok().body(itemService.createItems(itemReqDtoList));
+        return ResponseEntity.created(URI.create("/headquarter/items/")).body(itemService.createItems(itemReqDtoList));
     }
 
     @PostMapping("/store-recommendation")
