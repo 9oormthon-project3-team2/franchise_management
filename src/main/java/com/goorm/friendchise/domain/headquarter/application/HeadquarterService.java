@@ -54,7 +54,7 @@ public class HeadquarterService {
 
         findIfMine(headquarter, currentManager);
 
-        headquarter.updateFranchiseName(headquarterReqDto.franchiseName());
+        headquarter.updateByRequestDto(headquarterReqDto);
         return HeadquarterResDto.from(headquarter);
     }
 

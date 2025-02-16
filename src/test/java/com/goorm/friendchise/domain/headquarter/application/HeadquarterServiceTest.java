@@ -33,6 +33,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.goorm.friendchise.domain.manager.domain.Role.HEADQUARTER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -240,16 +241,19 @@ class HeadquarterServiceTest {
 	}
 
 	@Test
-	@DisplayName("성공적으로 프랜차이즈 이름을 수정한다.")
+	@DisplayName("성공적으로 프랜차이즈 정보를 수정한다.")
 	void updateHeadquarterName() {
 		// given
 		createManagerAndHeadquarter();
 
 		// when
-		HeadquarterResDto res = headquarterService.updateHeadquarterName(HeadquarterReqDto.of("newTest", "패스트푸드", ""));
+		HeadquarterResDto res = headquarterService.updateHeadquarterName(HeadquarterReqDto.of("newTest", "한식", "국밥"));
 
 		// then
-		assertThat(res.franchiseName()).isEqualTo("newTest");
+		Headquarter headquarter = headquarterRepository.findById(res.id()).orElseThrow(() -> new CustomException(ErrorCode.HEADQUARTER_NOT_FOUND));
+		assertThat(headquarter.getFranchiseName()).isEqualTo("newTest");
+		assertThat(headquarter.getCategory()).isEqualTo(Category.KOREANFOOD);
+		assertThat(headquarter.getSubCategory()).isEqualTo(SubCategory.GOOKBAB);
 	}
 
 	@Test
