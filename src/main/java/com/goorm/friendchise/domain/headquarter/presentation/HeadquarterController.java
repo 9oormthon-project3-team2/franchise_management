@@ -64,7 +64,7 @@ public class HeadquarterController {
     }
 
     @PostMapping("/store-recommendation")
-    public ResponseEntity<ChatCompletionResponseDto> getRecommendationResult(@RequestBody StoreRecommendReqDto req) {
+    public ResponseEntity<ChatCompletionResponseDto> getRecommendationResult(@Valid @RequestBody StoreRecommendReqDto req) {
         return ResponseEntity.ok().body(storeRecommendationService.getRecommendation(req));
     }
 
