@@ -41,7 +41,8 @@ public class HeadquarterController {
         return ResponseEntity.ok().body(headquarterService.getHeadquarter());
     }
 
-    @PutMapping("/update")
+    // 엔티티 전체 필드가 들어오는 경우 PUT, 일부만 들어오는 경우 PATCH로 구분하는게 맞을거같은데..그냥 PATCH로 구현
+    @PatchMapping("/update")
     public ResponseEntity<HeadquarterResDto> updateHeadquarter(@Valid @RequestBody HeadquarterReqDto headquarterReqDto) {
         return ResponseEntity.ok().body(headquarterService.updateHeadquarterName(headquarterReqDto));
     }

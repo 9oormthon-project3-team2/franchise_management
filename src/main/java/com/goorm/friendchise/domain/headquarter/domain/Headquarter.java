@@ -58,7 +58,7 @@ public class Headquarter extends BaseEntity {
     }
 
     /*
-    * PUT method를 구현할 때 사용하려고 만든 메소드인데, 특정 필드가 null인 경우는 없기 때문에 이렇게 했는데 만약 null인 경우가 생긴다면 로직 변경 필요
+    * PATCH method를 구현할 때 사용하려고 만든 메소드인데, 특정 필드가 null인 경우는 없기 때문에 이렇게 했는데 만약 null인 경우가 생긴다면 로직 변경 필요
     */
     public void updateByRequestDto(HeadquarterReqDto headquarterReqDto) {
         if(headquarterReqDto.franchiseName() != null) this.franchiseName = headquarterReqDto.franchiseName();
