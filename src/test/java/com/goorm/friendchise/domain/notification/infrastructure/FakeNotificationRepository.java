@@ -20,15 +20,15 @@ public class FakeNotificationRepository implements NotificationRepository {
 	}
 
 	@Override
-	public List<Notification> findByTargetId(Long targetId) {
-		return notifications.stream().filter(notification -> notification.getTargetId().equals(targetId)).collect(Collectors.toList());
+	public List<Notification> findByStoreId(Long targetId) {
+		return notifications.stream().filter(notification -> notification.getStoreId().equals(targetId)).collect(Collectors.toList());
 	}
 
 	@Override
 	public Notification save(Notification notification) {
 		Notification savedNotification = new Notification(
 			sequence.getAndIncrement(),
-			notification.getTargetId(),
+			notification.getStoreId(),
 			notification.getTitle(),
 			notification.getContent(),
 			false

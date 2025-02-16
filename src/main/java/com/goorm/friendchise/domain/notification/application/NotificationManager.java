@@ -1,9 +1,14 @@
 package com.goorm.friendchise.domain.notification.application;
 
 import com.goorm.friendchise.domain.headquarter.dto.store.StoreIdDto;
+import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.notification.domain.Notification;
 import com.goorm.friendchise.domain.notification.domain.NotificationRepository;
-import com.goorm.friendchise.domain.notification.dto.response.NotificationDetailResponse;
+import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
+import com.goorm.friendchise.global.auth.application.AuthService;
+import com.goorm.friendchise.global.exception.CustomException;
+import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +22,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NotificationManager {
 	private final NotificationRepository repository;
+	private final AuthService authService;
+
+	private Manager getAuthStoreManager() {
+		Manager manager = authService.findManagerByAuth();
+		if (manager.getRole() != Role.STORE) {
+			throw new CustomException(ErrorCode.NO_STORE_AUTHENTICATION_ERROR);
+		}
+		return manager;
+	}
 
 	public List<Notification> createNotifications(List<StoreIdDto> storeIds, String title, String content) {
 		List<Notification> notifications = storeIds.stream()
@@ -35,22 +49,33 @@ public class NotificationManager {
 
 	@Transactional
 	public void markAsRead(Long notificationId) {
+		Manager storeManager = getAuthStoreManager();
+		Long storeId = storeManager.getManageId();
+
 		Notification notification = repository.findById(notificationId)
-			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+			.orElseThrow(() -> new CustomException(ErrorCode.NOTIFICATION_NOT_FOUND));
+
+		if (!notification.getStoreId().equals(storeId)) {
+			throw new CustomException(ErrorCode.NO_STORE_EQUAL_AUTHENTICATION_ERROR);
+		}
+
 		notification.markAsRead();
 	}
+
 
 	@Transactional
 	public void deleteNotification(Long notificationId) {
 		repository.deleteById(notificationId);
 	}
 
-	public List<NotificationDetailResponse> getNotificationsByTarget(Long targetId) {
-		List<Notification> notifications = repository.findByTargetId(targetId);
+	@Transactional
+	public List<ReceivedNotificationResponse> getNotifications() {
+		Manager storeManager = getAuthStoreManager();
+		Long storeId = storeManager.getManageId();
+
+		List<Notification> notifications = repository.findByStoreId(storeId);
 		return notifications.stream()
-			.map(notification -> NotificationDetailResponse.builder()
-				.id(notification.getId())
-				.targetId(notification.getTargetId())
+			.map(notification -> ReceivedNotificationResponse.builder()
 				.title(notification.getTitle())
 				.content(notification.getContent())
 				.isRead(notification.isRead())
