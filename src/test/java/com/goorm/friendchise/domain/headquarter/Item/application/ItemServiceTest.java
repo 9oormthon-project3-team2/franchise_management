@@ -77,6 +77,8 @@ class ItemServiceTest {
         itemService = new ItemService(headquarterRepository, itemRepository, authService);
     }
 
+    // TODO: AfterEach로 테스트 독립성 보장
+
     private void setContextHolder(Manager manager) {
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(

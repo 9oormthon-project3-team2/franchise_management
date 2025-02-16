@@ -60,7 +60,7 @@ public class HeadquarterController {
 
     @PostMapping("/items/register")
     public ResponseEntity<List<ItemResDto>> createItems(@Valid @RequestBody ItemReqDtoList itemReqDtoList) {
-        return ResponseEntity.created(URI.create("/headquarter/items/")).body(itemService.createItems(itemReqDtoList));
+        return ResponseEntity.created(URI.create("/headquarter/items")).body(itemService.createItems(itemReqDtoList));
     }
 
     @PostMapping("/store-recommendation")
