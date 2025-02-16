@@ -51,7 +51,7 @@ public class ItemService {
     public Slice<ItemResDto> getItems(Pageable pageable) {
         Headquarter headquarter = getCurrentHeadquarter();
 
-        return itemRepository.findByHeadquarter(headquarter, pageable).map(ItemResDto::fromEntity);
+        return itemRepository.findByHeadquarterId(headquarter.getId(), pageable).map(ItemResDto::fromEntity);
     }
 
     private Headquarter getCurrentHeadquarter() {

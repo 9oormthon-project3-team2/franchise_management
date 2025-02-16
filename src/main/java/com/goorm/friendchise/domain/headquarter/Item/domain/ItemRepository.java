@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface ItemRepository {
     Item save(Item item);
     Optional<Item> findById(Long id);
-    Slice<Item> findByHeadquarter(Headquarter headquarter, Pageable pageable);
+    Slice<Item> findByHeadquarterId(Long headquarterId, Pageable pageable);
 }

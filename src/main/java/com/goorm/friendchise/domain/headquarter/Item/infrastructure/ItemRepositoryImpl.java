@@ -27,8 +27,8 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public Slice<Item> findByHeadquarter(Headquarter headquarter, Pageable pageable) {
-        return jpaItemRepository.findByHeadquarter(headquarter, pageable);
+    public Slice<Item> findByHeadquarterId(Long headquarterId, Pageable pageable) {
+        return jpaItemRepository.findByHeadquarterId(headquarterId, pageable);
     }
 
 }

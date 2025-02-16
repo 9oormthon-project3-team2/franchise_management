@@ -7,5 +7,5 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JpaItemRepository extends JpaRepository<Item, Long> {
-    Slice<Item> findByHeadquarter(Headquarter headquarter, Pageable pageable);
+    Slice<Item> findByHeadquarterId(Long headquarterId, Pageable pageable);
 }
