@@ -51,7 +51,16 @@ public class ItemService {
     public Slice<ItemResDto> getItems(Pageable pageable) {
         Headquarter headquarter = getCurrentHeadquarter();
 
+        // headquarter.id = headquarterId 이런식으로 조회되기 때문에 페치 조인이 아님에도 left join해서 headquarter까지 가져옮
         return itemRepository.findByHeadquarterId(headquarter.getId(), pageable).map(ItemResDto::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<ItemResDto> getItemsNative(Pageable pageable) {
+        Headquarter headquarter = getCurrentHeadquarter();
+
+        // native query로 불필요한 left join X
+        return itemRepository.findItemsByHeadquarterIdNative(headquarter.getId(), pageable).map(ItemResDto::fromEntity);
     }
 
     private Headquarter getCurrentHeadquarter() {

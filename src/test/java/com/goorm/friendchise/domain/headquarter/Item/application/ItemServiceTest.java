@@ -146,7 +146,7 @@ class ItemServiceTest {
     */
     @Test
     @DisplayName("Headquarter에 연관된 Item들을 조회한다.")
-    void testGetItems() {
+    void testGetItems_hibernateQuery() {
         // given
         Long savedHeadquarterId = createManagerAndHeadquarter();
 
@@ -166,6 +166,43 @@ class ItemServiceTest {
         // when
         Slice<ItemResDto> itemResDtos1 = itemService.getItems(PageRequest.of(0,5));
         Slice<ItemResDto> itemResDtos2 = itemService.getItems(PageRequest.of(1,5));
+
+        // then
+        assertThat(itemResDtos1).hasSize(5);
+        List<String> itemNames = itemResDtos1.stream()
+                .map(ItemResDto::name)
+                .collect(Collectors.toList());
+        assertThat(itemNames).containsExactlyInAnyOrder("item1", "item2", "item3", "item4", "item5");
+
+        assertThat(itemResDtos2).hasSize(5);
+        itemNames = itemResDtos2.stream()
+                .map(ItemResDto::name)
+                .collect(Collectors.toList());
+        assertThat(itemNames).containsExactlyInAnyOrder("item6", "item7", "item8", "item9", "item10");
+    }
+
+    @Test
+    @DisplayName("Headquarter에 연관된 Item들을 조회한다.(네이티브 쿼리)")
+    void testGetItems_nativeQuery() {
+        // given
+        Long savedHeadquarterId = createManagerAndHeadquarter();
+
+        Headquarter headquarter = headquarterRepository.findById(savedHeadquarterId)
+                .orElseThrow(() -> new CustomException(ErrorCode.HEADQUARTER_NOT_FOUND));
+        List<ItemResDto> savedItemResDtos = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            Item item = Item.builder()
+                    .name("item" + i)
+                    .price(1000)
+                    .headquarter(headquarter)
+                    .build();
+            Item savedItem = itemRepository.save(item);
+            savedItemResDtos.add(ItemResDto.fromEntity(savedItem));
+        }
+
+        // when
+        Slice<ItemResDto> itemResDtos1 = itemService.getItemsNative(PageRequest.of(0,5));
+        Slice<ItemResDto> itemResDtos2 = itemService.getItemsNative(PageRequest.of(1,5));
 
         // then
         assertThat(itemResDtos1).hasSize(5);
