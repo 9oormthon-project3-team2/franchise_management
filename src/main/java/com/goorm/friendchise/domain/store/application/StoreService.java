@@ -1,10 +1,13 @@
 package com.goorm.friendchise.domain.store.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.notification.application.NotificationSseSender;
 import com.goorm.friendchise.domain.store.domain.Store;
+import com.goorm.friendchise.domain.store.dto.StoreRedisDto;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.domain.store.dto.StoreResDto;
 import com.goorm.friendchise.domain.store.dto.res.KakaoApiAddressResDto;
@@ -19,6 +22,7 @@ import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+
 public class StoreService {
 
     @Value("${kakao.api.findPosition}")
@@ -40,6 +45,8 @@ public class StoreService {
     private final AuthService authService;
 	private final NotificationSseSender notificationSseSender;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper; // JSON 변환용
 	private Manager getCurrentManager(){
         return authService.findManagerByAuth();
     }
@@ -72,7 +79,25 @@ public class StoreService {
 
         currentManager.updateManageId(store.getId());
 
-		log.info("초기 스토어 생성 완료 storeId = {}", store.getId());
+
+        String storeKey = "store:" + store.getId();
+        StoreRedisDto storeDto = StoreRedisDto.builder()
+                .pointX(store.getPointX())
+                .pointY(store.getPointY())
+                .manageId(store.getManageId())
+                .franchiseName(store.getFranchiseName())
+                .headquarterId(headquarter.getId())
+                .address(store.getAddress())
+                .dong(store.getDong())
+                .build();
+        try {
+            String storeJson = objectMapper.writeValueAsString(storeDto);
+            redisTemplate.opsForValue().set(storeKey, storeJson);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Redis 저장 중 JSON 변환 오류", e);
+        }
+
+        log.info("초기 스토어 생성 완료 storeId = {}", store.getId());
 	}
 
     @Transactional(readOnly = true)
@@ -100,6 +125,9 @@ public class StoreService {
         Store store = findIfStoreExists(currentManager);
 
         findIfMine(store, currentManager);
+
+        String storeKey = "store:" + store.getId();
+        redisTemplate.delete(storeKey);
 
         currentManager.updateManageId(null);
         storeRepository.delete(store);
