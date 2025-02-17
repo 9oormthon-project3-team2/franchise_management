@@ -26,4 +26,3 @@ ENV JAVA_OPTS="-javaagent:/opt/pinpoint-agent/pinpoint-bootstrap-${PINPOINT_VERS
 
 # 실행
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar friendchise.jar"]
-CMD ["java", "-jar", "friendchise.jar"]
