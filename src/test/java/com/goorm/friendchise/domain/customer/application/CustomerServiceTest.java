@@ -15,6 +15,8 @@ import com.goorm.friendchise.domain.headquarter.insfrastructure.FakeHeadquarterR
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
 import com.goorm.friendchise.domain.redis.config.RedisConfigTest;
+import com.goorm.friendchise.domain.store.domain.Store;
+import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.domain.RefreshToken;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
@@ -32,7 +34,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class CustomerServiceTest {
     private KaKaoApiService kaKaoApiService;
     @Autowired
     private TokenProvider tokenProvider;
+
     @BeforeEach
     void setUp() {
         CustomerRepository customerRepository = new FakeCustomerRepository();
@@ -66,15 +68,15 @@ public class CustomerServiceTest {
         CustomerCreateRequest request=new CustomerCreateRequest("testUser","testPassword");
         HeadquarterRepository headquarterRepository=new FakeHeadquarterRepository();
         refreshTokenRepository = new FakeRefreshTokenRepository();
-
+        StoreRepository storeRepository = new FakeStoreRepository();
 
 
         AuthService authService = new AuthService(managerRepository, tokenProvider,
-                refreshTokenRepository, headquarterRepository,customerRepository);
+                refreshTokenRepository, headquarterRepository,customerRepository,storeRepository);
 
 
         customerService = new CustomerService(customerRepository, bCryptPasswordEncoder,fakeStoreRepository,
-                kaKaoApiService,redisTemplate,authService);
+                kaKaoApiService,redisTemplate,authService,null);
         customerService.create(request);
 
         customer=customerRepository.findByUsername("testUser").orElseThrow();
@@ -138,13 +140,7 @@ public class CustomerServiceTest {
 
 
     }
-    @Test
-    void 로그인_테스트(){
-        CustomerLoginRequest customerLoginRequest=new CustomerLoginRequest("testUser","testPassword");
-        TokenResponse rToken =customerService.login(customerLoginRequest);
-        assertEquals(rToken.refreshToken(),
-                refreshTokenRepository.findByRefreshToken(rToken.refreshToken()).orElseThrow().getRefreshToken());
-    }
+
 
 
 

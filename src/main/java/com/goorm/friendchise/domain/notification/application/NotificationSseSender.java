@@ -1,11 +1,13 @@
 package com.goorm.friendchise.domain.notification.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,16 +19,30 @@ public class NotificationSseSender {
 
 	public void sendSse(Long targetId, String title, String content) {
 		SseEmitter emitter = emitters.get(targetId);
-		if (emitter == null) return;
+		if (emitter == null) {
+			log.info("🚨 SSE Emitter 없음: targetId={}", targetId);
+			return;
+		}
 
 		try {
-			log.info("SSE 전송 시작: targetId={}, title={}", targetId, title);
-			emitter.send(SseEmitter.event().name("Promotion").data(content));
+			log.info("📢 SSE 전송 시작: targetId={}, title={}", targetId, title);
+
+			// JSON 형태로 데이터 구성
+			Map<String, String> payload = new HashMap<>();
+			payload.put("title", title);
+			payload.put("content", content);
+
+			// Gson 또는 Jackson으로 직렬화
+			String json = new ObjectMapper().writeValueAsString(payload);
+
+			emitter.send(SseEmitter.event().name("Promotion").data(json));
+			log.info("✅ SSE 전송 성공: targetId={}", targetId);
 		} catch (IOException e) {
 			emitters.remove(targetId);
-			log.error("SSE 전송 실패", e);
+			log.error("❌ SSE 전송 실패", e);
 		}
 	}
+
 
 	public SseEmitter subscribe(Long targetId) {
 		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);

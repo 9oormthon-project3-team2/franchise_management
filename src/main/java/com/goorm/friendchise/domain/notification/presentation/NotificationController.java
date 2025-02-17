@@ -39,9 +39,9 @@ public class NotificationController {
 		return ResponseEntity.ok(new NotificationResponse(notificationId, "success", "알림이 삭제되었습니다."));
 	}
 
-	// SSE 구독 (매장 실시간 알림 받기)
-	@GetMapping("/subscribe/{targetId}")
-	public SseEmitter subscribe(@PathVariable("targetId") Long targetId) {
-		return notificationSseSender.subscribe(targetId);
+	// SSE 구독 - 스토어 (추후 유저 기능 추가)
+	@GetMapping("/subscribe/{storeId}")
+	public SseEmitter subscribe(@PathVariable("storeId") Long storeId) {
+		return notificationSseSender.subscribe(storeId);
 	}
 }

@@ -3,6 +3,7 @@ package com.goorm.friendchise.domain.store.application;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.notification.application.NotificationSseSender;
 import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.domain.store.dto.StoreResDto;
@@ -11,7 +12,6 @@ import com.goorm.friendchise.domain.store.dto.res.KakaoApiRes;
 import com.goorm.friendchise.domain.store.exception.NoAuthenticationException;
 import com.goorm.friendchise.domain.store.exception.NotFoundAddressException;
 import com.goorm.friendchise.domain.store.exception.StoreNotFoundException;
-import com.goorm.friendchise.domain.store.infrastructure.SalesRepository;
 import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.exception.CustomException;
@@ -35,12 +35,12 @@ public class StoreService {
     private String findPosition;
 
     private final StoreRepository storeRepository;
-    private final SalesRepository salesRepository;
     private final HeadquarterRepository headquarterRepository;
     private final WebClient webClient;
     private final AuthService authService;
+	private final NotificationSseSender notificationSseSender;
 
-    private Manager getCurrentManager(){
+	private Manager getCurrentManager(){
         return authService.findManagerByAuth();
     }
 
@@ -69,8 +69,11 @@ public class StoreService {
 
         Store store = new Store(req, headquarter, currentManager);
         storeRepository.save(store);
+
         currentManager.updateManageId(store.getId());
-    }
+
+		log.info("초기 스토어 생성 완료 storeId = {}", store.getId());
+	}
 
     @Transactional(readOnly = true)
     public StoreResDto getStoreInfo() {
