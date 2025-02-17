@@ -56,7 +56,7 @@ public class HeadquarterController {
     @PageableAsQueryParam
     @GetMapping("/items")
     public ResponseEntity<Slice<ItemResDto>> getItems(Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getItems(pageable));
+        return ResponseEntity.ok().body(itemService.getItemsNative(pageable));
     }
 
     @PostMapping("/items/register")
