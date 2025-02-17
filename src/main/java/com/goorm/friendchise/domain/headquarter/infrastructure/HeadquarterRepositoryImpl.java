@@ -41,11 +41,6 @@ public class HeadquarterRepositoryImpl implements HeadquarterRepository {
     }
 
     @Override
-    public Page<Store> findStoresByHeadquarterId(Long headquarterId, Pageable pageable) {
-        return jpaHeadquarterRepository.findStoresByHeadquarterId(headquarterId, pageable);
-    }
-
-    @Override
     public void deleteAll() {
         jpaHeadquarterRepository.deleteAll();
     }
