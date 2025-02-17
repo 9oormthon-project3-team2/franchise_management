@@ -106,8 +106,7 @@ public class StoreServiceRedisTest {
     }
 
     @Test
-    void 레디스에_있는_모든_store를_불러오기()
-    {
+    void 레디스에_있는_모든_store를_불러오기() throws JsonProcessingException {
         StoreReqDto reqDto = StoreReqDto.builder()
                 .address("광진구 중곡동")
                 .roadAddress("광진구 중곡동 천호대로116 9길")
@@ -125,6 +124,10 @@ public class StoreServiceRedisTest {
         storeService.createStore(reqDto);
 
         List<StoreRedisDto> stores= redisService.getAllStoresFromRedis();
+
+        StoreRedisDto storeDto = redisService.getStoreFromRedisById(11L);
+        System.out.println("id로 가져온 값:"+storeDto);
+
         for(StoreRedisDto store : stores)
         {
             System.out.println(store);

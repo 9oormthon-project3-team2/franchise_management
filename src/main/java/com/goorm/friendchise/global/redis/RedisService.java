@@ -1,7 +1,11 @@
 package com.goorm.friendchise.global.redis;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.friendchise.domain.store.dto.StoreRedisDto;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
+import com.goorm.friendchise.domain.store.exception.NoAuthenticationException;
+import com.goorm.friendchise.domain.store.exception.StoreNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
@@ -12,13 +16,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public RedisService(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
+    private final ObjectMapper objectMapper= new ObjectMapper();
 
     public void saveData(String key, String value) {
         redisTemplate.opsForValue().set(key, value, 5, TimeUnit.MINUTES);
@@ -43,7 +46,6 @@ public class RedisService {
                 connection -> connection.scan(ScanOptions.scanOptions().match(pattern).build())
         );
 
-        ObjectMapper objectMapper = new ObjectMapper();
 
         // 모든 키에 대해 값을 가져와서 Store 객체로 변환
         while (cursor.hasNext()) {
@@ -64,5 +66,14 @@ public class RedisService {
         }
 
         return stores;
+    }
+
+    public StoreRedisDto getStoreFromRedisById(Long id) throws JsonProcessingException {
+        String storeKey = "store:"+id;
+        Object value = redisTemplate.opsForValue().get(storeKey);
+        if(value==null)
+            throw new StoreNotFoundException();
+        String jsonValue = value.toString();
+        return objectMapper.readValue(jsonValue, StoreRedisDto.class);
     }
 }
