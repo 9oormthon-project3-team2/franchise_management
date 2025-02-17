@@ -2,7 +2,10 @@ package com.goorm.friendchise.domain.headquarter.infrastructure;
 
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
+import com.goorm.friendchise.domain.store.domain.Store;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -35,6 +38,11 @@ public class HeadquarterRepositoryImpl implements HeadquarterRepository {
     @Override
     public Optional<Headquarter> findByFranchiseName(String franchiseName) {
         return jpaHeadquarterRepository.findByFranchiseName(franchiseName);
+    }
+
+    @Override
+    public Page<Store> findStoresByHeadquarterId(Long headquarterId, Pageable pageable) {
+        return jpaHeadquarterRepository.findStoresByHeadquarterId(headquarterId, pageable);
     }
 
     @Override
