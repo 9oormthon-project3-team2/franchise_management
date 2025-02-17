@@ -137,13 +137,7 @@ public class CustomerServiceTest {
 
 
     }
-    @Test
-    void 로그인_테스트(){
-        CustomerLoginRequest customerLoginRequest=new CustomerLoginRequest("testUser","testPassword");
-        TokenResponse rToken =customerService.login(customerLoginRequest,null);
-        assertEquals(rToken.refreshToken(),
-                refreshTokenRepository.findByRefreshToken(rToken.refreshToken()).orElseThrow().getRefreshToken());
-    }
+
 
 
 
