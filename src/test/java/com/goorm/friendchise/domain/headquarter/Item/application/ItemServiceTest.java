@@ -60,6 +60,9 @@ class ItemServiceTest {
     private HeadquarterRepository headquarterRepository;
 
     @Autowired
+    private StoreRepository storeRepository;
+
+    @Autowired
     private ItemRepository itemRepository;
 
     private AuthService authService;
@@ -75,8 +78,9 @@ class ItemServiceTest {
         CustomerRepository customerRepository = new FakeCustomerRepository();
         TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
         RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
-        StoreRepository storeRepository = new FakeStoreRepository();
-        authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository, customerRepository,storeRepository);
+
+        authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository, customerRepository, storeRepository);
+
         itemService = new ItemService(headquarterRepository, itemRepository, authService);
     }
 

@@ -29,6 +29,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -41,9 +45,16 @@ import static com.goorm.friendchise.domain.manager.domain.Role.HEADQUARTER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@ExtendWith(MockitoExtension.class)
 class HeadquarterServiceTest {
+
+	@Mock
+	private StoreRepository storeRepository;
+
 	private HeadquarterService headquarterService;
 	private HeadquarterRepository headquarterRepository;
+
+	@InjectMocks
 	private AuthService authService;
 	private ManagerRepository managerRepository;
 
@@ -52,10 +63,10 @@ class HeadquarterServiceTest {
 		headquarterRepository = new FakeHeadquarterRepository();
 		managerRepository = new FakeManagerRepository();
 		CustomerRepository customerRepository = new FakeCustomerRepository();
-		StoreRepository storeRepository = new FakeStoreRepository();
 		TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
-		authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository, customerRepository,storeRepository);
+		
+    authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository, customerRepository, storeRepository);
 		headquarterService = new HeadquarterService(authService, headquarterRepository);
 	}
 
