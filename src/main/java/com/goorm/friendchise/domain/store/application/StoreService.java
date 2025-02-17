@@ -3,6 +3,7 @@ package com.goorm.friendchise.domain.store.application;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.notification.application.NotificationSseSender;
 import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.domain.store.dto.StoreResDto;
@@ -37,8 +38,9 @@ public class StoreService {
     private final HeadquarterRepository headquarterRepository;
     private final WebClient webClient;
     private final AuthService authService;
+	private final NotificationSseSender notificationSseSender;
 
-    private Manager getCurrentManager(){
+	private Manager getCurrentManager(){
         return authService.findManagerByAuth();
     }
 
@@ -67,8 +69,11 @@ public class StoreService {
 
         Store store = new Store(req, headquarter, currentManager);
         storeRepository.save(store);
+
         currentManager.updateManageId(store.getId());
-    }
+
+		log.info("초기 스토어 생성 완료 storeId = {}", store.getId());
+	}
 
     @Transactional(readOnly = true)
     public StoreResDto getStoreInfo() {

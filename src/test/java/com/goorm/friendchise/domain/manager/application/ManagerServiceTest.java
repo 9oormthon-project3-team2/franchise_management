@@ -2,6 +2,7 @@ package com.goorm.friendchise.domain.manager.application;
 
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
+import com.goorm.friendchise.domain.customer.infrastructure.FakeStoreRepository;
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
@@ -15,6 +16,8 @@ import com.goorm.friendchise.domain.manager.dto.response.ManagerPersistResponse;
 import com.goorm.friendchise.domain.manager.exception.HeadquarterAuthNotMatchException;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.domain.manager.infrastructure.FakeManagerRepository;
+import com.goorm.friendchise.domain.notification.application.NotificationSseSender;
+import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
 import com.goorm.friendchise.global.auth.infrastructure.FakeRefreshTokenRepository;
@@ -51,10 +54,12 @@ class ManagerServiceTest {
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
 		CustomerRepository customerRepository = new FakeCustomerRepository();
 		this.headquarterRepository = new FakeHeadquarterRepository();
+		NotificationSseSender notificationSseSender = new NotificationSseSender();
+		StoreRepository storeRepository = new FakeStoreRepository();
 		AuthService authService = new AuthService(managerRepository, tokenProvider,
-			refreshTokenRepository, headquarterRepository,customerRepository);
+			refreshTokenRepository, headquarterRepository, customerRepository, storeRepository);
 		managerService = new ManagerService(managerRepository, bCryptPasswordEncoder,
-			authService, headquarterRepository);
+			authService, headquarterRepository, notificationSseSender);
 
 		managerRepository.save(
 			Manager.create("test", "test1234", HEADQUARTER)

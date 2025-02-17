@@ -10,6 +10,8 @@ import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.manager.exception.ManagerNotFoundException;
 import com.goorm.friendchise.domain.manager.exception.TokenNotFoundException;
+import com.goorm.friendchise.domain.store.domain.Store;
+import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
 import com.goorm.friendchise.global.auth.domain.RefreshToken;
 import com.goorm.friendchise.global.auth.domain.RefreshTokenRepository;
 import com.goorm.friendchise.global.auth.dto.request.TokenReissueRequest;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 
 import static com.goorm.friendchise.global.exception.ErrorCode.HEADQUARTER_NOT_FOUND;
+import static com.goorm.friendchise.global.exception.ErrorCode.STORE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +39,10 @@ public class AuthService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final HeadquarterRepository headquarterRepository;
 	private final CustomerRepository customerRepository;
+	private final StoreRepository storeRepository;
+
 	private static final String HEADQUARTER_ROLE = "HEADQUARTER";
+	private static final String STORE_ROLE = "STORE";
 	private static final Duration REFRESH_TOKEN_EXP = Duration.ofDays(1);
 	private static final Duration ACCESS_TOKEN_EXP = Duration.ofHours(1);
 
@@ -56,7 +62,7 @@ public class AuthService {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			String username = ((UserDetails) principal).getUsername();
 			return customerRepository.findByUsername(username)
-					.orElseThrow(ManagerNotFoundException::new);
+				.orElseThrow(ManagerNotFoundException::new);
 		} catch (Exception e) {
 			throw new CustomerException(ErrorCode.USER_NOT_FOUND);
 		}
@@ -70,6 +76,10 @@ public class AuthService {
 
 		if (role.equals(HEADQUARTER_ROLE) && manager.getManageId() != null) {
 			accessToken = headquarterAccessToken(manager, role, name);
+		}
+
+		if (role.equals(STORE_ROLE) && manager.getManageId() != null) {
+			accessToken = storeAccessToken(manager, role, name);
 		}
 
 		refreshTokenRepository.save(
@@ -86,7 +96,7 @@ public class AuthService {
 		String refreshToken = tokenProvider.generateToken(name, REFRESH_TOKEN_EXP, "USER");
 
 		refreshTokenRepository.save(
-				RefreshToken.of(refreshToken, customer.getId(),Role.USER )
+			RefreshToken.of(refreshToken, customer.getId(), Role.USER)
 		);
 
 		return TokenResponse.of(accessToken, refreshToken);
@@ -99,6 +109,14 @@ public class AuthService {
 
 		return tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role, manager.getId(),
 			headquarter.getCategory().getValue(), headquarter.getSubCategory().getValue());
+	}
+
+	private String storeAccessToken(Manager manager, String role, String name) {
+		Long manageId = manager.getManageId();
+		Store store = storeRepository.findById(manageId)
+			.orElseThrow(() -> new CustomException(STORE_NOT_FOUND));
+
+		return tokenProvider.generateToken(name, ACCESS_TOKEN_EXP, role, store.getId());
 	}
 
 	public TokenResponse reissue(TokenReissueRequest request) {
