@@ -1,4 +1,4 @@
-create table if not exists friendchise.commercial_area
+create table if not exists mydb.commercial_area
 (
     id         bigint auto_increment
     primary key,
@@ -8,4 +8,4 @@ create table if not exists friendchise.commercial_area
     );
 
 create spatial index geom
-    on friendchise.commercial_area (geom);
+    on mydb.commercial_area (geom);
