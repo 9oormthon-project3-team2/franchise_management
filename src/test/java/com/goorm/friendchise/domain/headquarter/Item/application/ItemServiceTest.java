@@ -2,6 +2,7 @@ package com.goorm.friendchise.domain.headquarter.Item.application;
 
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
+import com.goorm.friendchise.domain.customer.infrastructure.FakeStoreRepository;
 import com.goorm.friendchise.domain.headquarter.Item.domain.Item;
 import com.goorm.friendchise.domain.headquarter.Item.domain.ItemRepository;
 import com.goorm.friendchise.domain.headquarter.Item.dto.ItemReqDto;
@@ -77,7 +78,9 @@ class ItemServiceTest {
         CustomerRepository customerRepository = new FakeCustomerRepository();
         TokenProvider tokenProvider = new TokenProvider(new JwtProperties());
         RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
+
         authService = new AuthService(managerRepository, tokenProvider, refreshTokenRepository, headquarterRepository, customerRepository, storeRepository);
+
         itemService = new ItemService(headquarterRepository, itemRepository, authService);
     }
 

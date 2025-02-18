@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.customer.infrastructure;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 public class FakeStoreRepository implements StoreRepository {
+    private long idGenerator = 1L; // ID 자동 증가 변수
     Headquarter fakeHeadquarter = Headquarter.builder()
             .id(1L)
             .franchiseName("맥도날드")
@@ -37,15 +40,28 @@ public class FakeStoreRepository implements StoreRepository {
             StoreReqDto storeRegisterDto = StoreReqDto
                     .builder()
                     .dong("동").address("Test:" + i).x(37.5665002 + (i * 0.0000001)).y(126.9780002 + (i * 0.0000001)).franchiseName("맥도날드").build();
-            stores.add(new Store(storeRegisterDto,fakeHeadquarter,fakeManager));
+            Store store=new Store(storeRegisterDto,fakeHeadquarter,fakeManager);
+            setIdUsingReflection(store, idGenerator++);
+            stores.add(store);
         }
     }
 
     @Override
-    public <S extends Store> S save(S entity) {
-        return null;
+    public Store  save(Store store) {
+        setIdUsingReflection(store, idGenerator++);
+        stores.add(store);
+        return store;
     }
 
+    private void setIdUsingReflection(Store store, Long id) {
+        try {
+            Field idField = Store.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(store, id);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("ID 설정 실패", e);
+        }
+    }
     @Override
     public <S extends Store> List<S> saveAll(Iterable<S> entities) {
         return List.of();
@@ -53,7 +69,9 @@ public class FakeStoreRepository implements StoreRepository {
 
     @Override
     public Optional<Store> findById(Long aLong) {
-        return Optional.empty();
+        return stores.stream()
+                .filter(store -> store.getId().equals(aLong))
+                .findFirst();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.goorm.friendchise.domain.store.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.friendchise.domain.headquarter.domain.Category;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
@@ -7,6 +9,7 @@ import com.goorm.friendchise.domain.headquarter.domain.SubCategory;
 import com.goorm.friendchise.domain.manager.domain.Manager;
 import com.goorm.friendchise.domain.manager.domain.ManagerRepository;
 import com.goorm.friendchise.domain.store.domain.Store;
+import com.goorm.friendchise.domain.store.dto.StoreRedisDto;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
 import com.goorm.friendchise.domain.store.dto.StoreResDto;
 import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
@@ -18,6 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -48,6 +53,14 @@ class StoreServiceTest {
     @InjectMocks
     private StoreService storeService;
 
+    @Mock
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Mock
+    private ObjectMapper objectMapper;
+    @Mock
+    private ValueOperations<String, Object> mockValueOperations;
+
     @BeforeAll
     static void setUp() {
         headquarter = Headquarter.of("HeadQuarter", Category.FASTFOOD, SubCategory.MEAT);
@@ -63,7 +76,7 @@ class StoreServiceTest {
 
     @DisplayName("인증된 사용자가 Store을 생성합니다.")
     @Test
-    void createStore(){
+    void createStore() throws JsonProcessingException {
      //given
         StoreReqDto reqDto = StoreReqDto.builder()
                 .address("광진구 중곡동")
@@ -80,8 +93,10 @@ class StoreServiceTest {
         when(authService.findManagerByAuth()).thenReturn(storeManager);
         when(headquarterRepository.findByFranchiseName(headquarter.getFranchiseName()))
                 .thenReturn(Optional.ofNullable(headquarter));
-        storeService.createStore(reqDto);
+        when(redisTemplate.opsForValue()).thenReturn(mockValueOperations);
+        when(objectMapper.writeValueAsString(any(StoreRedisDto.class))).thenReturn("jsonString");  // mock 처리
 
+        storeService.createStore(reqDto);
      //then
         verify(headquarterRepository, times(1)).findByFranchiseName(headquarter.getFranchiseName());
         verify(storeRepository).save(any(Store.class));
@@ -180,6 +195,9 @@ class StoreServiceTest {
      //when
         when(authService.findManagerByAuth()).thenReturn(storeManager);
         when(storeRepository.findById(storeManager.getManageId())).thenReturn(Optional.of(store));
+
+        when(redisTemplate.delete("store:" + store.getId())).thenReturn(true);
+
         storeService.deleteStore();
 
         //then
