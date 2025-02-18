@@ -9,10 +9,11 @@ import java.util.List;
 
 public record ChatCompletionRequestDto(
         String model,
-        List<ChatMessage> messages
+        List<ChatMessage> messages,
+        double temperature
 ){
 
     public static ChatCompletionRequestDto of(String model, List<ChatMessage> chatMessages) {
-        return new ChatCompletionRequestDto(model, chatMessages);
+        return new ChatCompletionRequestDto(model, chatMessages, 0);
     }
 }

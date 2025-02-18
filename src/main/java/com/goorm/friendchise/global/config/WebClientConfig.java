@@ -28,7 +28,6 @@ public class WebClientConfig {
     public WebClient webClient() {
         String apiKey = "KakaoAK " + authorization;
 
-        // TODO: Timeout 설정 필요
         return WebClient.builder()
                 .baseUrl("https://dapi.kakao.com/v2/local")
                 .defaultHeaders(httpHeaders -> {

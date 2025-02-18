@@ -31,7 +31,7 @@ public class KakaoApiService {
             return null; // 동일 프랜차이즈 매장이 존재하면 바로 리턴
         }
 
-        Map<String, Mono<KakaoApiResultDto>> totalSearchResults = new HashMap();
+        Map<String, Mono<KakaoApiResultDto>> totalSearchResults = new HashMap<>();
 
         // 2. 동일 업종 경쟁 매장 검색
         Mono<KakaoApiResultDto> sameCategoryStoreResult;

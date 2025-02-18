@@ -25,6 +25,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         log.warn("CustomException 예외 발생, msg:{}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
+        if(errorCode == ErrorCode.WEBCLIENT_ERROR)
+            return ResponseEntity.status(errorCode.getStatus()).body(createErrorResponse(errorCode, e.getMessage()));
         return ResponseEntity.status(errorCode.getStatus()).body(createErrorResponse(errorCode));
     }
 
@@ -72,6 +74,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ErrorResponse.builder()
                 .code(errorCode.name())
                 .message(errorCode.getMessage())
+                .build();
+    }
+
+    private ErrorResponse createErrorResponse(ErrorCode errorCode, String message) {
+        return ErrorResponse.builder()
+                .code(errorCode.name())
+                .message(message)
                 .build();
     }
 
