@@ -10,8 +10,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
     show-sql: true
     generate-ddl: true
+
+  sql:
+    init:
+      mode: never
 
   data:
     jpa:
