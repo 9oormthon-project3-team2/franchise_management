@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
 import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.notification.application.NotificationSseSender;
 import com.goorm.friendchise.domain.store.domain.Store;
 import com.goorm.friendchise.domain.store.dto.StoreRedisDto;
 import com.goorm.friendchise.domain.store.dto.StoreReqDto;
@@ -42,6 +43,7 @@ public class StoreService {
     private final HeadquarterRepository headquarterRepository;
     private final WebClient webClient;
     private final AuthService authService;
+    private final NotificationSseSender notificationSseSender;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper; // JSON 변환용
