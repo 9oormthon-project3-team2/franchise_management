@@ -50,7 +50,7 @@ public class LocationService
     public void saveDestinationLocation(CustomerDestinationRequest request)
     {
         Customer customer = authService.findCustomerByAuth();
-        List<Location> locationList= locationRepository.findByCustomerUsernameOrderByRecordedAtAsc(customer.getUsername());
+        List<Location> locationList= locationRepository.findByCustomerUsernameOrderByRecordedAtDesc(customer.getUsername());
         if(locationList.isEmpty())
             throw new CustomerException(ErrorCode.NOT_FOUND_ADDRESS);
         Location location =locationList.get(0);
