@@ -1,88 +1,49 @@
 package com.goorm.friendchise.domain.headquarter.application;
 
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
+import com.goorm.friendchise.global.exception.CustomException;
+import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+
+import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
 public class KakaoApiClient {
     private final WebClient webClient;
 
-    /*
-     * "키워드로 장소 검색하기" 카카오 지도 API를 사용하여 radius 반경 내 장소 정보를 가져온다. (동기)
-     * @param keyword 검색 키워드
-     * @param y 위도
-     * @param x 경도
-     * @param radius 검색 반경
-     * @return KakaoSearchResDto
-     */
     public KakaoApiResultDto requestPlaceDataByKeywordSync(String keyword, Double y, Double x, int radius) {
         String uri = makeKeywordSearchAPIUri(keyword, y, x, radius);
 
-        return webClient.get()
-                .uri(uri)
-                .retrieve()
-                .bodyToMono(KakaoApiResultDto.class)
-                .block();
+        return getKakaoApiResultDtoMono(uri).block();
     }
 
-    /*
-     * "키워드로 장소 검색하기" 카카오 지도 API를 사용하여 radius 반경 내 장소 정보를 가져온다. (비동기)
-     * @param keyword 검색 키워드
-     * @param y 위도
-     * @param x 경도
-     * @param radius 검색 반경
-     * @return Mono<KakaoSearchResDto>
-     */
     public Mono<KakaoApiResultDto> requestPlaceDataByKeywordAsync(String keyword, Double y, Double x, int radius) {
         String uri = makeKeywordSearchAPIUri(keyword, y, x, radius);
 
-        return webClient.get()
-                .uri(uri)
-                .retrieve()
-                .bodyToMono(KakaoApiResultDto.class);
+        return getKakaoApiResultDtoMono(uri);
     }
 
-    /*
-     * "카테고리로 장소 검색하기" 카카오 지도 API를 사용하여 radius 반경 내 장소 정보를 가져온다. (동기)
-     * @param categoryGroupCode 카테고리 그룹 코드
-     * @param y 위도
-     * @param x 경도
-     * @param radius 검색 반경
-     * @return KakaoSearchResDto
-     */
     public KakaoApiResultDto requestPlaceDataByCategorySync(String categoryGroupCode, Double y, Double x, int radius) {
         String uri = makeCategorySearchAPIUri(categoryGroupCode, y, x, radius);
 
-        return webClient.get()
-                .uri(uri)
-                .retrieve()
-                .bodyToMono(KakaoApiResultDto.class)
-                .block();
+        return getKakaoApiResultDtoMono(uri).block();
     }
 
-    /*
-     * "카테고리로 장소 검색하기" 카카오 지도 API를 사용하여 radius 반경 내 장소 정보를 가져온다. (비동기)
-     * @param categoryGroupCode 카테고리 그룹 코드
-     * @param y 위도
-     * @param x 경도
-     * @param radius 검색 반경
-     * @return Mono<KakaoSearchResDto>
-     */
     public Mono<KakaoApiResultDto> requestPlaceDataByCategoryAsync(String categoryGroupCode, Double y, Double x, int radius) {
         String uri = makeCategorySearchAPIUri(categoryGroupCode, y, x, radius);
 
-        return webClient.get()
-                .uri(uri)
-                .retrieve()
-                .bodyToMono(KakaoApiResultDto.class);
+        return getKakaoApiResultDtoMono(uri);
     }
 
     // 키워드로 장소 검색하기 API URI 생성
+
     private String makeKeywordSearchAPIUri(String keyword, Double y, Double x, int radius) {
         return UriComponentsBuilder.fromPath("/search/keyword.json")
                 .queryParam("query", keyword)
@@ -94,8 +55,8 @@ public class KakaoApiClient {
                 .build()
                 .toUriString();
     }
-
     // 카테고리로 장소 검색하기 API URI 생성
+
     private String makeCategorySearchAPIUri(String categoryGroupCode, Double y, Double x, int radius) {
         return UriComponentsBuilder.fromPath("/search/category.json")
                 .queryParam("category_group_code", categoryGroupCode)
@@ -106,5 +67,17 @@ public class KakaoApiClient {
                 .queryParam("sort", "distance")
                 .build()
                 .toUriString();
+    }
+
+    private Mono<KakaoApiResultDto> getKakaoApiResultDtoMono(String uri) {
+        return webClient.get()
+                .uri(uri)
+                .retrieve()
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new CustomException(ErrorCode.WEBCLIENT_ERROR)))
+                .bodyToMono(KakaoApiResultDto.class)
+                .timeout(Duration.ofSeconds(3))
+                .retryWhen(Retry.backoff(3, Duration.ofMillis(200))
+                        .jitter(0.5));
     }
 }
