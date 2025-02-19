@@ -9,14 +9,14 @@ import java.util.Set;
 public record CustomerDetailResponse(
         Long id,
         String username,
-        Set<Achievement> achievements
+        Double movedDistance
 ) {
     public static CustomerDetailResponse from(Customer customer)
     {
         return CustomerDetailResponse.builder()
                 .id(customer.getId())
                 .username(customer.getUsername())
-                .achievements(customer.getAchievements())
+                .movedDistance(customer.getMovedDistance())
                 .build();
     }
 }
