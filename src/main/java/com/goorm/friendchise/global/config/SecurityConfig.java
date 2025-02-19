@@ -72,7 +72,8 @@ public class SecurityConfig {
 	private static final String[] PUBLIC_ENDPOINTS = {
 		"/manager/**",
 		"/notifications/**",
-		"/promotions/**"
+		"/promotions/**",
+			"/headquarter/store-recommendation-dummy"
 	};
 
 	CorsConfigurationSource corsConfigurationSource() {
