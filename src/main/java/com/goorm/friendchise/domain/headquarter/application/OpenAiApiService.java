@@ -4,6 +4,7 @@ import com.goorm.friendchise.domain.headquarter.dto.openai.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -38,12 +39,23 @@ public class OpenAiApiService {
     public ChatCompletionResponseDto requestChatCompletion(String data) {
         ChatMessage developerRoleMsg = ChatMessage.of(OpenAiRole.DEVELOPER.getValue(), initialSettingMessage);
         ChatMessage userRoleMsg = ChatMessage.of(OpenAiRole.USER.getValue(), data);
-        ChatCompletionRequestDto chatCompletionRequestDto = ChatCompletionRequestDto.of(OpenAiModel.GPT_4o_MINI.getValue(), List.of(developerRoleMsg, userRoleMsg));
+        ChatCompletionRequestDto chatCompletionRequestDto = ChatCompletionRequestDto.of(OpenAiModel.GPT_4o_MINI.getValue(), List.of(developerRoleMsg, userRoleMsg), false);
 
         return webClient.post()
                 .bodyValue(chatCompletionRequestDto)
                 .retrieve()
                 .bodyToMono(ChatCompletionResponseDto.class)
                 .block();
+    }
+
+    public Flux<ChatCompletionResponseDto> requestChatCompletionStream(String data) {
+        ChatMessage developerRoleMsg = ChatMessage.of(OpenAiRole.DEVELOPER.getValue(), initialSettingMessage);
+        ChatMessage userRoleMsg = ChatMessage.of(OpenAiRole.USER.getValue(), data);
+        ChatCompletionRequestDto chatCompletionRequestDto = ChatCompletionRequestDto.of(OpenAiModel.GPT_4o_MINI.getValue(), List.of(developerRoleMsg, userRoleMsg), true);
+
+        return webClient.post()
+                .bodyValue(chatCompletionRequestDto)
+                .retrieve()
+                .bodyToFlux(ChatCompletionResponseDto.class);
     }
 }
