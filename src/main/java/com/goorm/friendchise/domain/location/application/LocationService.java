@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -37,6 +38,7 @@ public class LocationService
                 .customer(customer)
                 .startY(startY)
                 .startX(startX)
+                .recordedAt(LocalDateTime.now())
                 .build();
         locationRepository.save(location);
     }
