@@ -108,7 +108,7 @@ public class CustomerServiceTest {
 
     @Test
     void 유저가져오기(){
-        CustomerDetailResponse detail = customerService.detail("testUser");
+        CustomerDetailResponse detail = customerService.myPage();
         assertEquals("testUser", detail.username());
         assertEquals(1L, detail.id());
     }
