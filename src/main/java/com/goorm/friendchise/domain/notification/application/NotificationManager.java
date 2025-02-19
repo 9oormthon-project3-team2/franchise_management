@@ -6,11 +6,14 @@ import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.domain.notification.domain.Notification;
 import com.goorm.friendchise.domain.notification.domain.NotificationRepository;
 import com.goorm.friendchise.domain.notification.dto.response.ReceivedNotificationResponse;
+import com.goorm.friendchise.domain.notification.event.NotificationDeletedEvent;
+import com.goorm.friendchise.domain.notification.event.NotificationReadEvent;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.exception.CustomException;
 import com.goorm.friendchise.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class NotificationManager {
 	private final NotificationRepository repository;
 	private final AuthService authService;
+	private final ApplicationEventPublisher eventPublisher;
 
 	private Manager getAuthStoreManager() {
 		Manager manager = authService.findManagerByAuth();
@@ -36,7 +40,6 @@ public class NotificationManager {
 		List<Notification> notifications = storeIds.stream()
 			.map(storeId -> Notification.create(storeId.id(), title, content))
 			.collect(Collectors.toList());
-
 		saveAllNotification(notifications);
 		return notifications;
 	}
@@ -44,7 +47,7 @@ public class NotificationManager {
 	@Transactional
 	public void saveAllNotification(List<Notification> notifications) {
 		repository.saveAll(notifications);
-		log.info("알림 {}개 저장 완료", notifications.size());
+		log.info("Saved {} notifications", notifications.size());
 	}
 
 	@Transactional
@@ -60,12 +63,15 @@ public class NotificationManager {
 		}
 
 		notification.markAsRead();
+		log.info("Notification {} marked as read", notificationId);
+		eventPublisher.publishEvent(new NotificationReadEvent(notification));
 	}
-
 
 	@Transactional
 	public void deleteNotification(Long notificationId) {
 		repository.deleteById(notificationId);
+		log.info("Notification {} deleted", notificationId);
+		eventPublisher.publishEvent(new NotificationDeletedEvent(notificationId));
 	}
 
 	@Transactional
@@ -73,13 +79,17 @@ public class NotificationManager {
 		Manager storeManager = getAuthStoreManager();
 		Long storeId = storeManager.getManageId();
 
-		List<Notification> notifications = repository.findByStoreId(storeId);
-		return notifications.stream()
-			.map(notification -> ReceivedNotificationResponse.builder()
-				.title(notification.getTitle())
-				.content(notification.getContent())
-				.isRead(notification.isRead())
-				.build())
+		return repository.findByStoreId(storeId)
+			.stream()
+			.map(this::toReceivedNotificationResponse)
 			.collect(Collectors.toList());
+	}
+
+	private ReceivedNotificationResponse toReceivedNotificationResponse(Notification notification) {
+		return ReceivedNotificationResponse.builder()
+			.title(notification.getTitle())
+			.content(notification.getContent())
+			.isRead(notification.isRead())
+			.build();
 	}
 }

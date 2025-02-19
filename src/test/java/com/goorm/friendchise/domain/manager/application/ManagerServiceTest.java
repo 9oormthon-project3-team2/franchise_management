@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.manager.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeStoreRepository;
@@ -53,7 +54,7 @@ class ManagerServiceTest {
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
 		CustomerRepository customerRepository = new FakeCustomerRepository();
 		this.headquarterRepository = new FakeHeadquarterRepository();
-		NotificationSseSender notificationSseSender = new NotificationSseSender();
+		NotificationSseSender notificationSseSender = new NotificationSseSender(new ObjectMapper());
 		StoreRepository storeRepository = new FakeStoreRepository();
 		AuthService authService = new AuthService(managerRepository, tokenProvider,
 			refreshTokenRepository, headquarterRepository, customerRepository, storeRepository);

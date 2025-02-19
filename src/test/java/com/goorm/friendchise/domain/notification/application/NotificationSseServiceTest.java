@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.notification.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class NotificationSseServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		sseSender = new NotificationSseSender();
+		sseSender = new NotificationSseSender(new ObjectMapper());
 	}
 
 	@Test
@@ -44,7 +45,7 @@ class NotificationSseServiceTest {
 		sseSender.sendSse(targetId, title, content, notificationId);
 
 		// Then
-		// SSEEmitter 내부 동작을 직접 검증하기 어려우므로, 로그 또는 정상 동작 확인
+		// 내부 동작은 로그로 확인하므로, 구독 상태가 유지되는지만 검증
 		assertThat(sseSender.subscribe(targetId)).isNotNull();
 	}
 }
