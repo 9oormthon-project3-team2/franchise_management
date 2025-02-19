@@ -101,7 +101,6 @@ public class StoreRecommendationService {
                 req.x());
 
         if(mono == null) { // 반경 500m 내 동일한 프랜차이즈 매장이 존재할 경우
-//            StreamChoice choice = StreamChoice.of(0, new Delta("반경 500m 내 동일한 프랜차이즈 매장이 존재합니다."));
             return Flux.just("반경 500m 내 동일한 프랜차이즈 매장이 존재합니다.");
         }
 
