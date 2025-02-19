@@ -37,6 +37,7 @@ public class LocationService
                 .customer(customer)
                 .startY(startY)
                 .startX(startX)
+                .recordedAt(LocalDateTime.now())
                 .build();
         locationRepository.save(location);
     }
