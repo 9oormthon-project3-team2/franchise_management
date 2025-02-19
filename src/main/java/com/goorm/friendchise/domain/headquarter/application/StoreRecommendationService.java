@@ -9,6 +9,9 @@ import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoApiResultDto;
 import com.goorm.friendchise.domain.headquarter.dto.kakaomap.KakaoPlaceDto;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto.Choice;
+import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionStreamResponseDto;
+import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionStreamResponseDto.Delta;
+import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionStreamResponseDto.StreamChoice;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatMessage;
 import com.goorm.friendchise.global.aop.ExecutionTime;
 import com.goorm.friendchise.global.exception.CustomException;
@@ -80,7 +83,7 @@ public class StoreRecommendationService {
         return res;
     }
 
-    public Flux<ChatCompletionResponseDto> getRecommendationStream(StoreRecommendReqDto req) {
+    public Flux<String> getRecommendationStream(StoreRecommendReqDto req) {
         // franchiseName, category, subCategory SecurityContextHolder 에서 가져와서 keyword로 사용
         StringBuilder sb = new StringBuilder();
         CommercialArea area = commercialAreaService.getCommercialArea(req.x(), req.y());
@@ -98,8 +101,8 @@ public class StoreRecommendationService {
                 req.x());
 
         if(mono == null) { // 반경 500m 내 동일한 프랜차이즈 매장이 존재할 경우
-            Choice choice = Choice.of(ChatMessage.of("assistant", "반경 500m 내 동일한 프랜차이즈 매장이 존재합니다."));
-            return Flux.just(ChatCompletionResponseDto.of(List.of(choice), new ChatCompletionResponseDto.Usage(0, 0)));
+//            StreamChoice choice = StreamChoice.of(0, new Delta("반경 500m 내 동일한 프랜차이즈 매장이 존재합니다."));
+            return Flux.just("반경 500m 내 동일한 프랜차이즈 매장이 존재합니다.");
         }
 
         Map<String, KakaoApiResultDto> totalPlaceData = mono.block();

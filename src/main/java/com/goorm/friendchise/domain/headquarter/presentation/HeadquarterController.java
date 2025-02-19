@@ -10,6 +10,7 @@ import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterReqDt
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.HeadquarterResDto;
 import com.goorm.friendchise.domain.headquarter.dto.headquarter.StoreRecommendReqDto;
 import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionResponseDto;
+import com.goorm.friendchise.domain.headquarter.dto.openai.ChatCompletionStreamResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.converters.models.PageableAsQueryParam;
@@ -72,7 +73,7 @@ public class HeadquarterController {
     }
 
     @PostMapping(value = "/store-recommendation-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<Flux<ChatCompletionResponseDto>> getRecommendationStreamResult(@Valid @RequestBody StoreRecommendReqDto req) {
+    public ResponseEntity<Flux<String>> getRecommendationStreamResult(@Valid @RequestBody StoreRecommendReqDto req) {
         return ResponseEntity.ok().body(storeRecommendationService.getRecommendationStream(req));
     }
 
