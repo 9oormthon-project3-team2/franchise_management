@@ -28,15 +28,15 @@ public class NotificationEventHandler {
 		sendNotifications(notifications);
 	}
 
-	@EventListener
-	public void handleNotificationRead(NotificationReadEvent event) {
-		log.info("알림 읽음 이벤트 감지: 알림ID={}", event.getNotification().getId());
-	}
-
-	@EventListener
-	public void handleNotificationDeleted(NotificationDeletedEvent event) {
-		log.info("알림 삭제 이벤트 감지: 알림ID={}", event.getNotificationId());
-	}
+//	@EventListener
+//	public void handleNotificationRead(NotificationReadEvent event) {
+//		log.info("알림 읽음 이벤트 감지: 알림ID={}", event.getNotification().getId());
+//	}
+//
+//	@EventListener
+//	public void handleNotificationDeleted(NotificationDeletedEvent event) {
+//		log.info("알림 삭제 이벤트 감지: 알림ID={}", event.getNotificationId());
+//	}
 
 	private List<Notification> processPromotionNotification(PromotionCreatedEvent event) {
 		Long headquarterId = event.getPromotion().getHeadquarterId();
