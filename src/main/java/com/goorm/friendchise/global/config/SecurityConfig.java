@@ -70,7 +70,7 @@ public class SecurityConfig {
 
 	// TODO 추후 권한별 분리 할때 세분화
 	private static final String[] PUBLIC_ENDPOINTS = {
-		"/customer/register",
+		"/customer/**",
 		"/manager/**",
 		"/notifications/**",
 		"/promotions/**"
