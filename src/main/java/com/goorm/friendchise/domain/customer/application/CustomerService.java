@@ -69,7 +69,7 @@ public class CustomerService {
         Customer customer =findCustomerByUsername(request.username());
         customer.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
-        locationService.saveStartLocation(request.startY(),request.startX());
+        locationService.saveStartLocation(request.startY(),request.startX(),customer);
 
         return authService.customerLogin(customer);
     }
