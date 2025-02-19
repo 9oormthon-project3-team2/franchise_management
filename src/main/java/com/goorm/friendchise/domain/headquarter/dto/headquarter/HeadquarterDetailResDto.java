@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record HeadquarterDetailResDto(
         Long id,
         String franchiseName,
