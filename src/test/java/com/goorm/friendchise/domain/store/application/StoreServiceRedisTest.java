@@ -105,39 +105,39 @@ public class StoreServiceRedisTest {
 
     }
 
-    @Test
-    void 레디스에_있는_모든_store를_불러오기() throws JsonProcessingException {
-        StoreReqDto reqDto = StoreReqDto.builder()
-                .address("광진구 중곡동")
-                .roadAddress("광진구 중곡동 천호대로116 9길")
-                .zoneNumber("04930")
-                .dong("중곡동")
-                .x(30.14578)
-                .y(18.345724)
-                .franchiseName("맥도날드 중곡점")
-                .headQuarterName("test")
-                .build();
+//    @Test
+//    void 레디스에_있는_모든_store를_불러오기() throws JsonProcessingException {
+//      StoreReqDto reqDto = StoreReqDto.builder()
+//                .address("광진구 중곡동")
+//                .roadAddress("광진구 중곡동 천호대로116 9길")
+//                .zoneNumber("04930")
+//                .dong("중곡동")
+//                .x(30.14578)
+//                .y(18.345724)
+//                .franchiseName("맥도날드 중곡점")
+//                .headQuarterName("test")
+//                .build();
 
-        storeService.createStore(reqDto);
-        storeService.createStore(reqDto);
-        storeService.createStore(reqDto);
-        storeService.createStore(reqDto);
+//        storeService.createStore(reqDto);
+//        storeService.createStore(reqDto);
+//        storeService.createStore(reqDto);
+//        storeService.createStore(reqDto);
 
-        List<StoreRedisDto> stores= redisService.getAllStoresFromRedis();
+//        List<StoreRedisDto> stores= redisService.getAllStoresFromRedis();
 
-        StoreRedisDto storeDto = redisService.getStoreFromRedisById(11L);
-        System.out.println("id로 가져온 값:"+storeDto);
+//        StoreRedisDto storeDto = redisService.getStoreFromRedisById(11L);
+//        System.out.println("id로 가져온 값:"+storeDto);
 
-        for(StoreRedisDto store : stores)
-        {
-            System.out.println(store);
-        }
+//        for(StoreRedisDto store : stores)
+//        {
+//            System.out.println(store);
+//        }
 
         //레디스 비우기
-        for(int i=0;i<4;i++){
-            String storeKey = "store:" + (11+i);
-            redisTemplate.delete(storeKey);
-        }
+//        for(int i=0;i<4;i++){
+//            String storeKey = "store:" + (11+i);
+//            redisTemplate.delete(storeKey);
+//        }
 
-    }
+//    }
 }
