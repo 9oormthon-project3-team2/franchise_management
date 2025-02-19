@@ -4,7 +4,6 @@ package com.goorm.friendchise.domain.location.application;
 import com.goorm.friendchise.domain.customer.application.CustomerDistanceService;
 import com.goorm.friendchise.domain.customer.domain.Customer;
 import com.goorm.friendchise.domain.customer.dto.request.CustomerDestinationRequest;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerStartLocationRequest;
 import com.goorm.friendchise.domain.customer.exception.CustomerException;
 import com.goorm.friendchise.domain.location.domain.Location;
 import com.goorm.friendchise.domain.location.domain.LocationRepository;
@@ -32,13 +31,13 @@ public class LocationService
 
     private final CustomerDistanceService customerDistanceService;
     @Transactional
-    public void saveStartLocation(CustomerStartLocationRequest request)
+    public void saveStartLocation(Double startY, Double startX)
     {
         Customer customer = authService.findCustomerByAuth();
         Location location = Location.builder()
                 .customer(customer)
-                .startY(request.startY())
-                .startX(request.startX())
+                .startY(startY)
+                .startX(startX)
                 .build();
         locationRepository.save(location);
     }
