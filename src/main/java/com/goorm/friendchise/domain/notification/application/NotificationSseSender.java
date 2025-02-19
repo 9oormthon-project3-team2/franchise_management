@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class NotificationSseSender {
 	private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+	private final ObjectMapper objectMapper;
 
 	public void sendSse(Long targetId, String title, String content, Long notificationId) {
 		SseEmitter emitter = emitters.get(targetId);
@@ -33,9 +34,7 @@ public class NotificationSseSender {
 			payload.put("title", title);
 			payload.put("content", content);
 
-			// Gson 또는 Jackson으로 직렬화
-			String json = new ObjectMapper().writeValueAsString(payload);
-
+			String json = objectMapper.writeValueAsString(payload);
 			emitter.send(SseEmitter.event().name("Promotion").data(json));
 			log.info("✅ SSE 전송 성공: targetId={}", targetId);
 		} catch (IOException e) {
