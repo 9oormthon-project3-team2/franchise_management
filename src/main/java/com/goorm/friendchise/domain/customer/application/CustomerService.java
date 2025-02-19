@@ -79,10 +79,9 @@ public class CustomerService {
         locationService.saveDestinationLocation(request);
     }
 
-    public CustomerDetailResponse detail(String username)
+    public CustomerDetailResponse myPage()
     {
-        Customer customer =findCustomerByUsername(username);
-        return CustomerDetailResponse.from(customer);
+        return CustomerDetailResponse.from( authService.findCustomerByAuth());
     }
 
     @Transactional

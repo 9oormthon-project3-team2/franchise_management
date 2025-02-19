@@ -43,10 +43,9 @@ public class CustomerController
     }
 
 
-    @GetMapping("/detail")
-    public ResponseEntity<CustomerDetailResponse> getCustomerDetail(@RequestParam String username) {
-        CustomerDetailResponse response = customerService.detail(username);
-        return ResponseEntity.ok(response);
+    @GetMapping("/mypage")
+    public ResponseEntity<CustomerDetailResponse> myPage() {
+        return ResponseEntity.ok(customerService.myPage());
     }
 
 
