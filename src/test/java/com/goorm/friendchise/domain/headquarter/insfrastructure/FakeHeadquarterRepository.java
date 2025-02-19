@@ -2,12 +2,12 @@ package com.goorm.friendchise.domain.headquarter.insfrastructure;
 
 import com.goorm.friendchise.domain.headquarter.domain.Headquarter;
 import com.goorm.friendchise.domain.headquarter.domain.HeadquarterRepository;
-import com.goorm.friendchise.domain.notification.domain.Notification;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeHeadquarterRepository implements HeadquarterRepository {
@@ -20,6 +20,7 @@ public class FakeHeadquarterRepository implements HeadquarterRepository {
                 .franchiseName(headquarter.getFranchiseName())
                 .category(headquarter.getCategory())
                 .subCategory(headquarter.getSubCategory())
+            	.certificationNumber(UUID.randomUUID().toString())
                 .build();
         headquarters.add(savedHeadquarter);
         return savedHeadquarter;
