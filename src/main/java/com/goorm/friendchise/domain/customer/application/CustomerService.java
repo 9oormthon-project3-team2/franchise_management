@@ -64,12 +64,12 @@ public class CustomerService {
         return CustomerPersistResponse.of(customer);
     }
 
-    public TokenResponse login(CustomerLoginRequest request,
-                               CustomerStartLocationRequest locationRequest) {
+    public TokenResponse login(CustomerLoginRequest request
+                               ) {
         Customer customer =findCustomerByUsername(request.username());
         customer.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
-        locationService.saveStartLocation(locationRequest);
+        locationService.saveStartLocation(request.startY(),request.startX());
 
         return authService.customerLogin(customer);
     }

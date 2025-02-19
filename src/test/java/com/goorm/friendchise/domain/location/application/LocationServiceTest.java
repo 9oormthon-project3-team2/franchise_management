@@ -4,10 +4,7 @@ import com.goorm.friendchise.domain.customer.application.CustomerDistanceService
 import com.goorm.friendchise.domain.customer.application.CustomerService;
 import com.goorm.friendchise.domain.customer.domain.Customer;
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerCreateRequest;
 import com.goorm.friendchise.domain.customer.dto.request.CustomerDestinationRequest;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerStartLocationRequest;
-import com.goorm.friendchise.domain.customer.dto.response.CustomerPersistResponse;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeStoreRepository;
 import com.goorm.friendchise.domain.location.domain.Location;
@@ -60,10 +57,8 @@ public class LocationServiceTest {
     @Test
     void 출발지점_도착지점_기록()
     {
-        //로그인 상황
-        CustomerStartLocationRequest request=
-                new CustomerStartLocationRequest(15.555555,14.222222);
-        locationService.saveStartLocation(request);
+
+        locationService.saveStartLocation(15.555555,14.222222);
         Location location=fakeLocationRepository.findAll().get(0);
         assertEquals(14.222222, location.getStartX());
         assertEquals(15.555555, location.getStartY());

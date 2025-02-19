@@ -29,9 +29,10 @@ public class CustomerController
 
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid CustomerLoginRequest request,
-                                               @RequestBody @Valid CustomerStartLocationRequest locationRequest) {
-        TokenResponse response = customerService.login(request,locationRequest);
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid CustomerLoginRequest request
+    )
+    {
+        TokenResponse response = customerService.login(request);
         return ResponseEntity.ok(response);
     }
 
