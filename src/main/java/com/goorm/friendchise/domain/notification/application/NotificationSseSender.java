@@ -45,7 +45,7 @@ public class NotificationSseSender {
 
 
 	public SseEmitter subscribe(Long targetId) {
-		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+		SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
 		emitters.put(targetId, emitter);
 
 		log.info("해당 매장 구독 완료 {}", targetId);
