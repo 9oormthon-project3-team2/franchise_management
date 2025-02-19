@@ -7,9 +7,9 @@ spring:
   application:
     name: friendchise
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:friendchise}
+    url: jdbc:mysql://database-1.chgq0y8mip6h.ap-northeast-2.rds.amazonaws.com:3306/mydb
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
