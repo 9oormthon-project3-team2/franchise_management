@@ -31,9 +31,8 @@ public class LocationService
 
     private final CustomerDistanceService customerDistanceService;
     @Transactional
-    public void saveStartLocation(Double startY, Double startX)
+    public void saveStartLocation(Double startY, Double startX,Customer customer)
     {
-        Customer customer = authService.findCustomerByAuth();
         Location location = Location.builder()
                 .customer(customer)
                 .startY(startY)

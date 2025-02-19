@@ -30,6 +30,7 @@ public class LocationServiceTest {
 
 
     private final FakeLocationRepository fakeLocationRepository = new FakeLocationRepository();
+    Customer customer=Customer.builder().id(1L).username("test").password("sddd").build();
     @BeforeEach
     public void setUp() {
         JwtProperties jwtProperties = new JwtProperties();
@@ -45,7 +46,6 @@ public class LocationServiceTest {
         CustomerDistanceService customerDistanceService=new CustomerDistanceService(customerRepository);
         locationService=new LocationService(authService,fakeLocationRepository,customerDistanceService);
 
-        Customer customer=Customer.builder().id(1L).username("test").password("sddd").build();
         customerRepository.save(customer);
 
         SecurityContext context = SecurityContextHolder.getContext();
@@ -58,7 +58,7 @@ public class LocationServiceTest {
     void 출발지점_도착지점_기록()
     {
 
-        locationService.saveStartLocation(15.555555,14.222222);
+        locationService.saveStartLocation(15.555555,14.222222,customer);
         Location location=fakeLocationRepository.findAll().get(0);
         assertEquals(14.222222, location.getStartX());
         assertEquals(15.555555, location.getStartY());
