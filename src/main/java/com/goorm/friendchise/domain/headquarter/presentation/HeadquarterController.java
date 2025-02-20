@@ -16,6 +16,7 @@ import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @RequestMapping("/headquarter")
+@Secured("ROLE_HEADQUARTER")
 public class HeadquarterController {
     private final HeadquarterService headquarterService;
     private final ItemService itemService;
