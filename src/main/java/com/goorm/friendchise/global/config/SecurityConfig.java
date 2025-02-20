@@ -72,7 +72,8 @@ public class SecurityConfig {
 		"*/register",
 		"*/login",
 		"*/reissue",
-		"/headquarter/store-recommendation-dummy"
+		"/headquarter/store-recommendation-dummy",
+		"/headquarter/store-recommendation-stream"
 	};
 
 	CorsConfigurationSource corsConfigurationSource() {
