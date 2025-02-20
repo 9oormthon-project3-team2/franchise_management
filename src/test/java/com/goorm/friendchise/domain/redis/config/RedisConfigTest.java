@@ -2,6 +2,7 @@ package com.goorm.friendchise.domain.redis.config;
 
 import com.goorm.friendchise.domain.store.domain.Store;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -12,7 +13,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 
-@Configuration
+@TestConfiguration
 public class RedisConfigTest {
 
     @Value("${EC2_HOST}") //EC2와 주소가 같습니다
