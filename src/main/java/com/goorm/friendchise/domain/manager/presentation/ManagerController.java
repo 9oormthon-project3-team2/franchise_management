@@ -12,6 +12,7 @@ import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +50,7 @@ public class ManagerController {
 		return ResponseEntity.ok(managerService.mypage());
 	}
 
+	@Secured({"ROLE_HEADQUARTER", "ROLE_STORE"})
 	@PutMapping("/update/store-id")
 	public ResponseEntity<Void> update(
 		@RequestParam Long newStoreId
@@ -57,6 +59,7 @@ public class ManagerController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Secured({"ROLE_HEADQUARTER", "ROLE_STORE"})
 	@PutMapping("/update/password")
 	public ResponseEntity<Void> updatePassword(
 		@RequestBody @Valid ManagerPasswordRequest request
