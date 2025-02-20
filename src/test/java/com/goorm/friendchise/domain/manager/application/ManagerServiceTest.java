@@ -1,5 +1,6 @@
 package com.goorm.friendchise.domain.manager.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeStoreRepository;
@@ -40,7 +41,6 @@ import static com.goorm.friendchise.domain.manager.domain.Role.STORE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ManagerServiceTest {
 	private ManagerService managerService;
@@ -54,16 +54,22 @@ class ManagerServiceTest {
 		RefreshTokenRepository refreshTokenRepository = new FakeRefreshTokenRepository();
 		CustomerRepository customerRepository = new FakeCustomerRepository();
 		this.headquarterRepository = new FakeHeadquarterRepository();
-		NotificationSseSender notificationSseSender = new NotificationSseSender();
+		NotificationSseSender notificationSseSender = new NotificationSseSender(new ObjectMapper());
 		StoreRepository storeRepository = new FakeStoreRepository();
 		AuthService authService = new AuthService(managerRepository, tokenProvider,
 			refreshTokenRepository, headquarterRepository, customerRepository, storeRepository);
 		managerService = new ManagerService(managerRepository, bCryptPasswordEncoder,
 			authService, headquarterRepository, notificationSseSender);
 
-		managerRepository.save(
+		Manager savedManager = managerRepository.save(
 			Manager.create("test", "test1234", HEADQUARTER)
 		);
+
+		Headquarter headquarter = headquarterRepository.save(
+			Headquarter.of("Mcdonald", Category.FASTFOOD, SubCategory.NONE)
+		);
+
+		savedManager.updateManageId(headquarter.getId());
 
 		UserDetails manger = managerService.findManagerByUsername("test");
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -163,7 +169,7 @@ class ManagerServiceTest {
 		assertEquals(1L, detail.id());
 		assertEquals(inputName, detail.username());
 		assertEquals(HEADQUARTER, detail.role());
-		assertNull(detail.manageId());
+		assertEquals(1L, detail.manageId());
 	}
 
 	@Test
@@ -177,6 +183,8 @@ class ManagerServiceTest {
 		assertEquals(1L, mypage.id());
 		assertEquals("test", mypage.username());
 		assertEquals(HEADQUARTER, mypage.role());
+		assertEquals(1L, mypage.manageId());
+		assertNotNull(mypage.certificationNumber());
 	}
 
 	@Test
@@ -236,7 +244,7 @@ class ManagerServiceTest {
 		assertEquals(inputName, manager.getUsername());
 		assertEquals("test1234", manager.getPassword());
 		assertEquals(HEADQUARTER, manager.getRole());
-		assertNull(manager.getManageId());
+		assertEquals(1L, manager.getManageId());
 	}
 
 	@Test

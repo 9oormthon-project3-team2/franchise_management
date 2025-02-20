@@ -5,16 +5,15 @@ import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
 import com.goorm.friendchise.domain.customer.dto.request.*;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerDetailResponse;
 import com.goorm.friendchise.domain.customer.dto.response.CustomerPersistResponse;
-import com.goorm.friendchise.domain.customer.dto.response.CustomerTokenResponse;
 import com.goorm.friendchise.domain.customer.exception.CustomerException;
 import com.goorm.friendchise.domain.location.application.LocationService;
 import com.goorm.friendchise.domain.store.application.StoreService;
-import com.goorm.friendchise.domain.store.domain.Store;
-import com.goorm.friendchise.domain.store.infrastructure.StoreRepository;
+import com.goorm.friendchise.domain.store.dto.StoreRedisDto;
 import com.goorm.friendchise.global.auth.application.AuthService;
 import com.goorm.friendchise.global.auth.dto.response.TokenResponse;
 import com.goorm.friendchise.global.auth.util.DistanceCalculator;
 import com.goorm.friendchise.global.exception.ErrorCode;
+import com.goorm.friendchise.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -38,10 +36,9 @@ import java.util.concurrent.TimeUnit;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final StoreRepository storeRepository;
     private final KaKaoApiService kakaoApiService;
     private final RedisTemplate<String, String> redisTemplate;
-    private static final Logger log = LoggerFactory.getLogger(StoreService.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
     private final ConcurrentHashMap<String, Object> locks = new ConcurrentHashMap<>();
 
     private static final int API_TIMEOUT = 3; // OpenAPI 호출 제한 시간 (초)
@@ -50,6 +47,8 @@ public class CustomerService {
     private static final String CACHE_PREFIX = "nearestStore:";
     private final AuthService authService;
     private final LocationService locationService;
+    private final RedisService redisService;
+    private final StoreService storeService;
     // 🕒 서비스 실행 시작 시간
     private Instant serviceStartTime = Instant.now();
 
@@ -64,26 +63,27 @@ public class CustomerService {
                 Customer.builder().username(request.username()).password(bCryptPasswordEncoder.encode(request.password())).build());
         return CustomerPersistResponse.of(customer);
     }
-
-    public TokenResponse login(CustomerLoginRequest request,
-                               CustomerStartLocationRequest locationRequest) {
+    
+    @Transactional
+    public TokenResponse login(CustomerLoginRequest request
+                               ) {
         Customer customer =findCustomerByUsername(request.username());
         customer.isPasswordMatch(request.password(), bCryptPasswordEncoder);
 
-        locationService.saveStartLocation(locationRequest);
+        locationService.saveStartLocation(request.startY(),request.startX(),customer);
 
         return authService.customerLogin(customer);
     }
 
+    @Transactional
     public void logout(CustomerDestinationRequest request)
     {
         locationService.saveDestinationLocation(request);
     }
 
-    public CustomerDetailResponse detail(String username)
+    public CustomerDetailResponse myPage()
     {
-        Customer customer =findCustomerByUsername(username);
-        return CustomerDetailResponse.from(customer);
+        return CustomerDetailResponse.from( authService.findCustomerByAuth());
     }
 
     @Transactional
@@ -121,7 +121,7 @@ public class CustomerService {
                 if(nearestAddress.contains("cached"))
                     return nearestAddress.split(" ")[0];
                 double elapsedTime = Duration.between(serviceStartTime, Instant.now()).toMillis(); // 실행 시간(ms)
-                log.info("✅ OPENAPI로 찾은 매장: " + nearestAddress +"응답시간: " +elapsedTime/1000+"초");
+                log.info("✅ OPENAPI로 찾은 매장: " + nearestAddress +" 응답시간: " +elapsedTime/1000+"초");
                 return nearestAddress;
             }
 
@@ -146,9 +146,9 @@ public class CustomerService {
                 String cachedAddress = redisTemplate.opsForValue().get(cacheKey);
                 if(cachedAddress != null)
                     return logCacheHit("3차",cachedAddress);
-                Store nearestStore=calculateNearestStore(address,franchiseName);
-                redisTemplate.opsForValue().set(cacheKey, nearestStore.getAddress(), CACHE_EXPIRATION, TimeUnit.MINUTES);
-                return nearestStore.getAddress();
+                String nearestStoreAddress=calculateNearestStore(address,franchiseName);
+                redisTemplate.opsForValue().set(cacheKey, nearestStoreAddress, CACHE_EXPIRATION, TimeUnit.MINUTES);
+                return nearestStoreAddress;
             } finally {
                 locks.remove(address);
             }
@@ -156,22 +156,25 @@ public class CustomerService {
         }
     }
 
-    private Store calculateNearestStore(String address, String franchiseName) {
+    private String calculateNearestStore(String address, String franchiseName) {
         return CompletableFuture
                 .supplyAsync(() -> kakaoApiService.getCoordinatesByAddress(address))
                 .orTimeout(API_TIMEOUT, TimeUnit.SECONDS)
                 .thenApply(customerCoordinates -> {
-                    List<Store> stores = storeRepository.findAll();
+                    List<StoreRedisDto> stores = redisService.getAllStoresFromRedis();
 
+                    if (stores.isEmpty()) {
+                        stores = storeService.fetchAndCacheStoresFromDB();
+                    }
                     return stores.stream()
-                            .filter(store -> store.getFranchiseName().equals(franchiseName))
+                            .filter(store -> store.franchiseName().equals(franchiseName))
                             .min(Comparator.comparing(store -> DistanceCalculator.calculateDistance(
                                     customerCoordinates.getPointY(), customerCoordinates.getPointX(),
-                                    store.getPointY(), store.getPointX()
+                                    store.pointY(), store.pointX()
                             )))
                             .orElseThrow(() -> new CustomerException(ErrorCode.NEAR_STORE_NOT_FOUND));
                 })
-                .join();
+                .join().address();
     }
 
     private String logCacheHit(String cacheLevel, String cachedAddress) {
@@ -181,4 +184,5 @@ public class CustomerService {
             cachedAddress+=" cached";
         return cachedAddress;
     }
+
 }

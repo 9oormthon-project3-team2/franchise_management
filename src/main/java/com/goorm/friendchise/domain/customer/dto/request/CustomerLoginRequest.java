@@ -10,6 +10,11 @@ public record CustomerLoginRequest(
 
         @NotBlank()
         @Size(min = 8, max = 15)
-        String password)
+        String password,
+        Double startY,
+        Double startX
+
+)
+
 {
 }

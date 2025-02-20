@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 
@@ -21,12 +22,14 @@ class NotificationManagerTest {
 	private NotificationManager notificationManager;
 	private FakeNotificationRepository repository;
 	private AuthService authService;
+	private ApplicationEventPublisher eventPublisher;
 
 	@BeforeEach
 	void setUp() {
 		repository = new FakeNotificationRepository();
 		authService = Mockito.mock(AuthService.class);
-		notificationManager = new NotificationManager(repository, authService);
+		eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+		notificationManager = new NotificationManager(repository, authService, eventPublisher);
 	}
 
 	@Test

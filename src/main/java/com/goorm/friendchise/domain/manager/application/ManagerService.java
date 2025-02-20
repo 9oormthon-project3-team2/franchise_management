@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.goorm.friendchise.domain.manager.domain.Role.HEADQUARTER;
 import static com.goorm.friendchise.domain.manager.domain.Role.STORE;
 import static com.goorm.friendchise.global.exception.ErrorCode.HEADQUARTER_NOT_FOUND;
 import static com.goorm.friendchise.global.exception.ErrorCode.INVALID_PARAMETER;
@@ -68,6 +69,12 @@ public class ManagerService {
 
 	public ManagerDetailResponse mypage() {
 		Manager manager = authService.findManagerByAuth();
+
+		if (manager.getRole().equals(HEADQUARTER)) {
+			Headquarter headquarter = headquarterRepository.findById(manager.getManageId())
+				.orElseThrow(() -> new CustomException(HEADQUARTER_NOT_FOUND));
+			return ManagerDetailResponse.fromHeadquarter(manager, headquarter.getCertificationNumber());
+		}
 		return ManagerDetailResponse.from(manager);
 	}
 

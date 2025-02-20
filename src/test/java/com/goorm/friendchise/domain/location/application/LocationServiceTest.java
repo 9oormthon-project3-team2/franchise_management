@@ -1,11 +1,10 @@
 package com.goorm.friendchise.domain.location.application;
 
+import com.goorm.friendchise.domain.customer.application.CustomerDistanceService;
+import com.goorm.friendchise.domain.customer.application.CustomerService;
 import com.goorm.friendchise.domain.customer.domain.Customer;
 import com.goorm.friendchise.domain.customer.domain.CustomerRepository;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerCreateRequest;
 import com.goorm.friendchise.domain.customer.dto.request.CustomerDestinationRequest;
-import com.goorm.friendchise.domain.customer.dto.request.CustomerStartLocationRequest;
-import com.goorm.friendchise.domain.customer.dto.response.CustomerPersistResponse;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeCustomerRepository;
 import com.goorm.friendchise.domain.customer.infrastructure.FakeStoreRepository;
 import com.goorm.friendchise.domain.location.domain.Location;
@@ -31,6 +30,7 @@ public class LocationServiceTest {
 
 
     private final FakeLocationRepository fakeLocationRepository = new FakeLocationRepository();
+    Customer customer=Customer.builder().id(1L).username("test").password("sddd").build();
     @BeforeEach
     public void setUp() {
         JwtProperties jwtProperties = new JwtProperties();
@@ -40,8 +40,12 @@ public class LocationServiceTest {
         StoreRepository storeRepository = new FakeStoreRepository();
         AuthService authService = new AuthService(null, tokenProvider,
             refreshTokenRepository, null, customerRepository, storeRepository);
-        locationService=new LocationService(authService,fakeLocationRepository);
-        Customer customer=Customer.builder().id(1L).username("test").password("sddd").build();
+
+        CustomerService customerService =new CustomerService(customerRepository,
+                null,null,null,null,null,null,null);
+        CustomerDistanceService customerDistanceService=new CustomerDistanceService(customerRepository);
+        locationService=new LocationService(authService,fakeLocationRepository,customerDistanceService);
+
         customerRepository.save(customer);
 
         SecurityContext context = SecurityContextHolder.getContext();
@@ -53,10 +57,8 @@ public class LocationServiceTest {
     @Test
     void 출발지점_도착지점_기록()
     {
-        //로그인 상황
-        CustomerStartLocationRequest request=
-                new CustomerStartLocationRequest(15.555555,14.222222);
-        locationService.saveStartLocation(request);
+
+        locationService.saveStartLocation(15.555555,14.222222,customer);
         Location location=fakeLocationRepository.findAll().get(0);
         assertEquals(14.222222, location.getStartX());
         assertEquals(15.555555, location.getStartY());
@@ -67,6 +69,7 @@ public class LocationServiceTest {
                 new CustomerDestinationRequest(16.555555,15.222222);
         locationService.saveDestinationLocation(dRequest);
         Location dLocation=fakeLocationRepository.findAll().get(0);
+        System.out.println(dLocation.getCustomer().getMovedDistance()+"km를 걸었습니다.");
         assertEquals(15.222222, dLocation.getDestinationX());
         assertEquals(16.555555, dLocation.getDestinationY());
     }

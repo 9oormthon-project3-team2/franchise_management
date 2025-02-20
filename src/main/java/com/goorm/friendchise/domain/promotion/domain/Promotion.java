@@ -1,11 +1,15 @@
-
 package com.goorm.friendchise.domain.promotion.domain;
 
+import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.manager.domain.Role;
 import com.goorm.friendchise.global.common.BaseEntity;
+import com.goorm.friendchise.global.exception.CustomException;
+import com.goorm.friendchise.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -32,13 +36,20 @@ public class Promotion extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
-    public static Promotion create(Long headquarterId, String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
-        return Promotion.builder()
-                .headquarterId(headquarterId)
-                .title(title)
-                .content(content)
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
-    }
+	public static Promotion create(Manager manager, String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
+		if (manager.getRole() != Role.HEADQUARTER) {
+			throw new CustomException(ErrorCode.NO_HEADQUARTER_AUTHENTICATION_ERROR);
+		}
+
+		Long headquarterId = Optional.ofNullable(manager.getManageId())
+			.orElseThrow(() -> new CustomException(ErrorCode.HEADQUARTER_NOT_FOUND));
+
+		return Promotion.builder()
+			.headquarterId(headquarterId)
+			.title(title)
+			.content(content)
+			.startDate(startDate)
+			.endDate(endDate)
+			.build();
+	}
 }

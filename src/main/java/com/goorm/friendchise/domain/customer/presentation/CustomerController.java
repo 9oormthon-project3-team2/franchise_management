@@ -29,9 +29,10 @@ public class CustomerController
 
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid CustomerLoginRequest request,
-                                               @RequestBody @Valid CustomerStartLocationRequest locationRequest) {
-        TokenResponse response = customerService.login(request,locationRequest);
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid CustomerLoginRequest request
+    )
+    {
+        TokenResponse response = customerService.login(request);
         return ResponseEntity.ok(response);
     }
 
@@ -43,10 +44,9 @@ public class CustomerController
     }
 
 
-    @GetMapping("/detail")
-    public ResponseEntity<CustomerDetailResponse> getCustomerDetail(@RequestParam String username) {
-        CustomerDetailResponse response = customerService.detail(username);
-        return ResponseEntity.ok(response);
+    @GetMapping("/mypage")
+    public ResponseEntity<CustomerDetailResponse> myPage() {
+        return ResponseEntity.ok(customerService.myPage());
     }
 
 
@@ -59,7 +59,8 @@ public class CustomerController
 
 
     @GetMapping("/nearest-store")
-    public ResponseEntity<String> findNearestStore(@RequestBody @Valid CustomerRecommendStoreRequest request) {
+    public ResponseEntity<String> findNearestStore(@RequestParam String address, @RequestParam String franchiseName) {
+        CustomerRecommendStoreRequest request = new CustomerRecommendStoreRequest(address, franchiseName);
         String storeAddress = customerService.findNearestStoreWithCache(request);
         return ResponseEntity.ok(storeAddress);
     }

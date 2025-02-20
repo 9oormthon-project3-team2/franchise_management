@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class StoreService {
     private final HeadquarterRepository headquarterRepository;
     private final WebClient webClient;
     private final AuthService authService;
-	private final NotificationSseSender notificationSseSender;
+    private final NotificationSseSender notificationSseSender;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper; // JSON 변환용
@@ -79,23 +80,7 @@ public class StoreService {
 
         currentManager.updateManageId(store.getId());
 
-
-        String storeKey = "store:" + store.getId();
-        StoreRedisDto storeDto = StoreRedisDto.builder()
-                .pointX(store.getPointX())
-                .pointY(store.getPointY())
-                .manageId(store.getManageId())
-                .franchiseName(store.getFranchiseName())
-                .headquarterId(headquarter.getId())
-                .address(store.getAddress())
-                .dong(store.getDong())
-                .build();
-        try {
-            String storeJson = objectMapper.writeValueAsString(storeDto);
-            redisTemplate.opsForValue().set(storeKey, storeJson);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Redis 저장 중 JSON 변환 오류", e);
-        }
+        saveStoreToRedis(store);
 
         log.info("초기 스토어 생성 완료 storeId = {}", store.getId());
 	}
@@ -133,6 +118,8 @@ public class StoreService {
         storeRepository.delete(store);
     }
 
+    /*--------------------------------------------------------------------------------*/
+
     private static List<KakaoApiAddressResDto> getCollect(KakaoApiRes query) {
         return query.getDocuments().stream()
                 .filter(doc -> doc.getRoad_address() != null)
@@ -165,4 +152,34 @@ public class StoreService {
         return headquarterRepository.findByFranchiseName(franchiseName)
                 .orElseThrow(() -> new CustomException(ErrorCode.FRANCHISE_NOT_FOUND));
     }
+
+    public List<StoreRedisDto> fetchAndCacheStoresFromDB() {
+        List<Store> stores = storeRepository.findAll();
+        List<StoreRedisDto> storeRedis= new ArrayList<>();
+        for(Store store : stores)
+            storeRedis.add(saveStoreToRedis(store));
+        return storeRedis;
+    }
+
+    private StoreRedisDto saveStoreToRedis(Store store) {
+        String storeKey = "store:" + store.getId();
+        StoreRedisDto storeDto = StoreRedisDto.builder()
+                .pointX(store.getPointX())
+                .pointY(store.getPointY())
+                .manageId(store.getManageId())
+                .franchiseName(store.getFranchiseName())
+                .headquarterId(store.getHeadquarter().getId())
+                .address(store.getAddress())
+                .dong(store.getDong())
+                .build();
+
+        try {
+            String storeJson = objectMapper.writeValueAsString(storeDto);
+            redisTemplate.opsForValue().set(storeKey, storeJson);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Redis 저장 중 JSON 변환 오류", e);
+        }
+        return storeDto;
+    }
+
 }

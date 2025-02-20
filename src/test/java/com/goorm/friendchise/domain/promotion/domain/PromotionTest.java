@@ -1,10 +1,12 @@
 package com.goorm.friendchise.domain.promotion.domain;
 
+import com.goorm.friendchise.domain.manager.domain.Manager;
+import com.goorm.friendchise.domain.manager.domain.Role;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PromotionTest {
 
@@ -17,8 +19,13 @@ class PromotionTest {
 		LocalDateTime startDate = LocalDateTime.of(2025, 3, 1, 9, 0);
 		LocalDateTime endDate = LocalDateTime.of(2025, 3, 7, 23, 59);
 
+		Manager headquarterManager = Manager.builder()
+			.role(Role.HEADQUARTER)
+			.manageId(headquarterId)
+			.build();
+
 		// when
-		Promotion promotion = Promotion.create(headquarterId, title, content, startDate, endDate);
+		Promotion promotion = Promotion.create(headquarterManager, title, content, startDate, endDate);
 
 		// then
 		assertThat(promotion).isNotNull();
